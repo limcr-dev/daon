@@ -8,10 +8,10 @@ import Leftbar from '../../common/Leftbar';
 
 const Schedule = () => {
   return (
-      <Container height={800} className="sidebar-page">
+      <Container style={{ minHeight: '100vh', width: '100%'}}>
         <Leftbar />
         <Container>
-          <Content>일정</Content>
+          <Content><img src="/image/monthgrid.jpg" alt="Daon" style={{ width: '1500px', height: 'auto' }} /> </Content>
         </Container>
       </Container>
   );

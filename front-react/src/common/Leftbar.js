@@ -40,40 +40,40 @@ const Leftbar = () => {
       <Sidenav expanded={expand} appearance="subtle">
         <Sidenav.Body>
           <Nav defaultActiveKey="1">
-            <Nav.Item eventKey="1" onClick={() => navigate('/Home')} icon={<Icon as={MdDashboard} />}>
+            <Nav.Item eventKey="1" onClick={() => navigate('/home')} icon={<Icon as={MdDashboard} />}>
               홈
             </Nav.Item>
-            <Nav.Item eventKey="2" onClick={() => navigate('/AttendanceManagement')} icon={<Icon as={MdGroup} />}>
+            <Nav.Item eventKey="2" onClick={() => navigate('/attendanceManagement')} icon={<Icon as={MdGroup} />}>
               근태 관리
             </Nav.Item>
-            <Nav.Item eventKey="3" onClick={() => navigate('/Mail')} icon={<Icon as={MdEmail} />}>
+            <Nav.Item eventKey="3" onClick={() => navigate('/mail')} icon={<Icon as={MdEmail} />}>
               메일
             </Nav.Item>
-            <Nav.Item eventKey="4" onClick={() => navigate('/ElectronicPayment')} icon={<Icon as={MdDescription} />}>
+            <Nav.Item eventKey="4" onClick={() => navigate('/approveMain')} icon={<Icon as={MdDescription} />}>
               전자결재
             </Nav.Item>
-            <Nav.Item eventKey="5" onClick={() => navigate('/ReferenceRoom')} icon={<Icon as={MdLibraryBooks} />}>
+            {/* <Nav.Item eventKey="5" onClick={() => navigate('/referenceRoom')} icon={<Icon as={MdLibraryBooks} />}>
               자료실
-            </Nav.Item>
-            <Nav.Item eventKey="6" onClick={() => navigate('/PersonnelEvaluation')} icon={<Icon as={MdBusinessCenter} />}>
+            </Nav.Item> */}
+            <Nav.Item eventKey="6" onClick={() => navigate('/personnelEvaluation')} icon={<Icon as={MdBusinessCenter} />}>
               인사평가
             </Nav.Item>
-            <Nav.Item eventKey="7" onClick={() => navigate('/Schedule')} icon={<Icon as={MdEvent} />}>
+            <Nav.Item eventKey="7" onClick={() => navigate('/schedule')} icon={<Icon as={MdEvent} />}>
               일정
             </Nav.Item>
-            <Nav.Item eventKey="8" onClick={() => navigate('/Reservation')} icon={<Icon as={MdGroup} />}>
+            {/* <Nav.Item eventKey="8" onClick={() => navigate('/reservation')} icon={<Icon as={MdGroup} />}>
               예약
-            </Nav.Item>
-            <Nav.Item eventKey="9" onClick={() => navigate('/Administrator')} icon={<Icon as={MdSupervisorAccount} />}>
+            </Nav.Item> */}
+            <Nav.Item eventKey="9" onClick={() => navigate('/administrator')} icon={<Icon as={MdSupervisorAccount} />}>
               관리자
             </Nav.Item>
-            <Nav.Item eventKey="10" onClick={() => navigate('/Administrator')} icon={<Icon as={MdSupervisorAccount} />}>
+            <Nav.Item eventKey="10" onClick={() => navigate('/messenger')} icon={<Icon as={MdSupervisorAccount} />}>
               메신저
             </Nav.Item>
           </Nav>
         </Sidenav.Body>
         <Nav>
-        <Nav.Item eventKey="10" icon={<Icon as={MdGroup} />}>
+        <Nav.Item eventKey="10" onClick={() => navigate('/oganizationChart')} icon={<Icon as={MdGroup} />}>
               조직도
               
             </Nav.Item>

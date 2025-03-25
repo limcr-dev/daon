@@ -6,15 +6,14 @@ import {
 
 import Leftbar from '../../common/Leftbar';
 
-const Administrator = () => {
+const ApproveMain = () => {
   return (
       <Container style={{ minHeight: '100vh', width: '100%'}}>
         <Leftbar />
         <Container>
-          <Content>관리자</Content>
-          <Content></Content>
+          <Content><img src="/image/approve_main.jpg" alt="Daon" style={{ width: '1500px', height: 'auto' }} /> </Content>
         </Container>
       </Container>
   );
 };
-export default Administrator;
+export default ApproveMain;
