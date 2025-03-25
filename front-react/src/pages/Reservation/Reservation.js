@@ -8,7 +8,7 @@ import Leftbar from '../../common/Leftbar';
 
 const Reservation = () => {
   return (
-      <Container height={800} className="sidebar-page">
+      <Container style={{ minHeight: '100vh', width: '100%'}}>
         <Leftbar />
         <Container>
           <Content>예약</Content>
