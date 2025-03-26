@@ -1,70 +1,84 @@
-# Getting Started with Create React App
+*** 프로젝트 파일 설치 및 실행 ***
+1. git clone 
+    1) workspace_daon 폴더 생성 > git bash 열기
+    2) git clone https://github.com/limcr-dev/daon.git 명령어 입력
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+2. STS4 실행
+    1) 프로젝트 열기
+        - File > Open Projects from File System > D:\DEV\workspace_daon\daon 선택
+    2) application.properties 확인
+        - application.properties source
+            ----------------------------------------------------------------
+            spring.application.name=daon
 
-## Available Scripts
+            # db connection(mariadb) - spring(context.xml)
+            spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+            spring.datasource.url=jdbc:mariadb://192.168.0.37:3306/daon
+            spring.datasource.username=root
+            spring.datasource.password=tiger
 
-In the project directory, you can run:
+            # http port number(default 8080)
+            server.port=8081
 
-### `npm start`
+            # MyBatis - spring(dataSource-config.xml)
+            mybatis.mapper-locations=mappers/**/*.xml
+            logging.level.com.atoz_develop.mybatissample.repository=TRACE
+            mybatis.configuration.map-underscore-to-camel-case=false
+            ----------------------------------------------------------------
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+    3) 프로젝트 실행
+        - 우클릭 > Run As > Spring Boot App 클릭
+        - Driver 오류 시, DBeaver에서 MariaDB 계정 생성 및 연결 필요
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+3. Visual Studio Code 실행
+    1) 프로젝트 열기
+        - File > Open Folder > D:\DEV\workspace_daon\daon 선택
+    2) 터미널 창 실행
+        - 상단바... > Terminal > New Terminal 선택
+        - cmd창(Command Prompt)으로 변경
+    
+    ---------- cmd 창에서 진행 -----------
+    3) 폴더 이동(cmd)
+        - cd front-react 입력
+    4) 모듈 설치
+        - D:\DEV\workspace_daon\daon\front-react 경로 확인
+        - front-react에서 설치해야 오류 없음
+        - npm install 입력
+    5) package-lock.json 취약점 해결
+        - npm audit fix 입력
+    6) 프로젝트 실행
+        - npm start 입력
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+*** npm install 모음 ***
+    1) 풀캘린더
+        npm install --save @fullcalendar/react
+        npm install @fullcalendar/core
+        npm install @fullcalendar/daygrid
+        npm install style-loader css-loader sass-loader sass --save
+        npm install @fullcalendar/timegrid
+        npm install @fullcalendar/interaction
+        npm install bootstrap @fullcalendar/bootstrap5
+        npm install @fullcalendar/list
 
-### `npm run build`
+    2) 스케줄
+        npm install @syncfusion/ej2-react-schedule --save
+        npm install @syncfusion/ej2-react-calendars --save
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    3) 데이트피커
+        npm install react-datepicker --save
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    4) crawling
+        npm install http-proxy-middleware
+        npm install react-spinners
+        
+    5) react
+        npm install react-icons --save
+        npm install react-router-dom
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    6) react suite
+        npm install rsuite --save
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+*** 설치 후 package.json 파일에서 dependcy 버전 확인 ***
+    - "react": "^18.3.1",
+    - "react-dom": "^18.3.1"
