@@ -27,8 +27,10 @@ public class LoginController {
 	@PostMapping("/login")
 	public ResponseEntity<?> logincheckIdPwd(@RequestBody LoginDTO dto) {
 		System.out.println("<<< logincheckIdPwd >>>");
-		if(service.checkIdPwd(dto) == null) {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		
+		LoginDTO loginDTO = service.checkIdPwd(dto);
+		if(loginDTO == null) {
+			return new ResponseEntity<>(loginDTO, HttpStatus.NO_CONTENT);
 		}
 		else {
 			return new ResponseEntity<>(HttpStatus.OK);
