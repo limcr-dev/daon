@@ -31,7 +31,7 @@ const SignUp = () => {
     .then((res) => {        // 결과를 돌려받는 부분
         console.log(1, res);
         if(res.status === 200){
-            return res.json();
+            return res;
         } else {
             return null;
         }
