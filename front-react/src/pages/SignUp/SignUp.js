@@ -20,7 +20,7 @@ const SignUp = () => {
 
   const submit = (e) => {    // 호출하는 부분
     e.preventDefault(); // submit이 action을 안 타고 자기 할 일을 그만함
-    fetch("http://localhost:8081/login", {      // 스프링부트
+    fetch("http://localhost:8081/api/login", {      // 스프링부트
         method: "POST",     // INSERT는 "POST"
         headers: {
             "Content-Type" : "application/json;charset=utf-8"
@@ -31,7 +31,7 @@ const SignUp = () => {
     .then((res) => {        // 결과를 돌려받는 부분
         console.log(1, res);
         if(res.status === 200){
-            return res;
+            return res.json();
         } else {
             return null;
         }
@@ -82,7 +82,7 @@ return (
       style={{height: '100vh' }}
     >      
 
-      <Panel bordered style={{ background: '#fff', width: 400 }} header={<h3>로그인</h3>}>
+      <Panel bordered style={{ background: '#fff', width: 400 }} header={<p style={{ fontSize: '25px' }}>로그인</p>}>
         <Form>
           <Form.Group>
             <Form.ControlLabel>
@@ -100,7 +100,7 @@ return (
           </Form.Group>
 
           <Stack spacing={6} divider={<Divider vertical />}>
-            <Button onClick={submit} appearance="blue">로그인</Button>  
+            <Button onClick={submit}>로그인</Button>  
           </Stack>
         </Form>
       </Panel>

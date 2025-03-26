@@ -7,6 +7,6 @@ import com.spring.daon.dto.LoginDTO;
 @Service
 public interface LoginService {
 	
-	public int checkIdPwd(LoginDTO dto);
+	public LoginDTO checkIdPwd(LoginDTO dto);
 
 }

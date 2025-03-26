@@ -1,7 +1,5 @@
 package com.spring.daon.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,19 +16,23 @@ import com.spring.daon.service.LoginService;
 
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/api")
 @CrossOrigin
 public class LoginController {
-	
-	   @Autowired
-	   private LoginService service;
-	   
-	   // login 페이지
-	   @PostMapping("/login")
-	   public ResponseEntity<?> logincheckIdPwd(@RequestBody LoginDTO dto) {
-	      System.out.println("<<< logincheckIdPwd >>>");
-	      
-	      return new ResponseEntity<>(service.checkIdPwd(dto), HttpStatus.OK);  // 200
-	   }	
+
+	@Autowired
+	private LoginService service;
+
+	// login 페이지
+	@PostMapping("/login")
+	public ResponseEntity<?> logincheckIdPwd(@RequestBody LoginDTO dto) {
+		System.out.println("<<< logincheckIdPwd >>>");
+		if(service.checkIdPwd(dto) == null) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+		else {
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
+	}	
 
 }
