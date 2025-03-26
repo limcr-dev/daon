@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+     
+<mapper namespace="com.spring.daon.dao.LoginMapper">
+
+ <select id="checkIdPwd" parameterType="com.spring.daon.dto.LoginDTO" resultType="int"> 
+	SELECT COUNT(*) 
+	  FROM employees 
+	 WHERE emp_email = #{emp_email} 
+	   AND emp_pwd = #{emp_pwd} 
+</select>
+   
+</mapper>   

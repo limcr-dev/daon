@@ -58,12 +58,12 @@
 			<optional>true</optional>
 		</dependency>
 		
-		<!-- Security : JWT 구현시 반드시 Spring Security를 추가해야 한다. -->
-		<!-- jwt : 시큐리티 추가(중요), 부트 로고 아래에 security password가 자동 생성되어 제공 -->
+<!--		 Security : JWT 구현시 반드시 Spring Security를 추가해야 한다. 
+		 jwt : 시큐리티 추가(중요), 부트 로고 아래에 security password가 자동 생성되어 제공 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
+		</dependency>-->
 	      
 		<!-- maria DB 추가 -->
 	      <dependency>
@@ -79,13 +79,13 @@
 			<optional>true</optional>
 		</dependency>
 		
-		<!-- jwt 토큰 생성을 위해 추가(중요) -->
-		<!-- https://mvnrepository.com/artifact/com.auth0/java-jwt -->
+		<!-- jwt 토큰 생성을 위해 추가(중요) 
+		 https://mvnrepository.com/artifact/com.auth0/java-jwt 
 		<dependency>
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>
 			<version>3.10.3</version>
-		</dependency>
+		</dependency>-->
       
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
