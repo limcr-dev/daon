@@ -30,10 +30,10 @@ public class LoginController {
 		
 		LoginDTO loginDTO = service.checkIdPwd(dto);
 		if(loginDTO == null) {
-			return new ResponseEntity<>(loginDTO, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
 		else {
-			return new ResponseEntity<>(HttpStatus.OK);
+			return new ResponseEntity<>(loginDTO, HttpStatus.OK);
 		}
 	}	
 
