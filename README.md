@@ -26,6 +26,7 @@
             mybatis.mapper-locations=mappers/**/*.xml
             logging.level.com.atoz_develop.mybatissample.repository=TRACE
             mybatis.configuration.map-underscore-to-camel-case=false
+          
             ----------------------------------------------------------------
 
     3) 프로젝트 실행
