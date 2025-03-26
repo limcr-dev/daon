@@ -13,8 +13,8 @@ public class LoginServiceImpl implements LoginService {
 	private LoginMapper loginMapper; 
 	
     @Override
-    public int checkIdPwd(LoginDTO dto) {
+    public LoginDTO checkIdPwd(LoginDTO dto) {
         
-            return loginMapper.checkIdPwd(dto);
+    	return loginMapper.checkIdPwd(dto);
     }
 }

@@ -5,8 +5,8 @@
      
 <mapper namespace="com.spring.daon.dao.LoginMapper">
 
- <select id="checkIdPwd" parameterType="com.spring.daon.dto.LoginDTO" resultType="int"> 
-	SELECT COUNT(*) 
+ <select id="checkIdPwd" parameterType="com.spring.daon.dto.LoginDTO" resultType="com.spring.daon.dto.LoginDTO"> 
+	SELECT *
 	  FROM employees 
 	 WHERE emp_email = #{emp_email} 
 	   AND emp_pwd = #{emp_pwd} 
