@@ -13,16 +13,16 @@
             ----------------------------------------------------------------
             spring.application.name=daon
 
-            # db connection(mariadb) - spring(context.xml)
+            // db connection(mariadb) - spring(context.xml)
             spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
             spring.datasource.url=jdbc:mariadb://192.168.0.37:3306/daon
             spring.datasource.username=root
             spring.datasource.password=tiger
 
-            # http port number(default 8080)
+            // http port number(default 8080)
             server.port=8081
 
-            # MyBatis - spring(dataSource-config.xml)
+            // MyBatis - spring(dataSource-config.xml)
             mybatis.mapper-locations=mappers/**/*.xml
             logging.level.com.atoz_develop.mybatissample.repository=TRACE
             mybatis.configuration.map-underscore-to-camel-case=false
