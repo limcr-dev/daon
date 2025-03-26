@@ -1,4 +1,6 @@
-*** 프로젝트 파일 설치 및 실행 ***
+# daon
+
+# 프로젝트 파일 설치 및 실행
 1. git clone 
     1) workspace_daon 폴더 생성 > git bash 열기
     2) git clone https://github.com/limcr-dev/daon.git 명령어 입력
@@ -7,24 +9,24 @@
     1) 프로젝트 열기
         - File > Open Projects from File System > D:\DEV\workspace_daon\daon 선택
     2) application.properties 확인
-        - application.properties source
-            ----------------------------------------------------------------
-            spring.application.name=daon
+        ----------------------------------------------------------------
+        spring.application.name=daon
 
-            # db connection(mariadb) - spring(context.xml)
-            spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
-            spring.datasource.url=jdbc:mariadb://192.168.0.37:3306/daon
-            spring.datasource.username=root
-            spring.datasource.password=tiger
+       
+        spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+        spring.datasource.url=jdbc:mariadb://192.168.0.37:3306/daon
+        spring.datasource.username=root
+        spring.datasource.password=tiger
 
-            # http port number(default 8080)
-            server.port=8081
+       
+        server.port=8081
 
-            # MyBatis - spring(dataSource-config.xml)
-            mybatis.mapper-locations=mappers/**/*.xml
-            logging.level.com.atoz_develop.mybatissample.repository=TRACE
-            mybatis.configuration.map-underscore-to-camel-case=false
-            ----------------------------------------------------------------
+       
+        mybatis.mapper-locations=mappers/**/*.xml
+        logging.level.com.atoz_develop.mybatissample.repository=TRACE
+        mybatis.configuration.map-underscore-to-camel-case=false
+      
+        ----------------------------------------------------------------
 
     3) 프로젝트 실행
         - 우클릭 > Run As > Spring Boot App 클릭
@@ -38,6 +40,7 @@
         - cmd창(Command Prompt)으로 변경
     
     ---------- cmd 창에서 진행 -----------
+   
     3) 폴더 이동(cmd)
         - cd front-react 입력
     4) 모듈 설치
@@ -50,7 +53,7 @@
         - npm start 입력
 
 
-*** npm install 모음 ***
+# npm install 모음
     1) 풀캘린더
         npm install --save @fullcalendar/react
         npm install @fullcalendar/core
@@ -79,6 +82,6 @@
     6) react suite
         npm install rsuite --save
 
-*** 설치 후 package.json 파일에서 dependcy 버전 확인 ***
+#설치 후 package.json 파일에서 dependcy 버전 확인
     - "react": "^18.3.1",
     - "react-dom": "^18.3.1"
