@@ -10,6 +10,6 @@ import com.spring.daon.dto.LoginDTO;
 public interface LoginMapper {
 	
 	// 사용자 사내 이메일, 비밀번호 조회
-	public int checkIdPwd(LoginDTO dto); 	
+	public LoginDTO checkIdPwd(LoginDTO dto); 	
 
 }
