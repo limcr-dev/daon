@@ -82,3 +82,20 @@
 *** 설치 후 package.json 파일에서 dependcy 버전 확인 ***
     - "react": "^18.3.1",
     - "react-dom": "^18.3.1"
+
+
+
+
+*** react 규칙 ***
+ - 기능별로 폴더 생성 후 내부에 pages, components, css 필요한 폴더 만들어 사용 
+ - 카멜표기법 사용
+ - 폴더명은 소문자로 시작
+ - js 파일명 대문자로 시작
+ - css 파일명 소문자로 시작
+
+*** Boot 규칙 ***
+ - 베이스 패키지 안에 각 기능별 패키지 만들어 사용
+ - DTO는 테이블명이랑 일치하게 생성(테이블 : employees -> DTO : Employees)
+ - class, interface 명 대문자로 시작
+ - 패키지명, xml명 소문자로 시작
+* Employees 테이블은 hrMgt에서 관리
