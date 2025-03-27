@@ -3,9 +3,9 @@
      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
      "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
      
-<mapper namespace="com.spring.daon.dao.LoginMapper">
+<mapper namespace="com.spring.daon.login.LoginMapper">
 
- <select id="checkIdPwd" parameterType="com.spring.daon.dto.LoginDTO" resultType="com.spring.daon.dto.LoginDTO"> 
+ <select id="checkIdPwd" parameterType="com.spring.daon.hrMgt.Employees" resultType="com.spring.daon.hrMgt.Employees"> 
 	SELECT *
 	  FROM employees 
 	 WHERE emp_email = #{emp_email} 
