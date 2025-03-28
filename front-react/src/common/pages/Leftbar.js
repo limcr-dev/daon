@@ -58,13 +58,16 @@ const Leftbar = () => {
             <Nav.Item eventKey="6" onClick={() => navigate('/performMgt')} icon={<Icon as={MdBusinessCenter} />}>
               인사평가
             </Nav.Item>
-            <Nav.Item eventKey="10" onClick={() => navigate('/hrMgt')} icon={<Icon as={MdGroup} />}>
+            <Nav.Item eventKey="7" onClick={() => navigate('/hrMgt')} icon={<Icon as={MdGroup} />}>
               인사관리
+            </Nav.Item>
+            <Nav.Item eventKey="8" onClick={() => navigate('/board')} icon={<Icon as={MdDescription} />}>
+              게시판
             </Nav.Item>
           </Nav>
         </Sidenav.Body>
         <Nav>
-          <Nav.Item eventKey="10" onClick={() => navigate('/orgChart')} icon={<Icon as={MdGroup} />}>
+          <Nav.Item eventKey="9" onClick={() => navigate('/orgChart')} icon={<Icon as={MdGroup} />}>
             조직도
           </Nav.Item>
           <Nav.Item eventKey="10" onClick={() => navigate('/messenger')} icon={<Icon as={MdSupervisorAccount} />}>

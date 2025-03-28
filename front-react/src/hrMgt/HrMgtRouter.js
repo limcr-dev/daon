@@ -5,7 +5,7 @@ import HRMgt from './pages/HRMgt';
 const HrMgtRouter = () => {
     return (
         <Routes>
-            <Route path="/hrMgt" element={<HRMgt />} />         {/* 전자결재 */}
+            <Route path="/" element={<HRMgt />} />         {/* 전자결재 */}
         </Routes>
     );
 };

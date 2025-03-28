@@ -5,7 +5,7 @@ import Messenger from './pages/Messenger';
 const MessengerRouter = () => {
     return (
         <Routes>
-            <Route path="/messenger" element={<Messenger/>} />         {/* 메신저 */}
+            <Route path="/" element={<Messenger/>} />         {/* 메신저 */}
         </Routes>
     );
 };
