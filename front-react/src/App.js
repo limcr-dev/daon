@@ -1,32 +1,32 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from './login/pages/Login';
 import Home from './common/pages/Home';
-import AttendMgt from './attendMgt/pages/AttendMgt';
-import Mail from './mail/pages/Mail';
-import Approve from './approve/pages/Approve';
-import PerfomeMgt from './performMgt/pages/PerfomeMgt';
-import Schedule from './schedule/pages/Schedule';
-import HRMgt from './hrMgt/pages/HRMgt';
-import OrgChart from './orgChart/pages/OrgChart';
-import Messenger from './messenger/pages/Messenger';
+import AttendRouter from "./attendMgt/AttendRouter";
+import ApproveRouter from "./approve/ApproveRouter";
+import HrMgtRouter from "./hrMgt/HrMgtRouter";
+import MailRouter from "./mail/MailRouter";
+import MessengerRouter from "./messenger/MessengerRouter";
+import OrgChartRouter from "./orgChart/OrgChartRouter";
+import PerformMgtRouter from "./performMgt/PerformMgtRouter";
+import ScheduleRouter from "./schedule/ScheduleRouter";
 
 function App() {
   return (
     <div>
       <BrowserRouter>
+
+        <ApproveRouter />     {/* 전자결재 */}
+        <AttendRouter />      {/* 근태관리 */}
+        <HrMgtRouter />       {/* 인사관리 */}
+        <MailRouter />        {/* 메일 */}
+        <MessengerRouter />   {/* 메신저 */}
+        <OrgChartRouter />    {/* 조직도 */}
+        <PerformMgtRouter />  {/* 인사평가 */}
+        <ScheduleRouter />    {/* 일정 */}
+
         <Routes>
           <Route path="/" element={<Login />} />                  {/* 로그인 */}
-
           <Route path="/home" element={<Home />} />               {/* 메인화면 */}
-          <Route path="/attendMgt" element={<AttendMgt />} />     {/* 근태관리 */}
-          <Route path="/mail" element={<Mail />} />               {/* 메일 */}
-          <Route path="/schedule" element={<Schedule />} />       {/* 일정 */}
-          <Route path="/approve" element={<Approve />} />         {/* 전자결재 */}
-          <Route path="/performMgt" element={<PerfomeMgt />} />   {/* 인사평가 */}
-
-          <Route path="/HRMgt" element={<HRMgt />} />             {/* 인사관리 */}
-          <Route path="/orgChart" element={<OrgChart />} />       {/* 조직도 */}
-          <Route path="/messenger" element={<Messenger />} />     {/* 메신저 */}
         </Routes>
       </BrowserRouter>
     </div>

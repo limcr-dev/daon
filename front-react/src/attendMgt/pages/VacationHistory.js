@@ -26,7 +26,7 @@ import FullCalendar from '@fullcalendar/react';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faMagnifyingGlass , faChevronLeft, faChevronRight} from '@fortawesome/free-solid-svg-icons'
-const AttendMgt = () => {
+const VacationHistory = () => {
 
   // 근태 정보 불러오기
   // const emp_no = propsParam.emp_no;
@@ -85,7 +85,7 @@ const AttendMgt = () => {
 
             <Col style={{ marginBottom: '20px' }}>
               <div style={{ display: "flex" }}>
-                <b style={{ fontSize: "20px" }}>내 근태 현황</b>
+                <b style={{ fontSize: "20px" }}>내 연차 내역</b>
 
                 <div style={{ display: "flex", position: "absolute", left: "50%", transform: "translateX(-50%)"}}>
 
@@ -162,4 +162,4 @@ const AttendMgt = () => {
     </Container >
   );
 };
-export default AttendMgt;
+export default VacationHistory;

@@ -1,5 +1,8 @@
 package com.spring.daon.attendMgt;
 
-public class AttendMgtServiceImpl {
+import org.springframework.stereotype.Service;
+
+@Service
+public class AttendMgtServiceImpl implements AttendMgtService{
 
 }

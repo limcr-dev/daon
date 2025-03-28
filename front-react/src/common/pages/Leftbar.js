@@ -58,7 +58,7 @@ const Leftbar = () => {
             <Nav.Item eventKey="6" onClick={() => navigate('/performMgt')} icon={<Icon as={MdBusinessCenter} />}>
               인사평가
             </Nav.Item>
-            <Nav.Item eventKey="10" onClick={() => navigate('/HRMgt')} icon={<Icon as={MdGroup} />}>
+            <Nav.Item eventKey="10" onClick={() => navigate('/hrMgt')} icon={<Icon as={MdGroup} />}>
               인사관리
             </Nav.Item>
           </Nav>
