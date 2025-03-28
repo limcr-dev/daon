@@ -5,13 +5,16 @@ import {
 } from 'rsuite';
 
 import Leftbar from '../../common/pages/Leftbar';
+import MyCalendar from './MyCalendar';
 
 const Schedule = () => {
   return (
       <Container style={{ minHeight: '100vh', width: '100%'}}>
         <Leftbar />
         <Container>
-          <Content><img src="/image/monthgrid.jpg" alt="Daon" style={{ width: '1500px', height: 'auto' }} /> </Content>
+          <Content>
+          <MyCalendar/>
+             </Content>
         </Container>
       </Container>
   );
