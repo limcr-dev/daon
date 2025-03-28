@@ -5,7 +5,7 @@ import Mail from './pages/Mail';
 const MailRouter = () => {
     return (
         <Routes>
-            <Route path="/mail" element={<Mail />} />         {/* 메일 */}
+            <Route path="/" element={<Mail />} />         {/* 메일 */}
         </Routes>
     );
 };

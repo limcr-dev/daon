@@ -5,7 +5,7 @@ import OrgChart from './pages/OrgChart';
 const OrgChartRouter = () => {
     return (
         <Routes>
-            <Route path="/orgChart" element={<OrgChart />} />       {/* 조직도 */}
+            <Route path="/" element={<OrgChart />} />       {/* 조직도 */}
         </Routes>
     );
 };

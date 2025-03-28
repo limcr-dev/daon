@@ -5,7 +5,7 @@ import PerfomeMgt from './pages/PerfomeMgt';
 const PerformMgtRouter = () => {
     return (
         <Routes>
-            <Route path="/performMgt" element={<PerfomeMgt />} />   {/* 인사평가 */}
+            <Route path="/" element={<PerfomeMgt />} />   {/* 인사평가 */}
         </Routes>
     );
 };

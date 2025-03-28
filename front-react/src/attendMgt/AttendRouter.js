@@ -7,7 +7,7 @@ const AttendRouter = () => {
     return (
         <div>
                 <Routes>
-                    <Route path="/attendMgt" element={<AttendMgt />} />                  {/* 내 근태 현황 */}
+                    <Route path="/" element={<AttendMgt />} />                  {/* 내 근태 현황 */}
 
                     <Route path="/vacationHistory" element={<VacationHistory />} />               {/* 내 연차 내력 */}
                   

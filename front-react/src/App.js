@@ -9,27 +9,28 @@ import MessengerRouter from "./messenger/MessengerRouter";
 import OrgChartRouter from "./orgChart/OrgChartRouter";
 import PerformMgtRouter from "./performMgt/PerformMgtRouter";
 import ScheduleRouter from "./schedule/ScheduleRouter";
+import BoardRouter from "./library/BoardRouter";
 
 function App() {
   return (
-    <div>
-      <BrowserRouter>
+    <BrowserRouter>
+      <Routes>
+        {/* 기본 경로 라우트 */}
+        <Route path="/" element={<Login />} />
+        <Route path="/home" element={<Home />} />
 
-        <ApproveRouter />     {/* 전자결재 */}
-        <AttendRouter />      {/* 근태관리 */}
-        <HrMgtRouter />       {/* 인사관리 */}
-        <MailRouter />        {/* 메일 */}
-        <MessengerRouter />   {/* 메신저 */}
-        <OrgChartRouter />    {/* 조직도 */}
-        <PerformMgtRouter />  {/* 인사평가 */}
-        <ScheduleRouter />    {/* 일정 */}
-
-        <Routes>
-          <Route path="/" element={<Login />} />                  {/* 로그인 */}
-          <Route path="/home" element={<Home />} />               {/* 메인화면 */}
-        </Routes>
-      </BrowserRouter>
-    </div>
+        {/* 서브 라우트들 */}
+        <Route path="/approve/*" element={<ApproveRouter />} />
+        <Route path="/attendMgt/*" element={<AttendRouter />} />
+        <Route path="/hrMgt/*" element={<HrMgtRouter />} />
+        <Route path="/mail/*" element={<MailRouter />} />
+        <Route path="/messenger/*" element={<MessengerRouter />} />
+        <Route path="/orgChart/*" element={<OrgChartRouter />} />
+        <Route path="/performMgt/*" element={<PerformMgtRouter />} />
+        <Route path="/schedule/*" element={<ScheduleRouter />} />
+        <Route path="/board/*" element={<BoardRouter />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 export default App;

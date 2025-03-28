@@ -5,7 +5,7 @@ import Schedule from './pages/Schedule';
 const ScheduleRouter = () => {
     return (
         <Routes>
-            <Route path="/schedule" element={<Schedule />} />       {/* 일정 */}
+            <Route path="/" element={<Schedule />} />       {/* 일정 */}
         </Routes>
     );
 };
