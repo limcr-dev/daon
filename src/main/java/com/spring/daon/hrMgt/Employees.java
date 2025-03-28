@@ -22,24 +22,25 @@ import lombok.ToString;
 public class Employees {
 	// employees table
 	@Id
-	private int emp_no;
-	private String emp_name;
-	private String emp_eng_name;
-	private String emp_email;
-	private String emp_ext_email;
-	private String emp_pwd;
-	private char emp_gender;
-	private Date emp_birthday;
-	private String emp_mobile;
-	private String emp_ext_tel;
-	private int position_id;
-	private int manager_no;
-	private int dept_no;
-	private int emp_status;
-	private int emp_type;
-	private String emp_img;
-	private Date hire_date;
-	private Date leave_date;
-	private String admin_type;
+	private int emp_no;				// 사원번호
+	private String emp_name;		// 이름
+	private String emp_eng_name;	// 영어 이름
+	private String emp_email;		// 사내이메일
+	private String emp_ext_email;	// 외부이메일
+	private String emp_pwd;			// 비밀번호
+	private char emp_gender;		// 성별
+	private Date emp_birthday;		// 생년월일	
+	private String emp_mobile;		// 전화번호(휴대폰)
+	private String emp_ext_tel;		// 전화번호(내선번호)
+	private int position_id;		// 직급 코드
+	private int role_id;			// 직책 코드
+	private int manager_no;			// 매니저 코드
+	private int dept_no;			// 부서 코드
+	private int emp_status;			// 재직 구분
+	private int emp_type;			// 고용 형태
+	private String emp_img;			// 프로필 이미지
+	private Date hire_date;			// 입사일
+	private Date leave_date;		// 퇴사일
+	private int admin_type;			// 관리자 유형
 	
 }
