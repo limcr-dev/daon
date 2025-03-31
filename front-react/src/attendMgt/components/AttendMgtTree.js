@@ -33,9 +33,9 @@ const data = [
     children: [
       { label: '전사 근태현황', value: 'inbox' },
       { label: '전사 근태통계', value: 'sent' },
-      { label: '전사 인사정보', value: 'spam' },
-      { label: '전사 연차현황', value: 'spam' },
-      { label: '전사 연차 사용내역', value: 'spam' },
+      { label: '전사 인사정보', value: 'spfam' },
+      { label: '전사 연차현황', value: 'swpam' },
+      { label: '전사 연차 사용내역', value: 'sqpam' },
     ],
   },
 ];
