@@ -21,7 +21,7 @@ const InsertNotice = (props) => {
     const changeValue = (e) => {
         setNotice({
             ...notice,
-            [e.target.name]: e.target.value.trim()
+            [e.target.name]: e.target.value
         });
     };
 

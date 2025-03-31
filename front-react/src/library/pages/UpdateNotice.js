@@ -46,16 +46,11 @@ const UpdateNotice = (props) => {
             return;
         }
 
-        if (!notice.emp_no.trim()) {
-            alert("작성자를 입력해주세요.");
-            return;
-        }
-
         if (!notice.notice_content.trim()) {
             alert("내용을 입력해주세요.");
             return;
         }
-        
+
         fetch("http://localhost:8081/board/notice/" + notice_no, {
             method: "PUT",
             headers: {
