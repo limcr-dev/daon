@@ -7,7 +7,6 @@ import {
   Content,
   Divider,
   FlexboxGrid,
-  List,
   Row
 } from 'rsuite';
 import Leftbar from '../../common/pages/Leftbar';

@@ -4,10 +4,10 @@ import {
   Sidenav,
   Text,
 } from 'rsuite';
-
 import BoardMenu from '../components/BoardMenu';
 
-const BaordLeftbar = () => {
+
+const BoardLeftbar = () => {
   return (
     <Sidebar style={{ backgroundColor: '#f0f0f0', width: '150px' }} >
       <Sidenav.Header
@@ -29,4 +29,4 @@ const BaordLeftbar = () => {
     </Sidebar>
   );
 };
-export default BaordLeftbar;
+export default BoardLeftbar;

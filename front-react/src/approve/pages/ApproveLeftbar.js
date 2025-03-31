@@ -1,8 +1,6 @@
 import {
   Button,
-  ButtonToolbar,
   Divider,
-  IconButton,
   Sidebar,
   Sidenav,
   Text,
