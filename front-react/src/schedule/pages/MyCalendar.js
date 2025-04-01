@@ -5,16 +5,18 @@ import FullCalendar from '@fullcalendar/react';
 import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import allLocales from "@fullcalendar/core/locales-all";
 import listPlugin from "@fullcalendar/list";
-import '../css/MyCalendar.css';
+import '../css/ScheduleCalendar.css';
 import { useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 
-import { ko } from 'date-fns/esm/locale';
+import { ko } from 'date-fns/locale';
 import Scroll from "./Scroll";
 
 import DatePicker from "react-datepicker";
+
 import "react-datepicker/dist/react-datepicker.css";
 import '../css/DatePicker.css';
+import '../css/Modal.css';
 
 
 const MyCalendar = () => {
@@ -182,7 +184,7 @@ const MyCalendar = () => {
         </Modal>
       </div>
       {/* 풀캘린더 시작 */}
-      <div style={{ display: 'grid' }}>
+      <div className="scheduleCalendar" style={{ display: 'grid' }}>
         <FullCalendar
           plugins={[dayGridPlugin, bootstrap5Plugin, timeGridPlugin, interactionPlugin, listPlugin]}
           initialView={'dayGridMonth'}  // 첫 화면 뷰어 설정

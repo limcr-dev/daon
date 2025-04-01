@@ -21,11 +21,21 @@ import lombok.ToString;
 @Entity   
 @Table(name="attendance")
 public class Attendance {
+	// attendance table
 	@Id
-	private String emp_no;
-	private Date date ;
-	private Time check_in_time;
-	private Time check_out_time;
-	private double work_hours;
-	private int status;
+	private int emp_no;			// 사원번호
+	private Date date;			// 날짜
+	private Time check_in_time;	// 출근 시간
+	private Time check_out_time;// 퇴근 시간
+	private double work_hours;	// 총 근무 시간
+	private int normal;			// 정상
+	private int late;			// 지각
+	private int early_leave;	// 조퇴
+	private int out_status;		// 외출
+	private int absent;			// 결근
+	private String message;   	// 수정 메시지
+	private int modifier;		// 수정자
+	private Time modifyTime;	// 수정시간
+	private String emp_name;		// 이름
+	private String emp_img;			// 프로필 이미지
 }

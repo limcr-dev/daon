@@ -19,75 +19,165 @@ import listPlugin from "@fullcalendar/list";
 import Leftbar from '../../common/pages/Leftbar';
 import AttendMgtLeftbar from './AttendMgtLeftbar';
 import Header from '../../common/pages/Header';
-import "../css/attendMgtMain.css";
-import MyCalendar from './MyCalendar';
-import Plan from '../../common/components/rightbar/Plan';
 import FullCalendar from '@fullcalendar/react';
 
+
+
+// data
+import History from './History'
+
+// css
+import "../css/AttendCalendar.css";
+import "../css/AttendMgtMain.css";
+
+// icon
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faMagnifyingGlass , faChevronLeft, faChevronRight} from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import FooterAttent from './FooterAttent';
+
 const AttendMgt = () => {
 
-  // 근태 정보 불러오기
-  // const emp_no = propsParam.emp_no;
-  const emp_no = "test";
-  const [board, setBoard] = useState({
-    b_num: '333',
-    date: '',
-    check_in_time: '',
-    check_out_time: '',
-    work_hours: '',
-    status: ''
+  // 직원 정보 불러오기
+  // const emp_no = propsParam.emp_no;  // props로 받아온 값 emp_no로 저장 
+  const emp_no = "1002";
+
+  // 직원 정보
+  const [employees, setEmployees] = useState({
+    emp_no: '1002',
+    work_type_no: ''
   });
+
+  // 근무 유형 정보
+  const [work_schedules, setWork_schedules] = useState({
+    type_name: '',
+    start_time: '',
+    end_time: '',
+  });
+
   useEffect(() => {
-    fetch("http://localhost:8081/api/attendMgtMain" + emp_no)
+    // 근무 유형 코드 가져오기
+    fetch("http://localhost:8081/api/getEmpInfo/" + emp_no)
       .then((res) => res.json())
       .then((res) => {
-        setBoard(res);
+        setEmployees(res);
+
+        // 근무 코드에 따른 정보 가져오기
+        fetch("http://localhost:8081/attend/workType/" + res.work_type_no)
+          .then((res) => res.json())
+          .then((res) => {
+            setWork_schedules(res);
+          })
+          .catch((error) => {
+            console.log('로그인정보를 확인해주세요', error);
+          })
       })
       .catch((error) => {
         console.log('로그인정보를 확인해주세요', error);
       })
   }, [])
 
-  // 날짜 이동 버튼
+  // 출퇴근 기록 불러오기
+  const [attendance, setAttendance] = useState({
+    date: '',
+    normal: '',
+    check_out_time: '',
+    late: '',
+    early_leave: '',
+    out_status: '',
+    absent: ''
+  });
+
+  // 날짜 이동 버튼 시작
   const [currentDate, setCurrentDate] = useState(new Date());
   const calendarRef = useRef();
+  const dayRef = useRef();
 
+  const [moveDate, setMoveDate] = useState({
+    // 초기 날짜 설정
+    year: currentDate.getFullYear(),
+    month: currentDate.getMonth() + 1
+  });
+
+  // 버튼 클릭 시
   const changeDate = (plusminus) => {
+
     const newDate = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth() + plusminus
-      
     );
-      setCurrentDate(newDate);
-      calendarRef.current.getApi().gotoDate(currentDate); // 새로운 날짜로 이동
+    setMoveDate({ year: newDate.getFullYear(), month: newDate.getMonth() + 1 })
+    setCurrentDate(newDate);
   };
+
+  // currentDate 변경 시
+  useEffect(() => {
+    calendarRef.current.getApi().gotoDate(currentDate); // 새로운 날짜로 이동
+  }, [currentDate])
+
+  // 날짜 이동 버튼 끝
+
+  // 이번 달 출퇴근 통계 불러오기
+  useEffect(() => {
+    fetch("http://localhost:8081/attend/attendCnt/" + emp_no + "/" + moveDate.year + "/" + moveDate.month, {
+      method: "GET"
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        // moveDate 값이 변경될때만 set (날짜 이동 버튼 클릭 시에만)
+        if (JSON.stringify(moveDate) !== JSON.stringify(res)) {
+          setAttendance(res);
+        }
+      })
+      .catch((error) => {
+        console.log('로그인정보를 확인해주세요', error);
+      })
+  }, [moveDate])
+
+  // 날짜, 이벤트 클릭 시 오른쪽 캘린더 날짜 변경
+  const handleShow = (pickDate) => {
+    dayRef.current.getApi().gotoDate(pickDate.dateStr); // 날짜 클릭 시 날짜로 이동
+  }
+  const eventhandleShow = (pickEvent) => {
+    dayRef.current.getApi().gotoDate(pickEvent.event.start); // 이벤트 클릭 시 날짜로 이동
+  }
+
+  // 상단 날짜 표기방식
   const monthDisplay = currentDate.toLocaleString('default', {
     year: 'numeric',
     month: 'long'
   });
 
+  // 캘린더 데이터 불러오기
+  const [attendHistoryList, setAttendHistoryList] = useState([])
+  // 캘린더 데이터 반환 후 attendHistory리스트에 값 저장
+  const handleAttendanceData = (data) => {
+    setAttendHistoryList(data);
+  };
+
+  // return
   return (
     <Container style={{ minHeight: '100vh', width: '100%' }}>
-
       <Leftbar />
       <Container>
 
-        <AttendMgtLeftbar />
+        <AttendMgtLeftbar emp_no={employees.emp_no} work_schedules={work_schedules} />
 
         <Content style={{ marginTop: '20px' }}>
           <Header />
+
+          {/* 캘린더 데이터 가져오기 */}
+          <History emp_no={emp_no} year={moveDate.year} month={moveDate.month} onDataFetched={handleAttendanceData} />
 
           <Divider style={{ margin: "0px" }} />
 
           <Row gutter={20} style={{ padding: '15px', display: 'flex', flexDirection: 'column' }}>
 
-            <Col style={{ marginBottom: '20px' }}>
+            <Col>
+              {/* 상단 근태현황 시작 */}
               <div style={{ display: "flex" }}>
                 <b style={{ fontSize: "20px" }}>내 근태 현황</b>
 
-                <div style={{ display: "flex", position: "absolute", left: "50%", transform: "translateX(-50%)"}}>
+                <div style={{ display: "flex", position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
 
                   <button onClick={() => changeDate(-1)}><FontAwesomeIcon icon={faChevronLeft} /></button>
                   <h5>{monthDisplay}</h5>
@@ -95,29 +185,31 @@ const AttendMgt = () => {
                 </div>
                 <br /> <br />
               </div>
-              <p style={{ fontSize: "16px" }}>근태유형 A</p>
+              <p style={{ fontSize: "16px" }}>
+                {work_schedules.type_name}
+              </p>
+              {/* 상단 근태현황 끝 */}
 
-              {/* 상단 근무정보 시작 */}
+              {/* 상단 근무시간 시작 */}
               <Card style={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
                 <Card.Header className="headerContents" style={{ minWidth: "800px", display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '30px', paddingBottom: '30px', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
-
-                  <div>이번주 누적<br /> <p>20h57m15s</p></div>
-                  <div>이번주 초과<br /> <p>0h0m0s</p></div>
-                  <div>이번주 잔여<br /> <p>19h2m45s</p></div>
-                  <div>이번달 누적<br /> <p>41h27m58s</p></div>
-                  <div>이번달 연장<br /> <p>1h0m0s</p></div>
-
+                  <div>정상근무<br /> <p>{attendance.normal}</p></div>
+                  <div>지각<br /> <p>{attendance.late}</p></div>
+                  <div>조퇴<br /> <p>{attendance.early_leave}</p></div>
+                  <div>외출<br /> <p>{attendance.out_status}</p></div>
+                  <div>결근<br /> <p>{attendance.absent}</p></div>
+                  <div>이번달 연장<br /> <p>1h30m</p></div>
                 </Card.Header>
               </Card>
-              {/* 상단 근무정보 끝 */}
-              <br></br>
+              <br />
+              {/* 상단 근무시간 끝 */}
+
               {/* 캘린더 시작 */}
-              <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
-                <Card style={{ borderRadius: '15px', width: "48%", boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+              <div className='attendCalendar' style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+                <Card style={{ borderRadius: '15px', width: "68%", boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
 
                   {/* 날짜 선택 캘린더 시작 */}
-
-                  <Card.Header className="" style={{ minWidth: "100px", display: 'flex', alignItems: 'center', paddingTop: '30px', paddingBottom: '30px', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
+                  <Card.Header className="leftCalendar" style={{ paddingBottom: "16px", minWidth: "100px", display: 'flex', alignItems: 'center', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
                     <div style={{ width: '100%' }}>
                       <FullCalendar
                         ref={calendarRef}
@@ -125,10 +217,22 @@ const AttendMgt = () => {
                         initialView={'dayGridMonth'}
                         locales={allLocales}  // 언어설정 가져오기
                         locale="kr"   // 한국어로 설정
-                        height={"55vh"}
+                        height={"58vh"}
                         dayCellContent={(info) => { // 일 지우기
                           return info.date.getDate();
                         }}
+                        headerToolbar={
+                          {
+                            start: '',
+                            center: 'title',
+                            end: ''
+                          }
+                        }
+                        dateClick={handleShow}
+                        eventClick={eventhandleShow}
+                        dayMaxEventRows={2}
+                        events={attendHistoryList}
+                      // dayCellDidMount={handleDayCellMount}
                       />
                     </div>
                   </Card.Header>
@@ -136,27 +240,51 @@ const AttendMgt = () => {
                 {/* 날짜 선택 캘린더 끝 */}
 
                 {/* 근태 정보 캘린더 시작 */}
-                <Card style={{ borderRadius: '15px', width: "48%", boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-                  <Card.Header className="" style={{ minWidth: "100px", display: 'flex', alignItems: 'center', paddingTop: '30px', paddingBottom: '30px', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
+                <Card style={{ borderRadius: '15px', width: "30%", boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+                  <Card.Header className="rightCalendar" style={{ minWidth: "100px", display: 'flex', alignItems: 'center', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
                     <div style={{ width: '100%' }}>
                       <FullCalendar
+                        ref={dayRef}
                         plugins={[dayGridPlugin, bootstrap5Plugin, timeGridPlugin, interactionPlugin, listPlugin]}
-                        initialView={'dayGridDay'}
+                        initialView={'timeGridDay'}
                         locales={allLocales}  // 언어설정 가져오기
                         locale="kr"   // 한국어로 설정
                         height={"55vh"}
+                        headerToolbar={
+                          {
+                            start: '',
+                            center: 'title',
+                            end: ''
+                          }
+                        }
+                        events={attendHistoryList}
                       />
+                      <div style={{ display: "flex" }}>
+                        <span style={{ color: "#81d742" }}>
+                          <span style={{ fontSize: "20px" }}>●</span> 정상&nbsp;
+                        </span>
+                        <span style={{ color: "red" }}>
+                          <span style={{ fontSize: "20px" }}>●</span> 지각&nbsp;
+                        </span>
+                        <span style={{ color: "#56adf9" }}>
+                          <span style={{ fontSize: "20px" }}>●</span> 수정&nbsp;
+                        </span>
+                        <span style={{ color: "orange" }}>
+                          <span style={{ fontSize: "20px" }}>●</span> 조퇴
+                        </span>
+                      </div>
                     </div>
-
                   </Card.Header>
                 </Card>
                 {/* 근태 정보 캘린더 끝 */}
-
               </div>
               {/* 캘린더 끝 */}
+              <br />
+              {/* 변경 이력 시작 */}
+              <FooterAttent emp_no={emp_no} year={moveDate.year} month={moveDate.month} />
+              {/* 변경 이력 끝 */}
             </Col>
           </Row>
-
         </Content>
       </Container>
     </Container >
