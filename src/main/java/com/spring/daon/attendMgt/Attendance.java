@@ -33,4 +33,9 @@ public class Attendance {
 	private int early_leave;	// 조퇴
 	private int out_status;		// 외출
 	private int absent;			// 결근
+	private String message;   	// 수정 메시지
+	private int modifier;		// 수정자
+	private Time modifyTime;	// 수정시간
+	private String emp_name;		// 이름
+	private String emp_img;			// 프로필 이미지
 }

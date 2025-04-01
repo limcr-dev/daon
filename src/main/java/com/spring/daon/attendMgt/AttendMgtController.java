@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/attend")
 @CrossOrigin
 public class AttendMgtController {
 	
@@ -23,39 +23,54 @@ public class AttendMgtController {
 	private AttendMgtServiceImpl service;
 
 	// 출근 버튼
-	@PostMapping("/postcheckIn/{emp_no}/{start_time}")
+	@PostMapping("/checkIn/{emp_no}/{start_time}")
 	public ResponseEntity<?> checkIn(@PathVariable int emp_no, Time start_time) {
 		System.out.println("<<< checkIn >>>");
 	
 		return new ResponseEntity<>(service.checkIn(emp_no, start_time), HttpStatus.OK);
 	}	
 	// 퇴근 버튼
-	@PutMapping("/putcheckOut/{emp_no}/{end_time}")
+	@PutMapping("/checkOut/{emp_no}/{end_time}")
 	public ResponseEntity<?> checkOut(@PathVariable int emp_no, Time end_time) {
 		System.out.println("<<< checkOut >>>");
 	
 		return new ResponseEntity<>(service.checkOut(emp_no, end_time), HttpStatus.OK);
 	}	
 	// 오늘 출퇴근 기록 불러오기
-	@GetMapping("/fetchAttendanceByDate/{emp_no}")
-	public ResponseEntity<?> fetchAttendanceByDate(@PathVariable int emp_no) {
-		System.out.println("<<< fetchAttendanceByDate >>>");
+	@GetMapping("/attendByDate/{emp_no}")
+	public ResponseEntity<?> attendByDate(@PathVariable int emp_no) {
+		System.out.println("<<< attendByDate >>>");
 	
-		return new ResponseEntity<>(service.fetchAttendanceByDate(emp_no), HttpStatus.OK);
+		return new ResponseEntity<>(service.attendByDate(emp_no), HttpStatus.OK);
 	}
 	
 	// 근무 유형 조회
-	@GetMapping("/fetchWorkType/{work_type_no}")
-	public ResponseEntity<?> fetchWorkType(@PathVariable int work_type_no) {
-		System.out.println("<<< fetchWorkType >>>");
+	@GetMapping("/workType/{work_type_no}")
+	public ResponseEntity<?> workType(@PathVariable int work_type_no) {
+		System.out.println("<<< workType >>>");
 	
-		return new ResponseEntity<>(service.fetchWorkType(work_type_no), HttpStatus.OK);
+		return new ResponseEntity<>(service.workType(work_type_no), HttpStatus.OK);
 	}
+	// 선택한 달 출퇴근 통계 불러오기
+	@GetMapping("/attendCnt/{emp_no}/{year}/{month}")
+	public ResponseEntity<?> attendCnt(@PathVariable int emp_no, @PathVariable int year, @PathVariable int month) {
+		System.out.println("<<< attendCnt >>>");
+		
+		return new ResponseEntity<>(service.attendCnt(emp_no, year, month), HttpStatus.OK);
+	}
+	
 	// 선택한 달 출퇴근 기록 불러오기
-	@GetMapping("/fetchAttendanceByAll/{emp_no}/{year}/{month}")
-	public ResponseEntity<?> fetchAttendanceByAll(@PathVariable int emp_no, @PathVariable int year, @PathVariable int month) {
-		System.out.println("<<< fetchAttendanceByAll >>>");
-		System.out.println("year" + year + "month" + month);
-		return new ResponseEntity<>(service.fetchAttendanceByAll(emp_no, year, month), HttpStatus.OK);
+	@GetMapping("/attendHistory/{emp_no}/{year}/{month}")
+	public ResponseEntity<?> attendHistory(@PathVariable int emp_no, @PathVariable int year, @PathVariable int month) {
+		System.out.println("<<< attendHistory >>>");
+		
+		return new ResponseEntity<>(service.attendHistory(emp_no, year, month), HttpStatus.OK);
+	}
+	// 선택한 달 변경이력 불러오기
+	@GetMapping("/changeLog/{emp_no}/{year}/{month}")
+	public ResponseEntity<?> changeLog(@PathVariable int emp_no, @PathVariable int year, @PathVariable int month) {
+		System.out.println("<<< changeLog >>>");
+		
+		return new ResponseEntity<>(service.changeLog(emp_no, year, month), HttpStatus.OK);
 	}
 }

@@ -28,32 +28,32 @@
 		set check_out_time = curtime(),
 			work_hours = TIMESTAMPDIFF(MINUTE, check_in_time, CURTIME()) / 60,
 	        normal = CASE 
-				        WHEN #{end_time} >= CURTIME() THEN 1
-				        ELSE 0  
+				        WHEN #{end_time} >= CURTIME() THEN 0
+				        ELSE 1  
 				    END,
 			early_leave = CASE 
-				        	WHEN #{end_time} > CURTIME() THEN 0
-				        	ELSE 1
+				        	WHEN #{end_time} > CURTIME() THEN 1
+				        	ELSE 0
 				    	  END
 		where  emp_no = #{emp_no}
 		  and  date = curdate();
 	</update>
 	
 	<!-- 오늘 출 퇴근 기록 불러오기 -->
-	<select id="fetchAttendanceByDate" parameterType="int" resultType="com.spring.daon.attendMgt.Attendance">
+	<select id="attendByDate" parameterType="int" resultType="com.spring.daon.attendMgt.Attendance">
 		select * from attendance
 	 	where emp_no = #{emp_no}
 	 	 and  date = curdate();
 	</select>
 	
 	<!-- 근무 유형 조회 -->
-	<select id="fetchWorkType" parameterType="int" resultType="com.spring.daon.attendMgt.Work_schedules">
+	<select id="workType" parameterType="int" resultType="com.spring.daon.attendMgt.Work_schedules">
 		select * from work_schedules
 		where work_type_no  = #{work_type_no};
 	</select>
 	
-	<!-- 선택한 달 출퇴근 기록 불러오기 -->
-	<select id="fetchAttendanceByAll" parameterType="java.util.Map" resultType="com.spring.daon.attendMgt.Attendance">
+	<!-- 선택한 달 출퇴근 통계 불러오기 -->
+	<select id="attendCnt" parameterType="java.util.Map" resultType="com.spring.daon.attendMgt.Attendance">
 		SELECT 
 		    SUM(normal) AS normal, 
 		    SUM(late) AS late, 
@@ -64,5 +64,30 @@
 		where emp_no = #{emp_no}
 		 AND MONTH(date) = #{month}
  		 AND YEAR(date) = #{year}
+	</select>
+	<!-- 선택한 달 출퇴근 기록 불러오기 -->
+	<select id="attendHistory" parameterType="java.util.Map" resultType="com.spring.daon.attendMgt.Attendance">
+		 SELECT *
+			FROM attendance
+			where emp_no = #{emp_no}
+			 AND MONTH(date) = #{month}
+			 AND YEAR(date) = #{year}
+	</select>
+	
+	<!-- 선택한 달 변경이력 불러오기 -->
+	<select id="changeLog" parameterType="java.util.Map" resultType="com.spring.daon.attendMgt.Attendance">
+		 <!-- SELECT *
+			FROM attendance
+			where emp_no = #{emp_no}
+			 AND MONTH(date) = #{month}
+			 AND YEAR(date) = #{year}
+			 AND message IS NOT NULL -->
+	     SELECT a.*, e.emp_name, e.emp_img
+		    FROM attendance a
+		    JOIN employees e ON a.emp_no = e.emp_no
+		    WHERE a.emp_no = #{emp_no}
+		      AND MONTH(a.date) = #{month}
+		      AND YEAR(a.date) = #{year}
+		      AND a.message IS NOT NULL
 	</select>
 </mapper>

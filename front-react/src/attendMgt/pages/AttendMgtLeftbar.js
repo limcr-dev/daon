@@ -13,15 +13,20 @@ import { MdDescription } from 'react-icons/md';
 import Clock from "react-live-clock";
 import { useEffect, useState } from 'react';
 
+// icon
+import { faArrowRightFromBracket, faPersonWalking } from '@fortawesome/free-solid-svg-icons'
+
+
 // css
 import "../css/AttendMgtLeftbar.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const AttendMgtLeftbar = (props) => {
 
   // 근태 정보
   const emp_no = props.emp_no
-  const {start_time, end_time} = props.work_schedules
-  const [attendance, setAttendance] = useState({
+  const { start_time, end_time } = props.work_schedules
+  const [todayAttendance, setTodayAttendance] = useState({
     b_num: '',
     date: '',
     check_in_time: '',
@@ -32,12 +37,12 @@ const AttendMgtLeftbar = (props) => {
 
   // 출근 버튼 클릭시
   const check_in = () => {
-    fetch("http://localhost:8081/api/postcheckIn/" + emp_no + "/" + start_time,{
+    fetch("http://localhost:8081/attend/checkIn/" + emp_no + "/" + start_time, {
       method: "POST"
     })
       .then((res) => res.json())
       .then((res) => {
-        setAttendance(res);
+        setTodayAttendance(res);
       })
       .catch((error) => {
         console.log('로그인정보를 확인해주세요', error);
@@ -46,12 +51,12 @@ const AttendMgtLeftbar = (props) => {
 
   // 퇴근 버튼 클릭시
   const check_out = () => {
-    fetch("http://localhost:8081/api/putcheckOut/" + emp_no + "/" + end_time,{
+    fetch("http://localhost:8081/attend/checkOut/" + emp_no + "/" + end_time, {
       method: "PUT"
     })
       .then((res) => res.json())
       .then((res) => {
-        setAttendance(res);
+        setTodayAttendance(res);
       })
       .catch((error) => {
         console.log('로그인정보를 확인해주세요', error);
@@ -60,20 +65,20 @@ const AttendMgtLeftbar = (props) => {
 
   // 오늘 출퇴근 기록 불러오기
   useEffect(() => {
-    fetch("http://localhost:8081/api/fetchAttendanceByDate/" + emp_no, {
+    fetch("http://localhost:8081/attend/attendByDate/" + emp_no, {
       method: "GET"
     })
       .then((res) => res.json())
       .then((res) => {
-        // attendance의 값이 변경될때만 set
-        if (JSON.stringify(attendance) !== JSON.stringify(res)) {
-          setAttendance(res);
+        // todayAttendance 값이 변경될때만 set
+        if (JSON.stringify(todayAttendance) !== JSON.stringify(res)) {
+          setTodayAttendance(res);
         }
       })
       .catch((error) => {
         console.log('로그인정보를 확인해주세요', error);
       })
-  }, [attendance])
+  }, [todayAttendance])
 
   // 오늘 날짜 불러오기
   const today = new Date();
@@ -91,7 +96,7 @@ const AttendMgtLeftbar = (props) => {
           flexDirection: 'column'
         }}>
         <Text size={24} style={{ marginTop: '20px' }}>근태관리</Text>
-        
+
         <Divider />
         {formattedDate} {/* 오늘 날짜 */}
 
@@ -103,18 +108,21 @@ const AttendMgtLeftbar = (props) => {
         </span>
         {/* 현재시각 끝 */}
         <div>
-          출근 시간 : {attendance.check_in_time}<br />
-          퇴근 시간 : {attendance.check_out_time}
+          출근 시간 : {todayAttendance.check_in_time}<br />
+          퇴근 시간 : {todayAttendance.check_out_time}
         </div>
 
         {/* 출퇴근 버튼 시작 */}
         <div style={{ gap: "10px", display: "flex" }}>
-          <Button style={{ backgroundColor: '#CECEF2' }} onClick={check_in}>
-            <Icon as={MdDescription} /> <p style={{ margin: '5px' }}>출근</p>
+
+          <Button style={{ backgroundColor: '#CECEF2' }} onClick={check_in}
+            disabled={!!todayAttendance.check_in_time}>  {/* 이미 누른 경우 비활성화 */}
+            <FontAwesomeIcon icon={faPersonWalking} /> <p style={{ margin: '5px' }}>출근</p>
           </Button>
 
-          <Button style={{ backgroundColor: '#CECEF2' }} onClick={check_out}>
-            <Icon as={MdDescription} /> <p style={{ margin: '5px' }}>퇴근</p>
+          <Button style={{ backgroundColor: '#CECEF2' }} onClick={check_out}
+            disabled={!!todayAttendance.check_out_time}> {/* 이미 누른 경우 비활성화 */}
+            <FontAwesomeIcon icon={faArrowRightFromBracket} /> <p style={{ margin: '5px' }}>퇴근</p>
           </Button>
         </div>
         {/* 출퇴근 버튼 끝 */}
