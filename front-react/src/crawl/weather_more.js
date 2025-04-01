@@ -27,7 +27,8 @@ function Weather_more() {
         "구름많음": process.env.PUBLIC_URL + "/image/weather/many_cloudy.png",
         "비": process.env.PUBLIC_URL + "/image/weather/rainy.png",
         "눈": process.env.PUBLIC_URL + "/image/weather/snowy.png",
-        "구름많고 한때 비": process.env.PUBLIC_URL + "/image/weather/cloudy_and_rainy.png"
+        "구름많고 한때 비": process.env.PUBLIC_URL + "/image/weather/cloudy_and_rainy.png",
+        "흐리고 비": process.env.PUBLIC_URL + "/image/weather/cloudy_and_rainy.png"
     };
 
     return (
