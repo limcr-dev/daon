@@ -1,13 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Button,
   Card,
   Col,
   Container,
   Content,
   Divider,
-  Heading,
-  List,
   Row,
 } from 'rsuite';
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -33,13 +30,12 @@ import "../css/AttendMgtMain.css";
 // icon
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
-import FooterAttent from './FooterAttent';
+import AttendFooter from './AttendFooter';
 
 const AttendMgt = () => {
 
   // 직원 정보 불러오기
   // const emp_no = propsParam.emp_no;  // props로 받아온 값 emp_no로 저장 
-  const emp_no = "1002";
 
   // 직원 정보
   const [employees, setEmployees] = useState({
@@ -56,7 +52,7 @@ const AttendMgt = () => {
 
   useEffect(() => {
     // 근무 유형 코드 가져오기
-    fetch("http://localhost:8081/api/getEmpInfo/" + emp_no)
+    fetch("http://localhost:8081/api/getEmpInfo/" + employees.emp_no)
       .then((res) => res.json())
       .then((res) => {
         setEmployees(res);
@@ -74,7 +70,7 @@ const AttendMgt = () => {
       .catch((error) => {
         console.log('로그인정보를 확인해주세요', error);
       })
-  }, [])
+  }, [employees.emp_no])
 
   // 출퇴근 기록 불러오기
   const [attendance, setAttendance] = useState({
@@ -118,7 +114,7 @@ const AttendMgt = () => {
 
   // 이번 달 출퇴근 통계 불러오기
   useEffect(() => {
-    fetch("http://localhost:8081/attend/attendCnt/" + emp_no + "/" + moveDate.year + "/" + moveDate.month, {
+    fetch("http://localhost:8081/attend/attendCnt/" + employees.emp_no + "/" + moveDate.year + "/" + moveDate.month, {
       method: "GET"
     })
       .then((res) => res.json())
@@ -131,7 +127,7 @@ const AttendMgt = () => {
       .catch((error) => {
         console.log('로그인정보를 확인해주세요', error);
       })
-  }, [moveDate])
+  }, [employees.emp_no, moveDate])
 
   // 날짜, 이벤트 클릭 시 오른쪽 캘린더 날짜 변경
   const handleShow = (pickDate) => {
@@ -166,14 +162,14 @@ const AttendMgt = () => {
           <Header />
 
           {/* 캘린더 데이터 가져오기 */}
-          <History emp_no={emp_no} year={moveDate.year} month={moveDate.month} onDataFetched={handleAttendanceData} />
+          <History emp_no={employees.emp_no} year={moveDate.year} month={moveDate.month} onDataFetched={handleAttendanceData} />
 
           <Divider style={{ margin: "0px" }} />
 
           <Row gutter={20} style={{ padding: '15px', display: 'flex', flexDirection: 'column' }}>
 
             <Col>
-              {/* 상단 근태현황 시작 */}
+              {/* 상단 날짜 이동 버튼 시작 시작 */}
               <div style={{ display: "flex" }}>
                 <b style={{ fontSize: "20px" }}>내 근태 현황</b>
 
@@ -188,7 +184,7 @@ const AttendMgt = () => {
               <p style={{ fontSize: "16px" }}>
                 {work_schedules.type_name}
               </p>
-              {/* 상단 근태현황 끝 */}
+              {/* 상단 날짜 이동 버튼 시작 끝 */}
 
               {/* 상단 근무시간 시작 */}
               <Card style={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
@@ -281,7 +277,7 @@ const AttendMgt = () => {
               {/* 캘린더 끝 */}
               <br />
               {/* 변경 이력 시작 */}
-              <FooterAttent emp_no={emp_no} year={moveDate.year} month={moveDate.month} />
+              <AttendFooter emp_no={employees.emp_no} year={moveDate.year} month={moveDate.month} />
               {/* 변경 이력 끝 */}
             </Col>
           </Row>

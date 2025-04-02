@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 const History = (props) => {
 
@@ -8,16 +8,12 @@ const History = (props) => {
   const onDataFetched = props.onDataFetched;
 
   useEffect(() => {
+    
     fetch("http://localhost:8081/attend/attendHistory/" + emp_no + "/" + year + "/" + month, {
       method: "GET"
     })
       .then((data) => data.json())
       .then((data) => {
-        // alert("ddd" + JSON.stringify(data, null, 2));
-        // moveDate 값이 변경될때만 set (날짜 이동 버튼 클릭 시에만)
-        // if (JSON.stringify(data) !== JSON.stringify(data)) {
-        // setAttendHistoryList(res);
-
         const transformedData = transformData(data);
         onDataFetched(transformedData);  // 변환된 데이터를 부모로 전달
         // }
@@ -25,7 +21,7 @@ const History = (props) => {
       .catch((error) => {
         console.log('로그인정보를 확인해주세요', error);
       })
-  }, [emp_no, year, month])
+  }, [emp_no, year, month, onDataFetched])
 
   // 데이터 형식변환 후 리턴
   const transformData = (data) => {

@@ -1,9 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
-import { Card, Divider } from 'rsuite';
-import CardBody from 'rsuite/esm/Card/CardBody';
+import { Card } from 'rsuite';
 
-const FooterAttent = (props) => {
+const AttendFooter = (props) => {
 
   const emp_no = props.emp_no;
   const year = props.year;
@@ -19,7 +18,7 @@ const FooterAttent = (props) => {
         console.log("test ", res);
         setChangeLog(res);
       })
-  }, []);
+  }, [emp_no,year,month]);
 
   return (
     <div>
@@ -52,4 +51,4 @@ const FooterAttent = (props) => {
   );
 };
 
-export default FooterAttent;
+export default AttendFooter;

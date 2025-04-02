@@ -8,7 +8,7 @@ const data = [
     value: 'attendance',
     children: [
       { label: '내 근태 현황', value: '' },
-      { label: '내 연차 내역', value: 'vacationHistory' },
+      { label: '내 연차 내역', value: 'vacationMain' },
       { label: '내 인사 정보', value: 'item3' },
     ],
   },

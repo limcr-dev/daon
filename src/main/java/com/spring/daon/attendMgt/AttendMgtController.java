@@ -69,7 +69,7 @@ public class AttendMgtController {
 	// 선택한 달 변경이력 불러오기
 	@GetMapping("/changeLog/{emp_no}/{year}/{month}")
 	public ResponseEntity<?> changeLog(@PathVariable int emp_no, @PathVariable int year, @PathVariable int month) {
-		System.out.println("<<< changeLog >>>");
+		System.out.println("<<< changeLog >>>" + emp_no + year + month);
 		
 		return new ResponseEntity<>(service.changeLog(emp_no, year, month), HttpStatus.OK);
 	}
