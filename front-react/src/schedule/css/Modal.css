@@ -1,0 +1,13 @@
+.modal-450w{
+    max-width: 450px !important;
+}
+.modal-300w{
+    max-width: 300px !important;
+}
+.modal-1000h{
+    max-height: 1500px !important;
+}
+
+.custom-form{
+    font-size: 14px;
+}

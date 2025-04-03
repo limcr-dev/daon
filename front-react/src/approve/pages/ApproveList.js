@@ -11,7 +11,7 @@ const ApproveList = () => {
       <Container style={{ minHeight: '100vh', width: '100%'}}>
         <Leftbar />
         <Container>
-          <Content><img src="/image/approve_main.jpg" alt="Daon" style={{ width: '1500px', height: 'auto' }} /> </Content>
+          <Content> </Content>
         </Container>
       </Container>
   );

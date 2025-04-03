@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+     
+<mapper namespace="com.spring.daon.board.BoardMapper">
+
+	<!-- 공지 목록 조회 -->
+	<select id="noticeList" resultType="com.spring.daon.board.Notice">
+		SELECT * FROM notice
+		 WHERE notice_delete = 'N'
+		 ORDER BY notice_reg_date DESC    
+	</select>
+ 
+	<!-- 공지 작성 -->
+	<insert id="insertNotice" parameterType="com.spring.daon.board.Notice">
+		INSERT INTO notice (notice_no, emp_no, notice_title, notice_content)
+		SELECT IFNULL(MAX(notice_no), 0) + 1, #{emp_no}, #{notice_title}, #{notice_content}
+		  FROM notice
+	</insert>   
+   
+   <!-- 공지 상세 페이지 -->
+	<select id="noticeDetail" resultType="com.spring.daon.board.Notice">
+		SELECT * FROM notice
+		 WHERE notice_no = #{notice_no}    
+	</select>
+   
+	<!-- 조회수 증가 -->
+	<update id="updateViews" parameterType="int">
+	   UPDATE notice
+	      SET notice_views = (SELECT notice_views + 1 FROM notice WHERE notice_no = #{notice_no})
+	    WHERE notice_no = #{notice_no}
+	</update>
+   
+	<!-- 공지 수정 -->
+	<update id="updateNotice" parameterType="com.spring.daon.board.Notice">
+		UPDATE notice
+		   SET notice_title = #{notice_title}
+		   	 , notice_content = #{notice_content}
+		 WHERE notice_no = #{notice_no}
+	</update>
+   
+   <!-- 공지 삭제 -->
+	<update id="deleteNotice" parameterType="int">
+   		UPDATE notice
+   		   SET notice_delete = 'Y'
+   		 WHERE notice_no = #{notice_no}
+	</update>
+	
+		<!-- 자료 목록 조회 -->
+	<select id="libraryList" resultType="com.spring.daon.board.Library">
+		SELECT * FROM library
+		 WHERE library_delete = 'N'
+		 ORDER BY library_reg_date DESC    
+	</select>
+ 
+	<!-- 자료 작성 -->
+	<insert id="insertLibrary" parameterType="com.spring.daon.board.Library">
+		INSERT INTO library (library_no, emp_no, library_title, library_content)
+		SELECT IFNULL(MAX(library_no), 0) + 1, #{emp_no}, #{library_title}, #{library_content}
+		  FROM library
+	</insert>   
+   
+   <!-- 자료 상세 페이지 -->
+	<select id="libraryDetail" resultType="com.spring.daon.board.Library">
+		SELECT * FROM library
+		 WHERE library_no = #{library_no}    
+	</select>
+   
+	<!-- 자료 조회수 증가 -->
+	<update id="libraryViews" parameterType="int">
+	   UPDATE library
+	      SET library_views = (SELECT library_views + 1 FROM library WHERE library_no = #{library_no})
+	    WHERE library_no = #{library_no}
+	</update>
+   
+	<!-- 자료 수정 -->
+	<update id="updateLibrary" parameterType="com.spring.daon.board.Library">
+		UPDATE library
+		   SET library_title = #{library_title}
+		   	 , library_content = #{library_content}
+		 WHERE library_no = #{library_no}
+	</update>
+   
+   <!-- 자료 삭제 -->
+	<update id="deleteLibrary" parameterType="int">
+   		UPDATE library
+   		   SET library_delete = 'Y'
+   		 WHERE library_no = #{library_no}
+	</update>
+	
+</mapper>   
+

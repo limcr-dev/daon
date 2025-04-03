@@ -1,0 +1,43 @@
+/* 일요일 날짜: 빨간색 */
+.scheduleCalendar .fc-day-sun a {
+    color: red;
+}
+
+/* 토요일 날짜: 파란색 */
+.scheduleCalendar .fc-day-sat a {
+    color: blue;
+}
+
+
+/* 버튼 색 변경 */
+.scheduleCalendar .fc .fc-button {
+    background-color: #CECEF2 !important;
+    color: white !important;
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: #b1b1d3;
+}
+
+/* 활성화 상태 */
+.scheduleCalendar .fc .fc-button.fc-button-active {
+    background-color: #b3b3d4 !important;
+    color: white !important;
+    border-radius: 5px;
+    border-width: 1px;
+    /* border-color: #000000 !important; */
+    border-color: #b1b1d3 !important;
+}
+/* 마우스 올렸을 때 */
+.scheduleCalendar .fc .fc-button:hover {
+    background-color: #b3b3d4 !important;
+    color: white !important;
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: #b1b1d3 !important;
+}
+/* 기본 테마 무시 */
+.scheduleCalendar .fc-theme-standard .fc-button {
+    border-color: #b1b1d3 !important;
+    border-width: 1px !important;
+}
+
