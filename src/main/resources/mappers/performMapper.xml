@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+     
+<mapper namespace="com.spring.daon.performMgt.PerformMgtMapper">
+
+	<select id="evalQuesList" parameterType="com.spring.daon.performMgt.EvalQuesComp" resultType="com.spring.daon.performMgt.EvalQuesComp"> 
+		select *
+ 	 	  from eval_quescomp
+	</select>
+   
+   <select id="evalList" parameterType="com.spring.daon.performMgt.EvalQuesComp" resultType="com.spring.daon.performMgt.EvalQuesComp"> 
+		select distinct(eval_comp_id)
+	 		, eval_comp_type
+	 		, eval_comp_name
+	 		, eval_comp_level
+	 		, eval_comp_description
+  		  from eval_quescomp
+  		 
+	</select>
+	
+	<!-- <insert id="" parameterType="" resultType="">
+		INSERT INTO TEST (eval_emp_type, eval_click_emp, eval_start_date, eval_end_date, eval_emp_no)
+		SELECT 
+		    '자기평가',
+		    #{eval_click_emp},
+		    NOW(),     
+		    DATE_ADD(NOW(), INTERVAL 7 DAY),
+		    emp_no
+		FROM employees	
+	</insert> -->
+  	
+<!--   	<update id="selectComp" >
+  		
+  	</update> -->
+</mapper>   
