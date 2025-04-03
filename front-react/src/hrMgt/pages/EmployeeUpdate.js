@@ -164,16 +164,16 @@ const EmployeeUpdate = ({ open, onClose, emp_no }) => {
                 <select name="position_id" value={employee.position_id} onChange={changeValue} required>
                     <option value="">직급 선택</option>
                     <option value="10">사장</option>
-                    <option value="20">부사장</option>
-                    <option value="30">전무</option>
-                    <option value="40">상무</option>
-                    <option value="50">이사</option>
-                    <option value="60">부장</option>
-                    <option value="70">차장</option>
-                    <option value="80">과장</option>
-                    <option value="90">대리</option>
-                    <option value="100">사원</option>
-                    <option value="110">인턴</option>
+                    <option value="15">부사장</option>
+                    <option value="20">전무</option>
+                    <option value="25">상무</option>
+                    <option value="30">이사</option>
+                    <option value="35">부장</option>
+                    <option value="40">차장</option>
+                    <option value="45">과장</option>
+                    <option value="50">대리</option>
+                    <option value="55">사원</option>
+                    <option value="60">인턴</option>
                 </select>
             </div>
             </div>
@@ -184,12 +184,15 @@ const EmployeeUpdate = ({ open, onClose, emp_no }) => {
                 <select name="dept_no" value={employee.dept_no} onChange={changeValue} required>
                 <option value="">부서 선택</option>
                 <option value="1">다온</option>
+                <option value="10">경영부</option>
                 <option value="101">경영부(인사팀)</option>
                 <option value="102">경영부(총무팀)</option>
                 <option value="103">경영부(회계팀)</option>
+                <option value="20">개발부</option>
                 <option value="201">개발부(연구개발팀)</option>
                 <option value="202">개발부(생산관리팀)</option>
                 <option value="203">개발부(it팀)</option>
+                <option value="30">영업부</option>
                 <option value="301">영업부(영업팀)</option>
                 <option value="302">영업부(마케팅팀)</option>
                 <option value="303">영업부(품질관리팀)</option>
