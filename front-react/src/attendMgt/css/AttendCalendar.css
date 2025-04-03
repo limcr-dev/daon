@@ -1,0 +1,46 @@
+/* 일요일 날짜: 빨간색 */
+.attendCalendar .fc-day-sun a {
+    color: rgb(187, 83, 83);
+}
+
+/* 토요일 날짜: 파란색 */
+.attendCalendar .fc-day-sat a {
+    color: blue;
+}
+
+/* 배경색 제거 */
+.attendCalendar .rightCalendar .fc-day-today {
+    background-color: transparent !important; 
+}
+
+
+.attendCalendar .fc .fc-toolbar.fc-header-toolbar {
+    margin-bottom: 0em;
+}
+/* 버튼 색 변경 */
+.attendCalendar .fc .fc-button {
+    background-color: #ffffff !important;
+    color: rgb(0, 0, 0) !important;
+    border-radius: 0px;
+    border-width: 0px !important;
+    border-color: #b1b1d3;
+}
+
+/* 활성화 상태 */
+.attendCalendar .fc .fc-button.fc-button-active {
+    border-width: 0px !important;
+    border-color: #000000 !important;
+    border-color: #b1b1d3 !important;
+}
+/* 마우스 올렸을 때 */
+.attendCalendar .fc .fc-button:hover {
+    cursor: default !important;
+}
+.attendCalendar .fc .fc-button:hover {
+    cursor: default !important;
+}
+
+/* 기본 테마 무시 */
+/* .attendCalendar .fc-theme-standard .fc-button {
+    border-color: #b1b1d3 !important;
+} */

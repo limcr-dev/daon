@@ -8,11 +8,12 @@
     vertical-align:middle;
 }
 
+
 .headerContents div:last-child {
     border-right: none; /* 마지막 div에 border-right 제거 */
   }
 
   .headerContents div p{
     font-Size:24px;
-    color:#CECEF2
+    color:#7888f3
 }

@@ -42,5 +42,5 @@ public class Employees {
 	private Date hire_date;			// 입사일
 	private Date leave_date;		// 퇴사일
 	private int admin_type;			// 관리자 유형
-	
+	private int work_type_no;		// 근무 유형 코드
 }
