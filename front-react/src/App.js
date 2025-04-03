@@ -11,6 +11,8 @@ import PerformMgtRouter from "./performMgt/PerformMgtRouter";
 import ScheduleRouter from "./schedule/ScheduleRouter";
 import BoardRouter from "./library/BoardRouter";
 
+
+
 function App() {
   return (
     <BrowserRouter>
@@ -22,7 +24,7 @@ function App() {
         {/* 서브 라우트들 */}
         <Route path="/approve/*" element={<ApproveRouter />} />
         <Route path="/attendMgt/*" element={<AttendRouter />} />
-        <Route path="/hrMgt/*" element={<HrMgtRouter />} />
+        <Route path="/employee/*" element={<HrMgtRouter />} />
         <Route path="/mail/*" element={<MailRouter />} />
         <Route path="/messenger/*" element={<MessengerRouter />} />
         <Route path="/orgChart/*" element={<OrgChartRouter />} />
