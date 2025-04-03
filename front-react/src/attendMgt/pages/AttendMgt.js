@@ -18,8 +18,6 @@ import AttendMgtLeftbar from './AttendMgtLeftbar';
 import Header from '../../common/pages/Header';
 import FullCalendar from '@fullcalendar/react';
 
-
-
 // data
 import History from './History'
 
@@ -28,9 +26,9 @@ import "../css/AttendCalendar.css";
 import "../css/AttendMgtMain.css";
 
 // icon
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
+
 import AttendFooter from './AttendFooter';
+import MoveDateHeader from './MoveDateHeader';
 
 const AttendMgt = () => {
 
@@ -88,28 +86,16 @@ const AttendMgt = () => {
   const calendarRef = useRef();
   const dayRef = useRef();
 
-  const [moveDate, setMoveDate] = useState({
-    // 초기 날짜 설정
-    year: currentDate.getFullYear(),
-    month: currentDate.getMonth() + 1
-  });
-
-  // 버튼 클릭 시
-  const changeDate = (plusminus) => {
-
-    const newDate = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() + plusminus
-    );
-    setMoveDate({ year: newDate.getFullYear(), month: newDate.getMonth() + 1 })
-    setCurrentDate(newDate);
-  };
-
   // currentDate 변경 시
   useEffect(() => {
     calendarRef.current.getApi().gotoDate(currentDate); // 새로운 날짜로 이동
   }, [currentDate])
 
+  // 초기 날짜 설정
+  const [moveDate, setMoveDate] = useState({
+    year: currentDate.getFullYear(),
+    month: currentDate.getMonth() + 1
+  });
   // 날짜 이동 버튼 끝
 
   // 이번 달 출퇴근 통계 불러오기
@@ -137,12 +123,6 @@ const AttendMgt = () => {
     dayRef.current.getApi().gotoDate(pickEvent.event.start); // 이벤트 클릭 시 날짜로 이동
   }
 
-  // 상단 날짜 표기방식
-  const monthDisplay = currentDate.toLocaleString('default', {
-    year: 'numeric',
-    month: 'long'
-  });
-
   // 캘린더 데이터 불러오기
   const [attendHistoryList, setAttendHistoryList] = useState([])
   // 캘린더 데이터 반환 후 attendHistory리스트에 값 저장
@@ -167,20 +147,9 @@ const AttendMgt = () => {
           <Divider style={{ margin: "0px" }} />
 
           <Row gutter={20} style={{ padding: '15px', display: 'flex', flexDirection: 'column' }}>
-
             <Col>
-              {/* 상단 날짜 이동 버튼 시작 시작 */}
-              <div style={{ display: "flex" }}>
-                <b style={{ fontSize: "20px" }}>내 근태 현황</b>
-
-                <div style={{ display: "flex", position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
-
-                  <button onClick={() => changeDate(-1)}><FontAwesomeIcon icon={faChevronLeft} /></button>
-                  <h5>{monthDisplay}</h5>
-                  <button onClick={() => changeDate(1)}><FontAwesomeIcon icon={faChevronRight} /></button>
-                </div>
-                <br /> <br />
-              </div>
+              {/* 상단 날짜 이동 헤더  */}
+              <MoveDateHeader currentDate={currentDate} setCurrentDate={setCurrentDate} moveDate={moveDate} setMoveDate={setMoveDate} />
               <p style={{ fontSize: "16px" }}>
                 {work_schedules.type_name}
               </p>

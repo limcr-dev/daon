@@ -21,7 +21,7 @@ const History = (props) => {
       .catch((error) => {
         console.log('로그인정보를 확인해주세요', error);
       })
-  }, [emp_no, year, month, onDataFetched])
+  }, [emp_no, year, month])
 
   // 데이터 형식변환 후 리턴
   const transformData = (data) => {
