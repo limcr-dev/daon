@@ -15,8 +15,8 @@ const data = [
     label: '자료실',
     value: 'library',
     children: [
-      { label: '자료실 목록', value: 'libraryList' },
-      { label: '글 작성', value: 'libraryInsert' }
+      { label: '자료 목록', value: 'libraryList' },
+      { label: '자료 입력', value: 'insertLibrary' }
     ]
   }
 ];

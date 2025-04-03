@@ -19,7 +19,8 @@ const Board = () => {
   const navigate = useNavigate();
 
   const [noticeList, setNoticeList] = useState([]);
-
+  const [libraryList, setLibraryList] = useState([]);
+  
   // noticeList 링크로 들어왔을 때 처음 실행되는 부분
   // dependency가 빈 배열[]이기 때문에 처음 한 번만 실행됨
   useEffect(() => {
@@ -34,6 +35,26 @@ const Board = () => {
 
   const notice = () => {
     navigate('/board/noticeList');
+  }
+
+
+
+  // libraryList 링크로 들어왔을 때 처음 실행되는 부분
+  // dependency가 빈 배열[]이기 때문에 처음 한 번만 실행됨
+  useEffect(() => {
+    fetch("http://localhost:8081/board/library", { // DB에 들림
+      method: "GET"   // @GetMapping 사용
+    }).then(res => res.json())  // 응답 값을 json형식으로 변환
+      .then(res => {
+        console.log(1, res);
+        // if (res == null){
+        //   setLibraryList=([])}
+        setLibraryList(res); // 응답 값을 setLibraryList를 통해서 libraryList 변수에 저장함
+      })
+  }, []); // [] : dependency, 페이지가 처음 로딩될 때 한 번만 실행되도록 사용하는 것
+
+  const library = () => {
+    navigate('/board/libraryList');
   }
 
   return (
@@ -85,52 +106,18 @@ const Board = () => {
                 </Card.Header>
                 <table className='board-table'>
                   <tr>
-                    <th>번호</th>
-                    <th>제목</th>
-                    <th>첨부파일</th>
-                    <th>작성자</th>
-                    <th>작성일</th>
-                    <th>조회수</th>
-                  </tr>
-                  <tr>
-                    <td>2025-03-27</td>
-                    <td>(신규)휴가신청-연차관리연동</td>
-                    <td>첨부파일</td>
-                    <td>긴급</td>
-                    <td>(신규)휴가신청-연차관리연동</td>
-                    <td>첨부</td>
-                  </tr>
-                  <tr>
-                    <td>2025-03-27</td>
-                    <td>(신규)휴가신청-연차관리연동</td>
-                    <td>첨부파일</td>
-                    <td>긴급</td>
-                    <td>(신규)휴가신청-연차관리연동</td>
-                    <td>첨부</td>
-                  </tr>
-                  <tr>
-                    <td>2025-03-27</td>
-                    <td>(신규)휴가신청-연차관리연동</td>
-                    <td>첨부파일</td>
-                    <td>긴급</td>
-                    <td>(신규)휴가신청-연차관리연동</td>
-                    <td>첨부</td>
-                  </tr>
-                  <tr>
-                    <td>2025-03-27</td>
-                    <td>(신규)휴가신청-연차관리연동</td>
-                    <td>첨부파일</td>
-                    <td>긴급</td>
-                    <td>(신규)휴가신청-연차관리연동</td>
-                    <td>첨부</td>
-                  </tr>
-                  <tr>
-                    <td>2025-03-27</td>
-                    <td>(신규)휴가신청-연차관리연동</td>
-                    <td>첨부파일</td>
-                    <td>긴급</td>
-                    <td>(신규)휴가신청-연차관리연동</td>
-                    <td>첨부</td>
+                    {/* .map() 함수를 사용하여 libraryList 안의 값을 하나씩 꺼냄 */}
+                    {/* slice(0,5) : 배열의 0번째 인덱스부터 5개의 요소만 가져옴 */}
+                    {libraryList.slice(0, 5).map(library => (
+                      <tr key={library.library_no}>
+                        <td>{library.library_no}</td>
+                        {/* 제목 클릭 시, 자료 상세 페이지로 이동 */}
+                        <td><Link to={"/board/libraryDetail/" + library.library_no}>{library.library_title}</Link></td>
+                      <td>{library.emp_no}</td>
+                      <td>{library.library_reg_date}</td>
+                      <td>{library.library_views}</td>
+                      </tr>
+                    ))}
                   </tr>
                 </table>
               </Card>

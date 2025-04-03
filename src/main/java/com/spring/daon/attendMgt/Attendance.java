@@ -1,11 +1,14 @@
 package com.spring.daon.attendMgt;
 
 import java.sql.Time;
+import java.time.LocalDate;
 import java.sql.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +27,8 @@ public class Attendance {
 	// attendance table
 	@Id
 	private int emp_no;			// 사원번호
-	private Date date;			// 날짜
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	private LocalDate date;			// 날짜
 	private Time check_in_time;	// 출근 시간
 	private Time check_out_time;// 퇴근 시간
 	private double work_hours;	// 총 근무 시간

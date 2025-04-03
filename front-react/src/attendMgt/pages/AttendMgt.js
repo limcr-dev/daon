@@ -37,7 +37,7 @@ const AttendMgt = () => {
 
   // 직원 정보
   const [employees, setEmployees] = useState({
-    emp_no: '1002',
+    emp_no: '1003',
     work_type_no: ''
   });
 

@@ -66,6 +66,7 @@ public class AttendMgtServiceImpl{
     	map.put("month", month);
     	
     	List<Attendance> result = AttendMgtMapper.attendHistory(map);
+    	System.out.println(result);
 		return result;
 	}
 	// 선택한 달 변경이력 불러오기
@@ -76,7 +77,7 @@ public class AttendMgtServiceImpl{
     	map.put("month", month);
     	
     	List<Attendance> result = AttendMgtMapper.changeLog(map);
-    	System.out.println(result);
+    	System.out.println("change" + result);
 		return result;
 	}
 }

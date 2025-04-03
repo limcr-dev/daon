@@ -3,84 +3,57 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Stack, Button, Form, Panel, Divider } from 'rsuite';
 import 'rsuite/dist/rsuite.min.css';
 
+import { request, setAuthToken } from '../helpers/axios_helper';
 const Login = () => {
 
-  const navigate = useNavigate();  
-  const[dto, setDto] = useState({     
-      emp_email : '',
-      emp_pwd : ''
+  const navigate = useNavigate();
+  const [dto, setDto] = useState({
+    emp_email: '',
+    emp_pwd: ''
   });
 
   const changeValue = (value, event) => {
     setDto({
-        ...dto,
-        [event.target.name]: value,
+      ...dto,
+      [event.target.name]: value,
     });
   };
 
-  const submit = (e) => {    // 호출하는 부분
-    e.preventDefault(); // submit이 action을 안 타고 자기 할 일을 그만함
-    fetch("http://localhost:8081/api/login", {      // 스프링부트
-        method: "POST",     // INSERT는 "POST"
-        headers: {
-            "Content-Type" : "application/json;charset=utf-8"
-        },
-        body: JSON.stringify(dto) // Controller에서 @RequestBody BoardDTO board로 받는다.
-        // javascript object를 json으로 변경해서 넘김. 데이터를 스프링부트에서 insert하고 201을 리턴한다.
-    })
-    .then((res) => {        // 결과를 돌려받는 부분
-        console.log(1, res);
-        if(res.status === 200){
-            return res;
-        } else {
-            return null;
-        }
-    })
-    .then((res) => {    // catch는 여기에서 오류가 발생해야 실행됨.
+  // JWT 기반 로그인 인증 흐름
+  // 1. 사용자 로그인 시도
+  // 1-1. 입력한 아이디로 로그인 요청
+  const submit = (e) => {
+    e.preventDefault();
+
+    // 1-2. 클라이언트(react)에서 서버(springBoot)로 로그인 정보 전송
+    request(  // axios_helper.js에서 정의한 함수
+      "POST", // method : @PostMapping
+      "/login", // url : http://localhost:8081/login (axios_helper에서 baseUrl로 설정한 값이 앞에 붙음)
+      dto)
+      .then((res) => {
+        setAuthToken(res.data.token);   // 스프링부트에서 생성한 토큰을 저장후 다른 메뉴 클릭시 토큰을 들고가서 인증받는다.
+      })
+      .then((res) => {    // catch는 여기에서 오류가 발생해야 실행됨.
         console.log('정상', res);
-        if(res !== null){
-            navigate('/home'); // 페이지 이동 : navigate, old  버전 : props.history.push()
-        }else{
-            alert("로그인에 실패하였습니다.");
+        if (res !== null) {
+          navigate('/home'); // 페이지 이동 : navigate, old  버전 : props.history.push()
+        } else {
+          alert("로그인에 실패하였습니다.");
         }
-    })
-    .catch((error) => {
-        console.log('실패', error);
-    })
-}
+      })
+      .catch((error) => {
+        setAuthToken(null);
+      }
+      );
+  }
 
-  
-// const submit =  (e) => {    
-//   e.preventDefault();
-//   try {
-//     const res =  fetch('http://localhost:8081/login', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json;charset=utf-8',
-//         },
-//         body: JSON.stringify(dto),
-//     });
-
-//     if (res.status === 200) {
-//         throw new Error(`HTTP error! status: ${res.status}`);
-//     }
-
-//     const result = res.json();
-//     console.log('정상', result);
-//     navigate('/home');
-// } catch (error) {
-//     console.error('로그인 실패', error);
-//     alert('로그인에 실패하였습니다.');
-// }
-// };
-
-return (
+  return (
     <Stack
       justifyContent="center"
       alignItems="center"
       direction="column"
-      style={{height: '100vh' }}
-    >      
+      style={{ height: '100vh' }}
+    >
 
       <Panel bordered style={{ background: '#fff', width: 400 }} header={<p style={{ fontSize: '25px' }}>로그인</p>}>
         <Form>
@@ -88,19 +61,19 @@ return (
             <Form.ControlLabel>
               <span>이메일</span>
             </Form.ControlLabel>
-            <Form.Control type="text" name="emp_email" onChange={changeValue} placeholder="Please input email"/>
-            
+            <Form.Control type="text" name="emp_email" onChange={changeValue} placeholder="Please input email" />
+
           </Form.Group>
 
           <Form.Group>
             <Form.ControlLabel>
               <span>비밀번호</span>
             </Form.ControlLabel>
-            <Form.Control type="password" name="emp_pwd" onChange={changeValue} placeholder="Please input password"/>
+            <Form.Control type="password" name="emp_pwd" onChange={changeValue} placeholder="Please input password" />
           </Form.Group>
 
           <Stack spacing={6} divider={<Divider vertical />}>
-            <Button onClick={submit}>로그인</Button>  
+            <Button onClick={submit}>로그인</Button>
           </Stack>
         </Form>
       </Panel>
