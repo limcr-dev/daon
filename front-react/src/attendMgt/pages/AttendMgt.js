@@ -37,7 +37,7 @@ const AttendMgt = () => {
 
   // 직원 정보
   const [employees, setEmployees] = useState({
-    emp_no: '1003',
+    emp_no: '1008',
     work_type_no: ''
   });
 
@@ -74,6 +74,7 @@ const AttendMgt = () => {
   const [attendance, setAttendance] = useState({
     date: '',
     normal: '',
+    check_in_time: '',
     check_out_time: '',
     late: '',
     early_leave: '',
@@ -142,14 +143,14 @@ const AttendMgt = () => {
           <Header />
 
           {/* 캘린더 데이터 가져오기 */}
-          <History emp_no={employees.emp_no} year={moveDate.year} month={moveDate.month} onDataFetched={handleAttendanceData} />
+          <History emp_no={employees.emp_no} moveDate={moveDate} onDataFetched={handleAttendanceData} attendance={attendance}/>
 
           <Divider style={{ margin: "0px" }} />
 
           <Row gutter={20} style={{ padding: '15px', display: 'flex', flexDirection: 'column' }}>
             <Col>
               {/* 상단 날짜 이동 헤더  */}
-              <MoveDateHeader currentDate={currentDate} setCurrentDate={setCurrentDate} moveDate={moveDate} setMoveDate={setMoveDate} />
+              <MoveDateHeader currentDate={currentDate} setCurrentDate={setCurrentDate} setMoveDate={setMoveDate} />
               <p style={{ fontSize: "16px" }}>
                 {work_schedules.type_name}
               </p>

@@ -1,7 +1,8 @@
 
+import FullCalendar from '@fullcalendar/react';
 import React, { useEffect, useState } from 'react';
 import { Card } from 'rsuite';
-
+import dayGridPlugin from "@fullcalendar/daygrid";
 const VacationFooter = (props) => {
 
   const emp_no = props.emp_no;
@@ -18,36 +19,34 @@ const VacationFooter = (props) => {
         console.log("test ", res);
         setChangeLog(res);
       })
-  }, [emp_no,year,month]);
+  }, [emp_no, year, month]);
 
   return (
-    <div>
-
-      <Card style={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-        <Card.Header style={{ justifyContent: 'space-between', alignItems: 'center', padding: '15px', backgroundColor: '#f5f5f5', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
-          <span style={{ fontWeight: '600', fontSize: '16px' }}>생성내역 </span>
-        </Card.Header>
-        <table className='board-table'>
-          {/* .map() 함수를 사용하여 noticeList 안의 값을 하나씩 꺼냄 */}
-          {changeLog.map(log => (
-            <tr>
-              {/* <td>{log.emp_img}</td> */}
-              <td style={{width:"100px"}}>daon_logo.png</td>
-
-              <td>{log.emp_name} {log.modifyTime}<br></br>{log.message}</td>
-             
-              
-              <td></td>
-            </tr>
-            
-
-          ))}
-
-
-        </table>
-
-      </Card>
-    </div >
+    <Card style={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+      <Card.Header style={{ justifyContent: 'space-between', alignItems: 'center', padding: '15px', backgroundColor: '#f5f5f5', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
+        <span style={{ fontWeight: '600', fontSize: '16px' }}>생성내역</span>
+      </Card.Header>
+      <table className='board-table'>
+        <tr>
+          <th>등록일</th>
+          <th>사용기간</th>
+          <th>발생일수</th>
+          <th>내용</th>
+        </tr>
+        <tr>
+          <td>2025-04-07</td>
+          <td>2026-03-07</td>
+          <td>1</td>
+          <td>연차</td>
+        </tr>
+        <tr>
+          <td>2025-03-07</td>
+          <td>2026-03-07</td>
+          <td>1</td>
+          <td>연차</td>
+        </tr>
+      </table>
+    </Card>
   );
 };
 

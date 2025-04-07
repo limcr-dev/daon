@@ -9,7 +9,6 @@ const data = [
     children: [
       { label: '내 근태 현황', value: '' },
       { label: '내 연차 내역', value: 'vacationMain' },
-      { label: '내 인사 정보', value: 'item3' },
     ],
   },
   {
@@ -17,14 +16,29 @@ const data = [
     value: 'department',
     children: [
       {
-        label: '본부',
+        label: '경영부',
         value: 'central',
         children: [
-          { label: '부서 근태현황', value: 'development' },
+          { label: '부서 근태현황', value: 'deptStatus' },
+          { label: '부서 근태통계', value: 'design' },
+        ]
+      },
+      {
+        label: '개발부',
+        value: 'central',
+        children: [
+          { label: '부서 근태현황', value: 'deptStatus' },
+          { label: '부서 근태통계', value: 'design' },
+        ]
+      },
+      {
+        label: '영업부',
+        value: 'central',
+        children: [
+          { label: '부서 근태현황', value: 'deptStatus' },
           { label: '부서 근태통계', value: 'design' },
         ]
       }
-
     ],
   },
   {
@@ -33,7 +47,6 @@ const data = [
     children: [
       { label: '전사 근태현황', value: 'inbox' },
       { label: '전사 근태통계', value: 'sent' },
-      { label: '전사 인사정보', value: 'spfam' },
       { label: '전사 연차현황', value: 'swpam' },
       { label: '전사 연차 사용내역', value: 'sqpam' },
     ],

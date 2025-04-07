@@ -28,12 +28,12 @@
 		set check_out_time = curtime(),
 			work_hours = TIMESTAMPDIFF(MINUTE, check_in_time, CURTIME()) / 60,
 	        normal = CASE 
-				        WHEN #{end_time} >= CURTIME() THEN 1
-				        ELSE 0  
+				        WHEN #{end_time} >= CURTIME() OR late = 1 THEN 0
+				        ELSE 1  
 				    END,
 			early_leave = CASE 
-				        	WHEN #{end_time} > CURTIME() THEN 0
-				        	ELSE 1
+				        	WHEN #{end_time} > CURTIME() THEN 1
+				        	ELSE 0
 				    	  END
 		where  emp_no = #{emp_no}
 		  and  date = curdate();

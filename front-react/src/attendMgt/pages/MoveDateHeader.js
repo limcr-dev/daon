@@ -4,7 +4,7 @@ import React from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 
-const MoveDateHeader = ({currentDate, setCurrentDate, moveDate, setMoveDate}) => {
+const MoveDateHeader = ({currentDate, setCurrentDate, setMoveDate}) => {
     // 버튼 클릭 시
     const changeDate = (plusminus) => {
 
