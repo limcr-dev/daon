@@ -44,3 +44,8 @@
 /* .attendCalendar .fc-theme-standard .fc-button {
     border-color: #b1b1d3 !important;
 } */
+
+/* 수정해야댐 */
+.DeptCalendar .fc-header-toolbar .fc-toolbar {
+    display: flex !important;
+}

@@ -43,6 +43,7 @@ const AttendMgtLeftbar = (props) => {
       .then((res) => res.json())
       .then((res) => {
         setTodayAttendance(res);
+        window.location.reload()
       })
       .catch((error) => {
         console.log('로그인정보를 확인해주세요', error);
@@ -57,6 +58,7 @@ const AttendMgtLeftbar = (props) => {
       .then((res) => res.json())
       .then((res) => {
         setTodayAttendance(res);
+        window.location.reload()
       })
       .catch((error) => {
         console.log('로그인정보를 확인해주세요', error);
@@ -121,7 +123,7 @@ const AttendMgtLeftbar = (props) => {
           </Button>
 
           <Button style={{ backgroundColor: '#CECEF2' }} onClick={check_out}
-            disabled={!!todayAttendance.check_out_time}> {/* 이미 누른 경우 비활성화 */}
+            disabled={!!todayAttendance.check_out_time || !todayAttendance.check_in_time}> {/* 이미 누른 경우 비활성화 */}
             <FontAwesomeIcon icon={faArrowRightFromBracket} /> <p style={{ margin: '5px' }}>퇴근</p>
           </Button>
         </div>

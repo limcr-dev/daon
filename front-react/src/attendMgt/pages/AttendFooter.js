@@ -15,7 +15,6 @@ const AttendFooter = (props) => {
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log("test ", res);
         setChangeLog(res);
       })
   }, [emp_no,year,month]);

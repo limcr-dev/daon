@@ -22,7 +22,7 @@ public class AttendMgtController {
 	@Autowired
 	private AttendMgtServiceImpl service;
 
-	// 출근 버튼
+	// 출근 버튼 
 	@PostMapping("/checkIn/{emp_no}/{start_time}")
 	public ResponseEntity<?> checkIn(@PathVariable int emp_no, Time start_time) {
 		System.out.println("<<< checkIn >>>");
@@ -73,4 +73,7 @@ public class AttendMgtController {
 		
 		return new ResponseEntity<>(service.changeLog(emp_no, year, month), HttpStatus.OK);
 	}
+	
+	// <<< 휴가 관련 >>>
+	
 }
