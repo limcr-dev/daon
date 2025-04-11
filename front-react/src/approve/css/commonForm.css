@@ -1,0 +1,175 @@
+/* CommonForm.css - 공통 스타일 */
+.form-container {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 20px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.form-title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 상단 정보 테이블 영역 */
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.header-table {
+  width: 45%;
+  border-collapse: collapse;
+}
+
+.header-table td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+}
+
+.label-cell {
+  background-color: #f0f0f0;
+  width: 100px;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* 결재라인 테이블 */
+.approval-table {
+  width: 50%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.approval-table td {
+  border: 1px solid #ddd;
+  text-align: center;
+  padding: 6px;
+}
+
+.approval-header {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  height: 24px;
+}
+
+.approval-sign {
+  vertical-align: bottom;
+  height: 60px;
+}
+
+/* 문서 정보 테이블 */
+.info-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.info-table td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+}
+
+.date-input {
+  display: flex;
+  align-items: center;
+}
+
+.full-width-input {
+  width: 100%;
+  padding: 6px;
+  border: none;
+  outline: none;
+}
+
+/* 선택 요소 공통 */
+select {
+  width: 150px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.day-input {
+  width: 50px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: center;
+}
+
+/* 공지사항 */
+.form-notice {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-top: 15px;
+  background-color: #f9f9f9;
+}
+
+.form-notice p {
+  margin: 5px 0;
+}
+
+.form-notice ol {
+  margin-top: 10px;
+  padding-left: 30px;
+}
+
+.form-notice li {
+  margin-bottom: 8px;
+}
+
+/* 첨부파일 및 관련 문서 */
+.form-footer {
+  margin-top: 30px;
+}
+
+.attachment-section, .related-docs {
+  margin-bottom: 20px;
+}
+
+.attachment-section h3, .related-docs h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.attachment-box {
+  border: 1px dashed #ccc;
+  padding: 20px;
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+.attachment-placeholder {
+  color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.attachment-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+.related-docs-btn {
+  padding: 6px 12px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}

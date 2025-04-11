@@ -4,6 +4,14 @@ import { useNavigate } from 'react-router-dom';
 
 const data = [
   {
+    label: '업무',
+    value: 'work',
+    children: [
+      { label: '업무기안서', value: '5' },
+
+    ],
+  },
+  {
     label: '휴가결재',
     value: 'vacation_approval',
     children: [
@@ -23,7 +31,7 @@ const data = [
   }
 ];
 
-const SelectForm = ({closeModal}) => {
+const SelectForm = ({ closeModal }) => {
 
   const navigate = useNavigate();
 
@@ -36,7 +44,7 @@ const SelectForm = ({closeModal}) => {
 
   return (
     <div className="height_change">
-      <Tree data={data} defaultExpandAll className='h-full' onSelect={handleSelect}/>
+      <Tree data={data} defaultExpandAll className='h-full' onSelect={handleSelect} />
       <Button appearance="subtle" block onClick={closeModal} style={{ marginTop: "10px" }}>
         취소
       </Button>
