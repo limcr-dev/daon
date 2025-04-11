@@ -19,7 +19,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const ScheduleLeftbar = (props) => {
   
   // 직원 정보
-  const emp_no = props.emp_no;
+  const emp_no = props.emp_no
 
   // 오늘 날짜 불러오기
   // const today = new Date();

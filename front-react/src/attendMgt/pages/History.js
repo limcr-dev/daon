@@ -5,7 +5,6 @@ const History = (props) => {
   const emp_no = props.emp_no;
   const {year,month} = props.moveDate;
   const onDataFetched = props.onDataFetched;
-  const {check_in_time, check_out_time} = props.attendance;
   useEffect(() => {
     
     fetch("http://localhost:8081/attend/attendHistory/" + emp_no + "/" + year + "/" + month, {

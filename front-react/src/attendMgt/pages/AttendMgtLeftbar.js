@@ -25,7 +25,7 @@ const AttendMgtLeftbar = (props) => {
 
   // 근태 정보
   const emp_no = props.emp_no
-  // const { start_time, end_time } = props.work_schedules
+
   const [todayAttendance, setTodayAttendance] = useState({
     b_num: '',
     date: '',

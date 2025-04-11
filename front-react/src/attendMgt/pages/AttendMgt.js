@@ -31,16 +31,12 @@ import AttendFooter from './AttendFooter';
 import MoveDateHeader from './MoveDateHeader';
 import AttendMgtLeftbar from './AttendMgtLeftbar';
 import ColorLegned from '../components/ColorLegned';
+import { useUser } from '../../common/contexts/UserContext';
 
 const AttendMgt = () => {
 
-  // 직원 정보 불러오기
-  // const emp_no = propsParam.emp_no;  // props로 받아온 값 emp_no로 저장 
-
-  // 직원 정보
-  const [employees, setEmployees] = useState({
-    emp_no: '1019'
-  });
+  // UserContext에서 사용자 정보 가져오기
+  const { user } = useUser();
 
   // 근무 유형 정보
   const [work_schedules, setWork_schedules] = useState({
@@ -49,7 +45,7 @@ const AttendMgt = () => {
 
   // 직원 코드에 따른 근무유형 이름 가져오기
   useEffect(() => {
-    fetch("http://localhost:8081/attend/workType/" + employees.emp_no)
+    fetch("http://localhost:8081/attend/workType/" + user.emp_no)
       .then((res) => res.json())
       .then((res) => {
         setWork_schedules(res);
@@ -105,7 +101,7 @@ const AttendMgt = () => {
   });
 
   useEffect(() => {
-    fetch("http://localhost:8081/attend/attendCnt/" + employees.emp_no + "/" + moveDate.year + "/" + moveDate.month, {
+    fetch("http://localhost:8081/attend/attendCnt/" + user.emp_no + "/" + moveDate.year + "/" + moveDate.month, {
       method: "GET"
     })
       .then((res) => res.json())
@@ -118,7 +114,7 @@ const AttendMgt = () => {
       .catch((error) => {
         console.log('로그인정보를 확인해주세요', error);
       })
-  }, [employees.emp_no, moveDate])
+  }, [user.emp_no, moveDate])
   // 출퇴근 통계 불러오기 끝
 
   // return
@@ -127,14 +123,14 @@ const AttendMgt = () => {
       <Leftbar />
       <Container>
 
-        <AttendMgtLeftbar emp_no={employees.emp_no} />
+        <AttendMgtLeftbar emp_no={user.emp_no} />
 
         <Content style={{ marginTop: '20px' }}>
           <Header />
 
           {/* 캘린더 데이터 가져오기 */}
           <History
-            emp_no={employees.emp_no}
+            emp_no={user.emp_no}
             moveDate={moveDate}
             onDataFetched={handleAttendanceData}
             attendance={attendance} />
@@ -244,7 +240,7 @@ const AttendMgt = () => {
               {/* 캘린더 끝 */}
               <br />
               {/* 변경 이력 */}
-              <AttendFooter emp_no={employees.emp_no} year={moveDate.year} month={moveDate.month} />
+              <AttendFooter emp_no={user.emp_no} year={moveDate.year} month={moveDate.month} />
             </Col>
           </Row>
         </Content>

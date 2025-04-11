@@ -23,16 +23,17 @@ import "../css/AttendCommon.css"
 // js
 import AttendMgtLeftbar from './AttendMgtLeftbar';
 import VacationFooter from './VacationFooter';
+import { useUser } from '../../common/contexts/UserContext';
 
 const VacationMain = () => {
 
   // 직원 정보
-  const [employees, setEmployees] = useState({
-    emp_no: '1001',
-    hire_date: ''
-  });
+    const { user } = useUser();
+    
+  const [employees, setEmployees] = useState({});
+
   useEffect(() => {
-      fetch("http://localhost:8081/api/getEmpInfo/" + employees.emp_no)
+      fetch("http://localhost:8081/api/getEmpInfo/" + user.emp_no)
         .then((res) => res.json())
         .then((res) => {
           setEmployees(res);
@@ -116,7 +117,7 @@ const VacationMain = () => {
         <Leftbar />
         <Container>
 
-          <AttendMgtLeftbar emp_no={employees.emp_no} />
+          <AttendMgtLeftbar emp_no={user.emp_no} />
 
           <Content style={{ marginTop: '20px' }}>
             <Header />
@@ -204,7 +205,7 @@ const VacationMain = () => {
                 {/* 연차 사용 내역 끝 */}
                 <br />
                 {/* 생성 내역 */}
-                <VacationFooter emp_no={employees.emp_no} moveDate={moveDate} />
+                <VacationFooter emp_no={user.emp_no} moveDate={moveDate} />
               </Col>
             </Row>
           </Content>
