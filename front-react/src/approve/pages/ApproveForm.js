@@ -8,6 +8,7 @@ import ApproveLeftbar from './ApproveLeftbar';
 import ApproveInfo from './ApproveInfo';
 import ExpenseForm from './ExpenseForm ';
 import '../css/approveForm.css'; // 스타일 파일
+import WorkReportForm from './WorkReportForm';
 
 
 const ApproveForm = () => {
@@ -23,6 +24,8 @@ const ApproveForm = () => {
                 return <ExpenseForm />;
             case 3:
                 return <ReportForm />;
+            case 5:
+                return <WorkReportForm />;
             default:
                 return <div>유효한 양식 유형을 선택해 주세요</div>;
         }
@@ -40,7 +43,7 @@ const ApproveForm = () => {
                             <h3>휴가신청서</h3>
                         </div>
                     </div>
-                    <br/>
+                    <br />
                     {/* 문서 액션 버튼 */}
                     <div className="document-actions">
                         <ButtonGroup>
@@ -63,7 +66,7 @@ const ApproveForm = () => {
                         {/* 우측 사이드바 */}
                         <FlexboxGrid.Item colspan={6}>
                             <ApproveInfo />
-                            
+
                         </FlexboxGrid.Item>
                     </FlexboxGrid>
                 </Content>
