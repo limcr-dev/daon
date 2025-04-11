@@ -17,7 +17,7 @@ const data = [
     children: [
       {
         label: '경영부',
-        value: 'central',
+        value: 'central1',
         children: [
           { label: '부서 근태현황', value: 'deptStatus' },
           { label: '부서 근태통계', value: 'design' },
@@ -25,7 +25,7 @@ const data = [
       },
       {
         label: '개발부',
-        value: 'central',
+        value: 'central2',
         children: [
           { label: '부서 근태현황', value: 'deptStatus' },
           { label: '부서 근태통계', value: 'design' },
@@ -33,7 +33,7 @@ const data = [
       },
       {
         label: '영업부',
-        value: 'central',
+        value: 'central3',
         children: [
           { label: '부서 근태현황', value: 'deptStatus' },
           { label: '부서 근태통계', value: 'design' },

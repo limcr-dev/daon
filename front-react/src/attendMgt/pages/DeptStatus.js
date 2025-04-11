@@ -20,7 +20,6 @@ import { ko } from 'date-fns/locale';
 
 // css
 import "../css/AttendCalendar.css";
-import "../css/AttendMgtMain.css";
 import "../css/DeptStatus.css"
 // icon
 import VacationFooter from './VacationFooter';

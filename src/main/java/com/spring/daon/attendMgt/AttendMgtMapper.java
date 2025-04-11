@@ -20,7 +20,7 @@ public interface AttendMgtMapper {
 	public Attendance attendByDate(int emp_no);
 	
 	// 근무 유형 조회
-	public Work_schedules workType(int work_type_no);
+	public Work_schedules workType(int emp_no);
 
 	// 선택한 달 출퇴근 통계 불러오기
 	public Attendance attendCnt(Map<String, Object> map);
@@ -30,4 +30,10 @@ public interface AttendMgtMapper {
 	
 	// 선택한 달 변경이력 불러오기
 	public List<Attendance> changeLog(Map<String, Object> map);
+	
+	// <<< 휴가 관련 >>>
+	
+	// 휴가 생성 내역
+	public List<Vacation_occur> vacation_log(Map<String, Object> map);
+	
 }

@@ -184,7 +184,7 @@ const MyCalendar = () => {
         </Modal>
       </div>
       {/* 풀캘린더 시작 */}
-      <div className="scheduleCalendar" style={{ display: 'grid' }}>
+      <div className="scheduleCalendar" style={{ display: 'grid'}}>
         <FullCalendar
           plugins={[dayGridPlugin, bootstrap5Plugin, timeGridPlugin, interactionPlugin, listPlugin]}
           initialView={'dayGridMonth'}  // 첫 화면 뷰어 설정
