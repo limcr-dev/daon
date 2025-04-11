@@ -1,0 +1,202 @@
+.vacation-form-container {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 20px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.form-title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+/* 상단 정보 테이블 */
+.header-table {
+  width: 60%;
+  border-collapse: collapse;
+}
+
+.header-table td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+}
+
+.label-cell {
+  background-color: #f0f0f0;
+  width: 100px;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 설정 */
+}
+
+/* 결재라인 테이블 */
+.approval-table {
+  width: 30%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+.approval-table td {
+  border: 1px solid #ddd;
+  text-align: center;
+  padding: 8px;
+}
+
+.approval-header {
+  background-color: #f0f0f0;
+  height: 20px;
+}
+
+.approval-sign {
+  height: 80px;
+  vertical-align: bottom;
+  padding-bottom: 10px;
+}
+
+/* 메인 휴가 정보 테이블 */
+.vacation-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.vacation-info-table td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+}
+
+.date-range {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.date-range input[type="date"] {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.date-separator {
+  margin: 0 10px;
+}
+
+.usage-status {
+  margin-left: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.usage-label {
+  margin-right: 5px;
+}
+
+.day-input {
+  width: 50px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.usage-message {
+  color: red;
+  margin-left: 10px;
+}
+
+.half-day-options {
+  display: flex;
+  align-items: center;
+}
+
+.radio-label {
+  margin: 0 10px 0 5px;
+}
+
+.leave-days {
+  display: flex;
+}
+
+.leave-days > div {
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.leave-days span {
+  margin-right: 5px;
+}
+
+/* 하단 공지 */
+.form-notice {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-top: 15px;
+  background-color: #f9f9f9;
+}
+
+.form-notice p {
+  margin: 5px 0;
+}
+
+.form-notice ol {
+  margin-top: 10px;
+  padding-left: 30px;
+}
+
+.form-notice li {
+  margin-bottom: 8px;
+}
+
+/* 첨부파일 및 관련 문서 */
+.form-footer {
+  margin-top: 30px;
+}
+
+.attachment-section, .related-docs {
+  margin-bottom: 20px;
+}
+
+.attachment-section h3, .related-docs h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.attachment-box {
+  border: 1px dashed #ccc;
+  padding: 20px;
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+.attachment-placeholder {
+  color: #888;
+}
+
+.related-docs-btn {
+  padding: 6px 12px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* 셀렉트 박스 스타일 */
+select {
+  width: 150px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}

@@ -16,7 +16,7 @@ import com.spring.daon.login.config.UserAuthProvider;
 import com.spring.daon.login.dto.CredentialsDTO;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/api")
 @CrossOrigin
 public class LoginController {
 
@@ -41,10 +41,21 @@ public class LoginController {
 		Employees emp = loginService.login(credentialsDTO);
 		
 		// 인증 성공 시 JWT 토큰 발급
-		emp.setToken(userAuthProvider.createToken(emp.getEmp_no()));
+		emp.setToken(userAuthProvider.createToken(emp));
 		
 		// res로 토큰과 사용자 정보 반환
 		return ResponseEntity.ok(emp);  // 크롬브라우저 F12 > Headers : 200 OK  : 새로운 JWT를 반환
+		
+		// return ResponseEntity.ok().body(Map.of("token", token, "user", userDTO));
+	}	
+	
+	// login 페이지
+	@PostMapping("/logout")
+	public ResponseEntity<?> logout(@RequestBody CredentialsDTO credentialsDTO) {
+		System.out.println("<<< logout >>>");
+		
+		
+		return null;  // 크롬브라우저 F12 > Headers : 200 OK  : 새로운 JWT를 반환
 		
 		// return ResponseEntity.ok().body(Map.of("token", token, "user", userDTO));
 	}	
