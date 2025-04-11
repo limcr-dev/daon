@@ -5,14 +5,23 @@
      
 <mapper namespace="com.spring.daon.login.mappers.LoginMapper">
 
- <select id="findByEmp_email" parameterType="String" resultType="com.spring.daon.hrMgt.Employees"> 
-	SELECT *
-	  FROM employees 
-	 WHERE emp_email = #{emp_email}
-</select>
+	<!-- emp_email로 사원 찾기 -->
+	<select id="findByEmp_email" parameterType="String" resultType="com.spring.daon.hrMgt.Employees"> 
+		SELECT *
+		  FROM employees 
+		 WHERE emp_email = #{emp_email}
+	</select>
+	
     <select id="toEmployees" parameterType="com.spring.daon.hrMgt.Employees" resultType="com.spring.daon.hrMgt.Employees"> 
-	SELECT *
-	  FROM employees 
-	 WHERE emp_email = #{emp_email}
-</select>
+		SELECT *
+		  FROM employees 
+		 WHERE emp_email = #{emp_email}
+	</select>
+	
+	<!-- emp_no로 사원 찾기 -->
+	<select id="findByEmp_no" parameterType="int" resultType="com.spring.daon.hrMgt.Employees"> 
+		SELECT *
+		  FROM employees 
+		 WHERE emp_no = #{emp_no}
+	</select>
 </mapper>   

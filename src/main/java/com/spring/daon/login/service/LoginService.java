@@ -22,13 +22,12 @@ public class LoginService {
 	
 	// 입력한 이메일을 가지고 db에 값이 있는지 확인
 	public Employees findByEmp_email(String emp_email) {
-		System.out.println("<<< UserService - findByEmp_Email() >>>");
+		System.out.println("<<< LoginService - findByEmp_Email() >>>");
 		
 		Employees emp = loginMapper.findByEmp_email(emp_email);
 		
 		return loginMapper.toEmployees(emp);
 	}
-	
 	
 	public Employees login(CredentialsDTO credentialsDTO) {
 		System.out.println("<<< LoginService - login() >>>");
@@ -43,5 +42,10 @@ public class LoginService {
 		}
 		
 		throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
+	}
+	
+	public Employees findByEmp_no(int emp_no) {
+		System.out.println("<<< LoginService - login() >>>");
+		return loginMapper.findByEmp_no(emp_no);
 	}
 }
