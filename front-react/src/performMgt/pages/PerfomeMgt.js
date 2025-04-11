@@ -19,6 +19,7 @@ import list3 from './../image/list3.jpg';
 import Leftbar from '../../common/pages/Leftbar';
 import LeftbarDEvaluation from '../components/LeftbarDEvaluation';
 
+// 인사평가 메인
 const PerfomeMgt = () => {
     const navigate = useNavigate();
 
