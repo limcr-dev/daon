@@ -12,8 +12,8 @@ import { Container, Content } from "rsuite";
 import QuesList from "./sub/QuesList";
 
 
-// 평가 문제 불러오기
-const EvalQue = () => {
+// 자기 평가 문제 불러오기
+const EvalSelQue = () => {
 
     const [ quesList, setQuesList ] = useState([]);   // 초기값을 모르므로 빈배열로 대입
     
@@ -65,4 +65,4 @@ const EvalQue = () => {
 
 };
 
-export default EvalQue;
+export default EvalSelQue;

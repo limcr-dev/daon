@@ -9,7 +9,7 @@ const QuesList = ({ ques }) => {
 
     if (!ques) return <p>질문 데이터가 없습니다.</p>;  //예외처리
 
-    const { eval_ques_id, eval_comp_id, eval_comp_type, eval_comp_name, eval_ques_text } = ques; // 구조분해 할당당
+    const { eval_comp_type, eval_comp_name, eval_ques_text } = ques; // 구조분해 할당당
 
 
     return (
