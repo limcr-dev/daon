@@ -28,14 +28,15 @@ const Header = () => {
 
 
             {user && (
-                <Whisper placement="bottom" trigger="hover" speaker={<Tooltip>로그아웃</Tooltip>}>
+                <div style={{ position: 'relative' }}>
                     <IconButton
                         icon={<ExitIcon />}
                         appearance="subtle"
                         onClick={handleLogout}
                         style={{ marginLeft: 10 }}
+                        title="로그아웃" // 기본 HTML 툴팁 사용
                     />
-                </Whisper>
+                </div>
             )}
         </Nav>
     );
