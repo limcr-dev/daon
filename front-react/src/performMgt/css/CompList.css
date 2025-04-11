@@ -18,7 +18,7 @@
     
   }
 
-  table {
+  .comp-table {
     border : 1px solid lightgray;
     border-collapse: collapse;
     
@@ -26,17 +26,16 @@
     margin-right: 20px;
     margin-bottom: 20px;
   }
-  th{
+  .comp-th{
     border : 1px solid lightgray;
     border-collapse: collapse;
     background-color: #f0eded;
     padding: 2px;
     text-align: center;
-  }
-  th .style{
     width:"40px";
   }
-  td{
+  
+  .comp-td{
     border : 1px solid lightgray;
     border-collapse: collapse;
     padding: 2px;
