@@ -8,6 +8,11 @@
     color: blue;
 }
 
+/* 캘린더가 컬러피커 가림 수정 */
+.scheduleCalendar{
+    z-index: 0;
+    position: relative ;
+}
 
 /* 버튼 색 변경 */
 .scheduleCalendar .fc .fc-button {

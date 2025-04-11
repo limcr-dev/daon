@@ -25,7 +25,7 @@ const AttendMgtLeftbar = (props) => {
 
   // 근태 정보
   const emp_no = props.emp_no
-  const { start_time, end_time } = props.work_schedules
+  // const { start_time, end_time } = props.work_schedules
   const [todayAttendance, setTodayAttendance] = useState({
     b_num: '',
     date: '',
@@ -34,10 +34,40 @@ const AttendMgtLeftbar = (props) => {
     work_hours: '',
     status: ''
   });
-
+  // 근무 유형 정보
+  const [work_schedules, setWork_schedules] = useState({
+    work_type_no: '',
+    type_name: '',
+    start_time: '',
+    end_time: '',
+  });
+  // 근무 코드에 따른 정보 가져오기
+  useEffect(() => {
+    fetch("http://localhost:8081/attend/workType/" + emp_no)
+      .then((res) => res.json())
+      .then((res) => {
+        setWork_schedules(res);
+        fetch("http://localhost:8081/attend/attendByDate/" + emp_no, {
+          method: "GET"
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            // todayAttendance 값이 변경될때만 set
+            if (JSON.stringify(todayAttendance) !== JSON.stringify(res)) {
+              setTodayAttendance(res);
+            }
+          })
+          .catch((error) => {
+            console.log('로그인정보를 확인해주세요', error);
+          })
+      })
+      .catch((error) => {
+        console.log('로그인정보를 확인해주세요', error);
+      })
+  }, [todayAttendance])
   // 출근 버튼 클릭시
   const check_in = () => {
-    fetch("http://localhost:8081/attend/checkIn/" + emp_no + "/" + start_time, {
+    fetch("http://localhost:8081/attend/checkIn/" + emp_no + "/" + work_schedules.start_time, {
       method: "POST"
     })
       .then((res) => res.json())
@@ -52,7 +82,7 @@ const AttendMgtLeftbar = (props) => {
 
   // 퇴근 버튼 클릭시
   const check_out = () => {
-    fetch("http://localhost:8081/attend/checkOut/" + emp_no + "/" + end_time, {
+    fetch("http://localhost:8081/attend/checkOut/" + emp_no + "/" + work_schedules.end_time, {
       method: "PUT"
     })
       .then((res) => res.json())
@@ -66,21 +96,7 @@ const AttendMgtLeftbar = (props) => {
   }
 
   // 오늘 출퇴근 기록 불러오기
-  useEffect(() => {
-    fetch("http://localhost:8081/attend/attendByDate/" + emp_no, {
-      method: "GET"
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        // todayAttendance 값이 변경될때만 set
-        if (JSON.stringify(todayAttendance) !== JSON.stringify(res)) {
-          setTodayAttendance(res);
-        }
-      })
-      .catch((error) => {
-        console.log('로그인정보를 확인해주세요', error);
-      })
-  }, [todayAttendance])
+
 
   // 오늘 날짜 불러오기
   const today = new Date();
@@ -142,7 +158,7 @@ const AttendMgtLeftbar = (props) => {
       {/* header 끝 */}
 
       <Sidenav style={{ marginTop: '20px' }}>
-        <Sidenav.Body style={{ backgroundColor: '#f0f0f0' }}>
+        <Sidenav.Body style={{ backgroundColor: '#f0f0f0', paddingLeft:"20px" }}>
           <AttendMgtTree />
         </Sidenav.Body>
       </Sidenav>
