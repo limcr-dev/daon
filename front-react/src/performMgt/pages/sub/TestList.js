@@ -67,16 +67,16 @@ const TestList = () => {
 
         <Button className="subutt1" onClick={evalList}> 직원 전체 리스트 </Button>
         <div className="linenomal">&nbsp;</div>
-        <table>
+        <table className="comp-table">
           <thead>
             <tr>
-              <th className="style"  >순번</th>
-              <th> 등록일 </th>
+              <th className="comp-th">순번</th>
+              <th className="comp-th"> 등록일 </th>
 
-              <th> 종료일 </th>
-              <th> 평가유형 </th>
-              <th> 평가역량 </th>
-              <th>  </th>
+              <th className="comp-th"> 종료일 </th>
+              <th className="comp-th"> 평가유형 </th>
+              <th className="comp-th"> 평가역량 </th>
+              <th className="comp-th">  </th>
 
             </tr>
           </thead>
@@ -86,13 +86,13 @@ const TestList = () => {
               <>
                 {testList.map((test, index) => (
                   <tr key={index}>
-                    <td>{test.eval_order_num || "정보 없음"}</td>
-                    <td>{test.eval_start_date || "정보 없음"}</td>
+                    <td className="comp-td">{test.eval_order_num || "정보 없음"}</td>
+                    <td className="comp-td">{test.eval_start_date || "정보 없음"}</td>
 
-                    <td>{test.eval_end_date || "정보 없음"}</td>
-                    <td>{test.eval_emp_type || "정보 없음"}</td>
-                    <td>{test.eval_click_emp || "정보 없음"}</td>
-                    <td>
+                    <td className="comp-td">{test.eval_end_date || "정보 없음"}</td>
+                    <td className="comp-td">{test.eval_emp_type || "정보 없음"}</td>
+                    <td className="comp-td">{test.eval_click_emp || "정보 없음"}</td>
+                    <td className="comp-td">
                       {/* <button className="subno" type="submit" onClick={insertTest} >등록</button>  */}
                       <button className="subno" type="button" onClick={() => deleteTest(test.eval_order_num)}>삭제</button>
                     </td>
