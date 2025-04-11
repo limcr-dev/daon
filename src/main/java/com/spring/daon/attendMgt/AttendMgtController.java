@@ -2,6 +2,7 @@ package com.spring.daon.attendMgt;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,8 +41,14 @@ public class AttendMgtController {
 	@GetMapping("/attendByDate/{emp_no}")
 	public ResponseEntity<?> attendByDate(@PathVariable int emp_no) {
 		System.out.println("<<< attendByDate >>>");
-	
-		return new ResponseEntity<>(service.attendByDate(emp_no), HttpStatus.OK);
+		Attendance result = service.attendByDate(emp_no);
+		 if (result == null) {
+		        return ResponseEntity.ok(Collections.emptyMap());
+		    }
+		 else {
+			 return new ResponseEntity<>(result, HttpStatus.OK);
+		 }
+		
 	}
 	
 	// 근무 유형 조회
@@ -74,6 +81,8 @@ public class AttendMgtController {
 		
 		return new ResponseEntity<>(service.changeLog(emp_no, year, month), HttpStatus.OK);
 	}
+	
+	// <<< 휴가 관련 >>>
 	
 	// 휴가 생성 내역
 	@GetMapping("vacation_log/{emp_no}/{startDate}/{endDate}")

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Card,
   Col,
   Container,
   Content,
@@ -13,7 +14,7 @@ import ScheduleLeftbar from './ScheduleLeftbar';
 import Header from '../../common/pages/Header';
 
 const Schedule = () => {
- const [employees, setEmployees] = useState({
+  const [employees, setEmployees] = useState({
     emp_no: '1001'
   });
 
@@ -22,14 +23,18 @@ const Schedule = () => {
       <Leftbar />
       <Container>
 
-        <ScheduleLeftbar emp_no = {employees.emp_no} />
+        <ScheduleLeftbar emp_no={employees.emp_no} />
 
         <Content style={{ marginTop: '20px' }}>
           <Header />
           <Divider style={{ margin: "0px" }} />
           <Row gutter={20} style={{ padding: '15px', display: 'flex', flexDirection: 'column' }}>
             <Col>
-              <MyCalendar />
+              <Card style={{maxWidth:"1400px", margin:"auto"}} >
+                <Card.Header className="">
+                  <MyCalendar />
+                </Card.Header>
+              </Card>
             </Col>
           </Row>
         </Content>
