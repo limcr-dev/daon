@@ -62,3 +62,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# macOS 시스템 파일
+.DS_Store
+**/.DS_Store
+
+# 빌드 결과물
+/node_modules/
