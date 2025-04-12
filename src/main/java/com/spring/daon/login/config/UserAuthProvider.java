@@ -3,6 +3,7 @@ package com.spring.daon.login.config;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
@@ -38,17 +39,26 @@ public class UserAuthProvider {
 	}
 	
 	// 토큰 생성
-	public String createToken(int emp_no) {
+	public String createToken(Employees employee) {
 		System.out.println("<<< UserAuthProvider - createToken() >>>");
 		
 		Date now = new Date();  // java.util.Date (import 주의)
 		Date validity = new Date(now.getTime() + 3600000);   // 토큰 유효시간 1시간
+		String jwtId = UUID.randomUUID().toString();
 		
 		// JWT를 사용하려면 pom.xml에 java-jwt 추가
 		return JWT.create()
-				.withIssuer(String.valueOf(emp_no))	// 토큰 발급자
+				.withSubject(String.valueOf(employee.getEmp_no()))	// 사용자 식별자(발급받은 사람)
+				.withIssuer("daon-approval-system")		// 시스템 식별자(발급해준 사람)
+				.withJWTId(jwtId) // 토큰 ID 설정
 				.withIssuedAt(now)
 				.withExpiresAt(validity)
+				
+				// payload 정보 담기
+				.withClaim("emp_name", employee.getEmp_name())
+				.withClaim("dept_no", employee.getDept_no())
+				.withClaim("position_id", employee.getPosition_id())
+				.withClaim("admin_type", employee.getAdmin_type())
 				.sign(Algorithm.HMAC256(secretKey));	// HMAC256 알고리즘으로 서명하여 토큰 생성
 	}
 	
@@ -69,7 +79,7 @@ public class UserAuthProvider {
 		System.out.println("<<< UserAuthProvider - validationToken() 2 >>>");
 		
 		// 토큰의 발급자(Issuer) 정보로 사용자 조회
-		Employees emp = loginService.findByEmp_email(decoded.getIssuer());
+		Employees emp = loginService.findByEmp_no(Integer.parseInt(decoded.getSubject()));
 		
 		// 사용자가 데이터베이스에 존재하는지 확인
 		return new UsernamePasswordAuthenticationToken(emp, null, Collections.emptyList());

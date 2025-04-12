@@ -1,0 +1,68 @@
+/* VacationForm.css - 휴가신청서 전용 스타일 */
+@import './commonForm.css';
+
+/* 휴가 정보 테이블 */
+.vacation-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.vacation-info-table td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+}
+
+.date-range {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.date-range input[type="date"] {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.date-separator {
+  margin: 0 10px;
+}
+
+.usage-status {
+  margin-left: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.usage-label {
+  margin-right: 5px;
+}
+
+.usage-message {
+  color: red;
+  margin-left: 10px;
+}
+
+.half-day-options {
+  display: flex;
+  align-items: center;
+}
+
+.radio-label {
+  margin: 0 10px 0 5px;
+}
+
+.leave-days {
+  display: flex;
+}
+
+.leave-days > div {
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.leave-days span {
+  margin-right: 5px;
+}

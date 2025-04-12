@@ -1,5 +1,6 @@
 package com.spring.daon.attendMgt;
 
+import java.sql.Date;
 import java.sql.Time;
 import java.util.HashMap;
 import java.util.List;
@@ -38,9 +39,9 @@ public class AttendMgtServiceImpl{
     	return AttendMgtMapper.attendByDate(emp_no);
     }
 	// 근무 유형 조회
-	public Work_schedules workType(int work_type_no) {
+	public Work_schedules workType(int emp_no) {
 		
-		return AttendMgtMapper.workType(work_type_no);
+		return AttendMgtMapper.workType(emp_no);
 	}
     
 	// 선택한 달 출퇴근 통계 불러오기
@@ -66,7 +67,6 @@ public class AttendMgtServiceImpl{
     	map.put("month", month);
     	
     	List<Attendance> result = AttendMgtMapper.attendHistory(map);
-    	System.out.println(result);
 		return result;
 	}
 	// 선택한 달 변경이력 불러오기
@@ -78,6 +78,21 @@ public class AttendMgtServiceImpl{
     	
     	List<Attendance> result = AttendMgtMapper.changeLog(map);
     	System.out.println("change" + result);
+		return result;
+	}
+	
+	// <<< 휴가 관련 >>>
+	
+	// 휴가 생성 내역
+	public List<Vacation_occur> vacation_log(int emp_no, Date startDate, Date endDate) {
+		Map<String, Object> map = new HashMap<>();
+    	map.put("emp_no", emp_no);
+    	map.put("startDate", startDate);
+    	map.put("endDate", endDate);
+    	
+    	System.out.println("기간" +startDate +  endDate);
+    	List<Vacation_occur> result = AttendMgtMapper.vacation_log(map);
+    	System.out.println("vacation_log" + result);
 		return result;
 	}
 }

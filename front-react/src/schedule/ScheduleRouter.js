@@ -6,7 +6,9 @@ const ScheduleRouter = () => {
     return (
         <Routes>
             <Route path="/" element={<Schedule />} />       {/* 일정 */}
+            <Route path="/schedule" element={<Schedule />} />       {/* 일정 */}
         </Routes>
+        
     );
 };
 

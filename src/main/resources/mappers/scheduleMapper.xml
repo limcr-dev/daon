@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+     
+<mapper namespace="com.spring.daon.schedule.ScheduleMapper">
+	
+	<!-- 출근 버튼 클릭 시 -->
+	<select id="getCategory" parameterType="int" resultType="com.spring.daon.schedule.Schedule_setting">		
+		select * from schedule_setting
+		where emp_no = #{emp_no}
+	</select>
+	
+</mapper>

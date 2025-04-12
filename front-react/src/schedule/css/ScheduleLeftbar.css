@@ -1,0 +1,12 @@
+.custom-dropdown .rs-dropdown-toggle {
+    background-color: #CECEF2 !important; /* 드롭다운 버튼 배경 */
+    color: black !important; /* 글씨 색상 */
+    border-radius: 5px; /* 버튼 둥글게 */
+    margin: 5px;
+    width: 163px;
+  }
+
+  .custom-dropdown .rs-dropdown-menu {
+    margin-left: 5px;
+    width: 163px;
+  }

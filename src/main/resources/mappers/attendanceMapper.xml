@@ -28,30 +28,37 @@
 		set check_out_time = curtime(),
 			work_hours = TIMESTAMPDIFF(MINUTE, check_in_time, CURTIME()) / 60,
 	        normal = CASE 
-				        WHEN #{end_time} >= CURTIME() THEN 1
-				        ELSE 0  
+				        WHEN #{end_time} >= CURTIME() OR late = 1 THEN 0
+				        ELSE 1  
 				    END,
 			early_leave = CASE 
-				        	WHEN #{end_time} > CURTIME() THEN 0
-				        	ELSE 1
+				        	WHEN #{end_time} > CURTIME() THEN 1
+				        	ELSE 0
 				    	  END
 		where  emp_no = #{emp_no}
-		  and  date = curdate();
+		  and  date = curdate()
 	</update>
 	
 	<!-- 오늘 출 퇴근 기록 불러오기 -->
 	<select id="attendByDate" parameterType="int" resultType="com.spring.daon.attendMgt.Attendance">
 		select * from attendance
 	 	where emp_no = #{emp_no}
-	 	 and  date = curdate();
+	 	 and  date = curdate()
 	</select>
 	
 	<!-- 근무 유형 조회 -->
 	<select id="workType" parameterType="int" resultType="com.spring.daon.attendMgt.Work_schedules">
-		select * from work_schedules
-		where work_type_no  = #{work_type_no};
+		select w.work_type_no,
+			   w.type_name,
+			   w.start_time,
+			   w.end_time,
+			   w.total_time
+			   
+		from work_schedules w
+		JOIN employees e ON e.work_type_no = w.work_type_no
+		where e.emp_no = #{emp_no}
 	</select>
-	
+
 	<!-- 선택한 달 출퇴근 통계 불러오기 -->
 	<select id="attendCnt" parameterType="java.util.Map" resultType="com.spring.daon.attendMgt.Attendance">
 		SELECT 
@@ -76,12 +83,6 @@
 	
 	<!-- 선택한 달 변경이력 불러오기 -->
 	<select id="changeLog" parameterType="java.util.Map" resultType="com.spring.daon.attendMgt.Attendance">
-		 <!-- SELECT *
-			FROM attendance
-			where emp_no = #{emp_no}
-			 AND MONTH(date) = #{month}
-			 AND YEAR(date) = #{year}
-			 AND message IS NOT NULL -->
 	     SELECT a.*, e.emp_name, e.emp_img
 		    FROM attendance a
 		    JOIN employees e ON a.emp_no = e.emp_no
@@ -89,5 +90,15 @@
 		      AND MONTH(a.date) = #{month}
 		      AND YEAR(a.date) = #{year}
 		      AND a.message IS NOT NULL
+	</select>
+	
+	<!-- <<< 휴가관련 >>> -->
+	
+	<!-- 휴가 생성 내역 -->
+	<select id="vacation_log" parameterType="java.util.Map" resultType="com.spring.daon.attendMgt.Vacation_occur">
+	     SELECT *
+		    FROM Vacation_occur
+		    WHERE emp_no = #{emp_no}
+		      AND create_at between #{startDate} and #{endDate}
 	</select>
 </mapper>

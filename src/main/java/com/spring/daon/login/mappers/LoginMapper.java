@@ -11,6 +11,8 @@ public interface LoginMapper {
 	
 	public Employees findByEmp_email(String emp_email);
 	
-	public Employees toEmployees(Employees dto); 	
+	public Employees toEmployees(Employees dto); 
+	
+	public Employees findByEmp_no(int emp_no); 	
 
 }

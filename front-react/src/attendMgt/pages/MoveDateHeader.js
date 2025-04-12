@@ -1,10 +1,12 @@
 import React from 'react';
 
+// css
+import "../css/AttendCommon.css"
 // icon
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 
-const MoveDateHeader = ({currentDate, setCurrentDate, moveDate, setMoveDate}) => {
+const MoveDateHeader = ({ currentDate, setCurrentDate, setMoveDate }) => {
     // 버튼 클릭 시
     const changeDate = (plusminus) => {
 
@@ -27,13 +29,17 @@ const MoveDateHeader = ({currentDate, setCurrentDate, moveDate, setMoveDate}) =>
             <div style={{ display: "flex" }}>
                 <b style={{ fontSize: "20px" }}>내 근태 현황</b>
 
-                <div style={{ display: "flex", position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
+                <div className="headCenter">
 
-                    <button onClick={() => changeDate(-1)}><FontAwesomeIcon icon={faChevronLeft} /></button>
+                    <button onClick={() => changeDate(-1)}>
+                        <FontAwesomeIcon icon={faChevronLeft} />
+                    </button>
                     <h5>{monthDisplay}</h5>
-                    <button onClick={() => changeDate(1)}><FontAwesomeIcon icon={faChevronRight} /></button>
+                    <button onClick={() => changeDate(1)}>
+                        <FontAwesomeIcon icon={faChevronRight} />
+                    </button>
                 </div>
-                <br /> <br />
+                <br/><br/>
             </div>
         </div>
 
