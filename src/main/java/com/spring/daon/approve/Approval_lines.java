@@ -22,16 +22,15 @@ import lombok.ToString;
 @ToString
 @Builder
 @Entity   
-@Table(name="documents")
-public class Documents {
+@Table(name="vacation_requests")
+public class Approval_lines {
 	@Id
+	private int line_id;
 	private int doc_no;
-    private String doc_form;
-    private int emp_no;
-    private String doc_title;
+    private int approver_no;
+    private int approval_order;
+    private int approval_status;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date doc_reg_date;
-    private int doc_status;
-    private String doc_reject_reason;
-    private char doc_urgent;
+    private Date approval_date;
+    private String approval_comment;
 }
