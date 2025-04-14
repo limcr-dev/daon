@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import '../css/vacationForm.css';
 import { useUser } from '../../common/contexts/UserContext';
-import { request } from '../../common/components/helpers/axios_helper';
 
 const VacationForm = () => {
-
   const { user } = useUser();
   const today = new Date();
   const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -27,20 +25,8 @@ const VacationForm = () => {
     });
   };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await request("GET", "/approve/getVacationInfo", user.emp_no);
-  //     } catch (error) {
-  //       console.error("데이터 불러오기 오류:", error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // },[])
-
   return (
-    <div className="vacation-form-container">
+    <div className="form-container">
       <h2 className="form-title">연차신청서</h2>
 
       <div className="form-content">

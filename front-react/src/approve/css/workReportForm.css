@@ -1,0 +1,104 @@
+/* WorkReportForm.css - 업무기안 전용 스타일 */
+@import './commonForm.css';
+
+/* 결재라인 세로 텍스트 */
+.approval-position {
+  background-color: #f0f0f0;
+  width: 30px;
+  font-weight: bold;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+
+.approver-row {
+  height: 30px;
+}
+
+.approval-name {
+  font-size: 14px;
+}
+
+/* 에디터 영역 */
+.editor-tabs {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+}
+
+.editor-tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  margin-right: 4px;
+  background-color: #f5f5f5;
+}
+
+.editor-tab.active {
+  background-color: #fff;
+  border-bottom: 1px solid #fff;
+  margin-bottom: -1px;
+}
+
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-top: none;
+  background-color: #f9f9f9;
+}
+
+.toolbar-btn-group {
+  display: flex;
+}
+
+.toolbar-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin-right: 2px;
+  border-radius: 2px;
+}
+
+.toolbar-btn:hover {
+  background-color: #eee;
+}
+
+.toolbar-separator {
+  width: 1px;
+  height: 20px;
+  background-color: #ddd;
+  margin: 0 8px;
+}
+
+.toolbar-select {
+  margin-right: 8px;
+}
+
+.toolbar-select select {
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+}
+
+.editor-content {
+  border: 1px solid #ddd;
+  border-top: none;
+  min-height: 300px;
+}
+
+/* Quill 에디터 커스터마이징 */
+.quill {
+  height: 300px;
+}
+
+.ql-container {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+}
+
+.ql-editor {
+  min-height: 280px;
+}
