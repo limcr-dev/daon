@@ -86,7 +86,7 @@ const WorkReportForm = () => {
               <td>
                 <div className="date-input">
                   <img src="/calendar-icon.png" alt="달력" className="calendar-icon" />
-                  <input type="date" defaultValue="2025-04-15" />
+                  <DatePicker type="date" defaultValue="2025-04-15" />
                 </div>
               </td>
               <td className="label-cell">협조부서</td>
