@@ -95,10 +95,9 @@
 	<!-- <<< 휴가관련 >>> -->
 	
 	<!-- 휴가 생성 내역 -->
-	<select id="vacation_log" parameterType="java.util.Map" resultType="com.spring.daon.attendMgt.Vacation_occur">
+	<select id="vacation_log" parameterType="int" resultType="com.spring.daon.attendMgt.Vacation_occur">
 	     SELECT *
 		    FROM Vacation_occur
 		    WHERE emp_no = #{emp_no}
-		      AND create_at between #{startDate} and #{endDate}
 	</select>
 </mapper>

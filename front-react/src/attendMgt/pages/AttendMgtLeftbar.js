@@ -8,8 +8,6 @@ import {
 } from 'rsuite';
 
 import AttendMgtTree from '../components/AttendMgtTree';
-import { Icon } from '@rsuite/icons';
-import { MdDescription } from 'react-icons/md';
 import Clock from "react-live-clock";
 import { useEffect, useState } from 'react';
 
@@ -35,12 +33,7 @@ const AttendMgtLeftbar = (props) => {
     status: ''
   });
   // 근무 유형 정보
-  const [work_schedules, setWork_schedules] = useState({
-    work_type_no: '',
-    type_name: '',
-    start_time: '',
-    end_time: '',
-  });
+  const [work_schedules, setWork_schedules] = useState();
   // 근무 코드에 따른 정보 가져오기
   useEffect(() => {
     fetch("http://localhost:8081/attend/workType/" + emp_no)
@@ -64,7 +57,7 @@ const AttendMgtLeftbar = (props) => {
       .catch((error) => {
         console.log('로그인정보를 확인해주세요', error);
       })
-  }, [todayAttendance])
+  }, [emp_no, todayAttendance])
   // 출근 버튼 클릭시
   const check_in = () => {
     fetch("http://localhost:8081/attend/checkIn/" + emp_no + "/" + work_schedules.start_time, {

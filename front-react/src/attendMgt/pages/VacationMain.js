@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   Col,
@@ -28,34 +28,64 @@ import { useUser } from '../../common/contexts/UserContext';
 const VacationMain = () => {
 
   // 직원 정보
-    const { user } = useUser();
-    
+  const { user } = useUser();
+
   const [employees, setEmployees] = useState({});
 
+  const [vacation_occurList, setVacation_occurList] = useState([])
+
+  // 만료 예정일 불러오기
+  let maxExpireDate = "";
+  if (vacation_occurList.length > 0) {
+    const maxExpire = Math.max(
+      ...vacation_occurList.map(v => new Date(v.expire_date).getTime())
+    );
+    maxExpireDate = new Date(maxExpire).toISOString().slice(0, 10);
+  }
+
+
+
   useEffect(() => {
-      fetch("http://localhost:8081/api/getEmpInfo/" + user.emp_no)
-        .then((res) => res.json())
-        .then((res) => {
-          setEmployees(res);
+    // 입사일 가져오기
+    fetch("http://localhost:8081/api/getEmpInfo/" + user.emp_no)
+      .then((res) => res.json())
+      .then((res) => {
+        setEmployees(res);
+
+        // 휴가정보 불러오기
+        fetch("http://localhost:8081/attend/vacation_log/" + user.emp_no, {
+          method: "GET"
         })
-        .catch((error) => {
-          console.log('로그인정보를 확인해주세요', error);
-        })
-    }, [])
+          .then((res) => res.json())
+          .then((res) => {
+            setVacation_occurList(res);
+          })
+      })
+      .catch((error) => {
+        console.log('로그인정보를 확인해주세요', error);
+      })
+  }, [user.emp_no])
 
   // 초기 날짜 설정
-  const [currentDate] = useState(new Date());
+  const currentDate = new Date();
   const [moveDate, setMoveDate] = useState({
     startDate: currentDate.getFullYear() + "-01-01",
     endDate: currentDate.getFullYear() + "-12-31",
   });
+  // 날짜 형식 지정 ${yyyy}-${mm}-${dd}
+  const formatDate = (date) => {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0'); // 월 2자리로 맞추기
+    const dd = String(date.getDate()).padStart(2, '0');      // 일 2자리로 맞추기
+    return `${yyyy}-${mm}-${dd}`;
+  };
 
   // 날짜 선택 시
   const startDatePick = (startDatePick) => {
     if (startDatePick != null) {
       setMoveDate(prev => ({
         ...prev,// endDate값 보존
-        startDate: startDatePick.getFullYear() + "-" + (startDatePick.getMonth() + 1) + "-" + startDatePick.getDate()
+        startDate: formatDate(startDatePick),
       }));
     }
   }
@@ -64,7 +94,7 @@ const VacationMain = () => {
     if (endDatePick != null) {
       setMoveDate(prev => ({
         ...prev, // startDate값 보존
-        endDate: endDatePick.getFullYear() + "-" + (endDatePick.getMonth() + 1) + "-" + endDatePick.getDate()
+        endDate: formatDate(endDatePick),
       }));
     }
   }
@@ -111,6 +141,7 @@ const VacationMain = () => {
       </div>
     </Popover>
   )
+
   return (
     <div>
       <Container style={{ minHeight: '100vh', width: '100%' }}>
@@ -131,7 +162,7 @@ const VacationMain = () => {
                   <b style={{ fontSize: "20px" }}>내 연차 내역</b>
                   <div className='headCenter'><h5>{formattedDate}</h5></div><br /><br />
                 </div>
-                
+
                 {/* 상단 연차 내역 시작 */}
                 <Card className="attendCard" >
                   <Card.Header className="cardHeaderContents" >
@@ -144,7 +175,7 @@ const VacationMain = () => {
                       </Whisper>
                       <p>0</p>
                     </div>
-                    <div>발생 월차<br /> <p>0</p></div>
+
                     <div>총 연차
                       <Whisper
                         placement="right"
@@ -155,6 +186,7 @@ const VacationMain = () => {
                       <p>17</p></div>
                     <div>사용 연차<br /> <p>3</p></div>
                     <div>잔여 연차<br /> <p>14</p></div>
+                    <div>만료 예정<br /> {maxExpireDate && <p>{maxExpireDate} </p>} </div>
                     <div>입사일<br /> <p>{employees.hire_date}</p></div>
                   </Card.Header>
                 </Card>
@@ -170,8 +202,8 @@ const VacationMain = () => {
                     speaker={vacationInfo3}
                   > 💡
                   </Whisper></p>
-                <DatePicker oneTap format="yyyy-MM-dd"  onChange={startDatePick} value={new Date(moveDate.startDate)} />~
-                <DatePicker oneTap format="yyyy-MM-dd"  onChange={endDatePick} value={new Date(moveDate.endDate)} />
+                <DatePicker oneTap format="yyyy-MM-dd" onChange={startDatePick} value={new Date(moveDate.startDate)} />~
+                <DatePicker oneTap format="yyyy-MM-dd" onChange={endDatePick} value={new Date(moveDate.endDate)} />
                 <br></br><br></br>
                 <Card className="attendCard">
                   <Card.Header className="cardHeaderList">
@@ -180,10 +212,10 @@ const VacationMain = () => {
                   <table className='board-table'>
                     <thead>
                       <tr>
-                        <th style={{width:"10%"}}>휴가종류</th>
-                        <th style={{width:"15%"}}>연차 사용기간</th>
-                        <th style={{width:"11%"}}>사용 연차</th>
-                        <th style={{width:"40%"}}>사유</th>
+                        <th style={{ width: "10%" }}>휴가종류</th>
+                        <th style={{ width: "15%" }}>연차 사용기간</th>
+                        <th style={{ width: "11%" }}>사용 연차</th>
+                        <th style={{ width: "40%" }}>사유</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -205,13 +237,13 @@ const VacationMain = () => {
                 {/* 연차 사용 내역 끝 */}
                 <br />
                 {/* 생성 내역 */}
-                <VacationFooter emp_no={user.emp_no} moveDate={moveDate} />
+                <VacationFooter moveDate={moveDate} vacation_occurList={vacation_occurList} />
               </Col>
             </Row>
           </Content>
         </Container>
       </Container >
-    </div>
+    </div >
   );
 };
 

@@ -25,16 +25,15 @@ public class AttendMgtController {
 
 	// 출근 버튼 
 	@PostMapping("/checkIn/{emp_no}/{start_time}")
-	public ResponseEntity<?> checkIn(@PathVariable int emp_no, Time start_time) {
+	public ResponseEntity<?> checkIn(@PathVariable int emp_no, @PathVariable Time start_time) {
 		System.out.println("<<< checkIn >>>");
 	
 		return new ResponseEntity<>(service.checkIn(emp_no, start_time), HttpStatus.OK);
 	}
 	// 퇴근 버튼
 	@PutMapping("/checkOut/{emp_no}/{end_time}")
-	public ResponseEntity<?> checkOut(@PathVariable int emp_no, Time end_time) {
+	public ResponseEntity<?> checkOut(@PathVariable int emp_no, @PathVariable Time end_time) {
 		System.out.println("<<< checkOut >>>");
-	
 		return new ResponseEntity<>(service.checkOut(emp_no, end_time), HttpStatus.OK);
 	}
 	// 오늘 출퇴근 기록 불러오기
@@ -55,7 +54,7 @@ public class AttendMgtController {
 	@GetMapping("/workType/{emp_no}")
 	public ResponseEntity<?> workType(@PathVariable int emp_no) {
 		System.out.println("<<< workType >>>");
-	
+		
 		return new ResponseEntity<>(service.workType(emp_no), HttpStatus.OK);
 	}
 	
@@ -85,10 +84,18 @@ public class AttendMgtController {
 	// <<< 휴가 관련 >>>
 	
 	// 휴가 생성 내역
-	@GetMapping("vacation_log/{emp_no}/{startDate}/{endDate}")
-	public ResponseEntity<?> vacation_log(@PathVariable int emp_no, @PathVariable Date startDate, @PathVariable Date endDate) {
-		System.out.println("<<< vacation_log >>>" + emp_no + startDate + endDate);
+	@GetMapping("vacation_log/{emp_no}")
+	public ResponseEntity<?> vacation_log(@PathVariable int emp_no) {
+		System.out.println("<<< vacation_log >>>" + emp_no);
 		
-		return new ResponseEntity<>(service.vacation_log(emp_no, startDate, endDate), HttpStatus.OK);
+		return new ResponseEntity<>(service.vacation_log(emp_no), HttpStatus.OK);
 	}
+	
+	// 휴가 정보 불러오기
+//	@GetMapping("vacationInfo/{emp_no}")
+//	public ResponseEntity<?> vacationInfo(@PathVariable int emp_no) {
+//		System.out.println("<<< vacationInfo >>>" + emp_no);
+//		
+//		return new ResponseEntity<>(service.vacationInfo(emp_no), HttpStatus.OK);
+//	}
 }

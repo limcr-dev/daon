@@ -84,15 +84,18 @@ public class AttendMgtServiceImpl{
 	// <<< 휴가 관련 >>>
 	
 	// 휴가 생성 내역
-	public List<Vacation_occur> vacation_log(int emp_no, Date startDate, Date endDate) {
-		Map<String, Object> map = new HashMap<>();
-    	map.put("emp_no", emp_no);
-    	map.put("startDate", startDate);
-    	map.put("endDate", endDate);
+	public List<Vacation_occur> vacation_log(int emp_no) {
     	
-    	System.out.println("기간" +startDate +  endDate);
-    	List<Vacation_occur> result = AttendMgtMapper.vacation_log(map);
+    	List<Vacation_occur> result = AttendMgtMapper.vacation_log(emp_no);
     	System.out.println("vacation_log" + result);
 		return result;
 	}
+	
+	// 휴가 정보 불러오기
+//	public List<Vacation_occur> vacationInfo(int emp_no) {
+//    	
+//    	List<Vacation_occur> result = AttendMgtMapper.vacationInfo(emp_no);
+//    	System.out.println("vacation_log" + result);
+//		return result;
+//	}
 }
