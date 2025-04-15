@@ -1,5 +1,6 @@
 
 import { Card } from 'rsuite';
+
 const VacationFooter = (props) => {
 
   const { startDate, endDate } = props.moveDate;
@@ -17,7 +18,8 @@ const VacationFooter = (props) => {
             <th style={{ width: "10%" }}>등록일</th>
             <th style={{ width: "15%" }}>사용기간</th>
             <th style={{ width: "11%" }}>발생일수</th>
-            <th style={{ width: "40%" }}>내용</th>
+            <th style={{ width: "11%" }}>사용가능일수</th>
+            <th style={{ width: "29%" }}>내용</th>
           </tr>
         </thead>
         <tbody>
@@ -28,6 +30,7 @@ const VacationFooter = (props) => {
                 <td>{vacation.create_at}</td>
                 <td>{vacation.expire_date}</td>
                 <td >{vacation.earned_days}</td>
+                <td >{vacation.available_days}</td>
                 <td>{vacation.occur_reason}</td>
               </tr>
             ))}

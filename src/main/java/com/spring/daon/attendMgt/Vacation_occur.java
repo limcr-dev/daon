@@ -1,5 +1,6 @@
 package com.spring.daon.attendMgt;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 
 import javax.persistence.Entity;
@@ -24,12 +25,13 @@ import lombok.ToString;
 public class Vacation_occur {
 	// vacation_occur table
 	@Id
-	private int vac_no;		// 휴가발생 번호
+	private int vac_no;					// 휴가발생 번호
 	private int emp_no;		
-	private int earned_days;		// 발생 일수
+	private int earned_days;			// 발생 일수
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-	private Date expire_date;		// 유효기간
-	private String occur_reason;			// 발생사유
+	private Date expire_date;			// 유효기간
+	private String occur_reason;		// 발생사유
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-	private Date create_at;		// 생성 날짜
+	private Date create_at;				// 생성 날짜
+	private BigDecimal  available_days;	// 사용 가능 일수
 }

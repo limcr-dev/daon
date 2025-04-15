@@ -24,6 +24,7 @@ import "../css/AttendCommon.css"
 import AttendMgtLeftbar from './AttendMgtLeftbar';
 import VacationFooter from './VacationFooter';
 import { useUser } from '../../common/contexts/UserContext';
+import VacationHistory from './VacationHistory';
 
 const VacationMain = () => {
 
@@ -32,18 +33,27 @@ const VacationMain = () => {
 
   const [employees, setEmployees] = useState({});
 
-  const [vacation_occurList, setVacation_occurList] = useState([])
+  const [vacation_occurList, setVacation_occurList] = useState([]);
 
-  // 만료 예정일 불러오기
+  const [vacationHistoryList, setVacationHistoryList] = useState([]);
+
+  // 가장 빠른 만료 예정일 불러오기
   let maxExpireDate = "";
+  // 잔여 연차 불러오기
+  let sumVacation = "";
   if (vacation_occurList.length > 0) {
-    const maxExpire = Math.max(
-      ...vacation_occurList.map(v => new Date(v.expire_date).getTime())
+    // 만료일이 현재 날짜 이후인 데이터만 추출
+    const futureVacations = vacation_occurList.filter(v => new Date(v.expire_date) > new Date());
+    // alert("test " + JSON.stringify(futureVacations));
+    // 현재 날짜 이후 목록중 가장 작은 값 추출
+    const maxExpire = Math.min(
+      ...futureVacations.map(v => new Date(v.expire_date).getTime())
     );
+    sumVacation = futureVacations.map(v => v.available_days).reduce((sum, available_days) => sum + available_days, 0);
+    // 형식 변환
     maxExpireDate = new Date(maxExpire).toISOString().slice(0, 10);
   }
-
-
+  // 총 연차 불러오기
 
   useEffect(() => {
     // 입사일 가져오기
@@ -60,18 +70,28 @@ const VacationMain = () => {
           .then((res) => {
             setVacation_occurList(res);
           })
+        // 휴가 사용기록 불러오기
+        fetch("http://localhost:8081/attend/vacationHistory/" + user.emp_no, {
+          method: "GET"
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            setVacationHistoryList(res);
+          })
       })
       .catch((error) => {
         console.log('로그인정보를 확인해주세요', error);
       })
   }, [user.emp_no])
 
+  // <<< 날짜 선택 시작 >>>
   // 초기 날짜 설정
   const currentDate = new Date();
   const [moveDate, setMoveDate] = useState({
     startDate: currentDate.getFullYear() + "-01-01",
     endDate: currentDate.getFullYear() + "-12-31",
   });
+
   // 날짜 형식 지정 ${yyyy}-${mm}-${dd}
   const formatDate = (date) => {
     const yyyy = date.getFullYear();
@@ -80,7 +100,7 @@ const VacationMain = () => {
     return `${yyyy}-${mm}-${dd}`;
   };
 
-  // 날짜 선택 시
+  // 1번 데이트피커 선택
   const startDatePick = (startDatePick) => {
     if (startDatePick != null) {
       setMoveDate(prev => ({
@@ -89,7 +109,7 @@ const VacationMain = () => {
       }));
     }
   }
-  // 두번째 날짜 선택시
+  // 2번 데이트피커 선택
   const endDatePick = (endDatePick) => {
     if (endDatePick != null) {
       setMoveDate(prev => ({
@@ -98,6 +118,7 @@ const VacationMain = () => {
       }));
     }
   }
+  // <<< 날짜 선택 끝 >>>
 
   // 상단 오늘날짜
   const today = new Date();
@@ -108,7 +129,7 @@ const VacationMain = () => {
 
   // 발생 연차 설명
   const vacationInfo = (
-    <Popover style={{ minWidth: "300px", whiteSpace: "pre-line", padding: "10px" }} arrow={false}>
+    <Popover style={{ whiteSpace: "pre-line", padding: "10px" }} arrow={false}>
       <div>
         <b>1년 미만 근속자</b><br />
         - 입사 후 1개월 근무할 때마다 1일씩 지급<br />
@@ -124,7 +145,7 @@ const VacationMain = () => {
     </Popover>
   )
   const vacationInfo2 = (
-    <Popover style={{ minWidth: "300px", whiteSpace: "pre-line", padding: "10px" }} arrow={false}>
+    <Popover style={{ whiteSpace: "pre-line", padding: "10px" }} arrow={false}>
       <div>
         <b>회차 단위 연차 이력 관리</b><br />
         - 연차는 '연도 기준'이 아닌 '입사일 기준 1년 단위'로 관리됩니다.<br />
@@ -135,13 +156,15 @@ const VacationMain = () => {
     </Popover>
   )
   const vacationInfo3 = (
-    <Popover style={{ minWidth: "300px", whiteSpace: "pre-line", padding: "10px" }} arrow={false}>
-      <div>
-        사용,생성 날짜기준으로 검색 됩니다.
-      </div>
+    <Popover style={{ whiteSpace: "pre-line", padding: "10px" }} arrow={false} >
+      <div>가장 빠르게 만료되는 연차의 만료일입니다.</div>
     </Popover>
   )
-
+  const vacationInfo4 = (
+    <Popover style={{ whiteSpace: "pre-line", padding: "10px" }} arrow={false}>
+      <div>사용,생성 날짜기준으로 검색 됩니다.</div>
+    </Popover>
+  )
   return (
     <div>
       <Container style={{ minHeight: '100vh', width: '100%' }}>
@@ -185,59 +208,40 @@ const VacationMain = () => {
                       </Whisper>
                       <p>17</p></div>
                     <div>사용 연차<br /> <p>3</p></div>
-                    <div>잔여 연차<br /> <p>14</p></div>
-                    <div>만료 예정<br /> {maxExpireDate && <p>{maxExpireDate} </p>} </div>
+                    <div>잔여 연차<br /> <p>{sumVacation}</p></div>
+                    <div>만료 예정
+                      <Whisper
+                        placement="right"
+                        trigger="click"
+                        speaker={vacationInfo3}
+                      > 💡
+                      </Whisper>
+                      {maxExpireDate && <p>{maxExpireDate} </p>}
+                    </div>
                     <div>입사일<br /> <p>{employees.hire_date}</p></div>
                   </Card.Header>
                 </Card>
                 <br />
                 {/* 상단 연차 내역 끝 */}
 
-                {/* 연차 사용 내역 시작 */}
+                {/* 연차 사용,생성 내역 시작 */}
                 <div style={{ display: "flex" }}> </div>
                 <p style={{ fontSize: "16px" }}>기간 선택 (사용 / 생성 내역)
                   <Whisper
                     placement="right"
                     trigger="click"
-                    speaker={vacationInfo3}
+                    speaker={vacationInfo4}
                   > 💡
                   </Whisper></p>
                 <DatePicker oneTap format="yyyy-MM-dd" onChange={startDatePick} value={new Date(moveDate.startDate)} />~
                 <DatePicker oneTap format="yyyy-MM-dd" onChange={endDatePick} value={new Date(moveDate.endDate)} />
                 <br></br><br></br>
-                <Card className="attendCard">
-                  <Card.Header className="cardHeaderList">
-                    <span style={{ fontWeight: '600', fontSize: '16px' }}>사용 내역</span>
-                  </Card.Header>
-                  <table className='board-table'>
-                    <thead>
-                      <tr>
-                        <th style={{ width: "10%" }}>휴가종류</th>
-                        <th style={{ width: "15%" }}>연차 사용기간</th>
-                        <th style={{ width: "11%" }}>사용 연차</th>
-                        <th style={{ width: "40%" }}>사유</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>연차</td>
-                        <td>2025-03-20 ~ 2025-03-22</td>
-                        <td>2</td>
-                        <td>개인사유</td>
-                      </tr>
-                      <tr>
-                        <td>연차</td>
-                        <td>2025-03-20 ~ 2025-03-22</td>
-                        <td>2</td>
-                        <td>개인사유</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </Card>
-                {/* 연차 사용 내역 끝 */}
+                <VacationHistory moveDate={moveDate} vacationHistoryList={vacationHistoryList} />
+
                 <br />
                 {/* 생성 내역 */}
                 <VacationFooter moveDate={moveDate} vacation_occurList={vacation_occurList} />
+                {/* 연차 사용,생성 내역 끝 */}
               </Col>
             </Row>
           </Content>

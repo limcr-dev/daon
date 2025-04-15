@@ -91,11 +91,11 @@ public class AttendMgtServiceImpl{
 		return result;
 	}
 	
-	// 휴가 정보 불러오기
-//	public List<Vacation_occur> vacationInfo(int emp_no) {
-//    	
-//    	List<Vacation_occur> result = AttendMgtMapper.vacationInfo(emp_no);
-//    	System.out.println("vacation_log" + result);
-//		return result;
-//	}
+	// 휴가 사용기록 입사일기준 현재 분기에 승인된 연차만 불러오기
+	public List<Vacation_occur> vacationHistory(int emp_no) {
+    	
+    	List<Vacation_occur> result = AttendMgtMapper.vacationHistory(emp_no);
+    	System.out.println("vacationHistory" + result);
+		return result;
+	}
 }

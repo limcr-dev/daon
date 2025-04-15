@@ -97,7 +97,24 @@
 	<!-- 휴가 생성 내역 -->
 	<select id="vacation_log" parameterType="int" resultType="com.spring.daon.attendMgt.Vacation_occur">
 	     SELECT *
-		    FROM Vacation_occur
+		    FROM vacation_occur
 		    WHERE emp_no = #{emp_no}
+	</select>
+	
+	<!-- 휴가 사용기록 불러오기 -->
+	<select id="vacationHistory" parameterType="int" resultType="com.spring.daon.approve.Vacation_requests">
+	     SELECT vr.doc_no
+	     	  , vr.start_date 
+			  , vr.end_date 
+			  , vr.used_days
+			  , vr.vacation_type
+			  , vr.vacation_reason 
+		   FROM vacation_requests vr
+		   join documents d
+		   join employees e 
+		  WHERE d.doc_no =vr.doc_no
+		    AND d.emp_no = e.emp_no 
+		    AND vr.emp_no = #{emp_no}
+		    AND d.doc_status = 2
 	</select>
 </mapper>

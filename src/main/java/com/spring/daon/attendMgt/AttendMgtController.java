@@ -91,11 +91,11 @@ public class AttendMgtController {
 		return new ResponseEntity<>(service.vacation_log(emp_no), HttpStatus.OK);
 	}
 	
-	// 휴가 정보 불러오기
-//	@GetMapping("vacationInfo/{emp_no}")
-//	public ResponseEntity<?> vacationInfo(@PathVariable int emp_no) {
-//		System.out.println("<<< vacationInfo >>>" + emp_no);
-//		
-//		return new ResponseEntity<>(service.vacationInfo(emp_no), HttpStatus.OK);
-//	}
+	// 휴가 사용기록 입사일기준 현재 분기에 승인된 연차만 불러오기
+	@GetMapping("vacationHistory/{emp_no}")
+	public ResponseEntity<?> vacationHistory(@PathVariable int emp_no) {
+		System.out.println("<<< vacationHistory >>>" + emp_no);
+		
+		return new ResponseEntity<>(service.vacationHistory(emp_no), HttpStatus.OK);
+	}
 }
