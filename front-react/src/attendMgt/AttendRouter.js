@@ -11,7 +11,11 @@ const AttendRouter = () => {
                 <Route path="/" element={<AttendMgt />} />                  {/* 내 근태 현황 */}
                 <Route path="/attendance" element={<AttendMgt />} />                  {/* 내 근태 현황 */}
                 <Route path="/vacationMain" element={<VacationMain />} />               {/* 내 연차 내역 */}
+                <Route path="/teamstatus/:dept_no" element={<DeptStatus />} />               {/* 팀근태현황 */}
+                <Route path="/teamstats/:dept_no" element={<DeptStatus />} />               {/* 팀근태통계 */}
+
                 <Route path="/deptStatus/:dept_no" element={<DeptStatus />} />               {/* 부서근태현황 */}
+                <Route path="/deptStats/:dept_no" element={<DeptStatus />} />               {/* 부서근태현황 */}
             </Routes>
         </div>
     );
