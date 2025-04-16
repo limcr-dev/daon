@@ -10,7 +10,7 @@ const VacationHistory = (props) => {
   return (
     <Card className="attendCard">
       <Card.Header className="cardHeaderList">
-        <span style={{ fontWeight: '600', fontSize: '16px' }}>생성내역</span>
+        <span style={{ fontWeight: '600', fontSize: '16px' }}>사용내역</span>
       </Card.Header>
       <table className='board-table'>
         <thead>

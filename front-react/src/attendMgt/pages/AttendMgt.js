@@ -122,7 +122,7 @@ const AttendMgt = () => {
       <Leftbar />
       <Container>
 
-        <AttendMgtLeftbar emp_no={user.emp_no} />
+        <AttendMgtLeftbar user={user} />
 
         <Content style={{ marginTop: '20px' }}>
           <Header />

@@ -5,11 +5,12 @@ import {
   Sidebar,
   Sidenav,
   Text,
+  Modal
 } from 'rsuite';
 
 import AttendMgtTree from '../components/AttendMgtTree';
 import Clock from "react-live-clock";
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // icon
 import { faArrowRightFromBracket, faPersonWalking } from '@fortawesome/free-solid-svg-icons'
@@ -22,7 +23,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const AttendMgtLeftbar = (props) => {
 
   // 근태 정보
-  const emp_no = props.emp_no
+  const emp_no = props.user.emp_no
 
   const [todayAttendance, setTodayAttendance] = useState({
     b_num: '',
@@ -58,6 +59,11 @@ const AttendMgtLeftbar = (props) => {
         console.log('로그인정보를 확인해주세요', error);
       })
   }, [emp_no, todayAttendance])
+
+  const [open, setOpen] = React.useState(false);
+  const check_in_open = () => setOpen(true);
+  const check_in_Close = () => setOpen(false);
+
   // 출근 버튼 클릭시
   const check_in = () => {
     fetch("http://localhost:8081/attend/checkIn/" + emp_no + "/" + work_schedules.start_time, {
@@ -126,11 +132,30 @@ const AttendMgtLeftbar = (props) => {
         {/* 출퇴근 버튼 시작 */}
         <div style={{ gap: "10px", display: "flex" }}>
 
-          <Button style={{ backgroundColor: '#CECEF2' }} onClick={check_in}
+          <Button style={{ backgroundColor: '#CECEF2' }} onClick={check_in_open}
             disabled={!!todayAttendance.check_in_time}>  {/* 이미 누른 경우 비활성화 */}
             <FontAwesomeIcon icon={faPersonWalking} /> <p style={{ margin: '5px' }}>출근</p>
           </Button>
-
+          <Modal open={open} onClose={check_in_Close} style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+            <Modal.Header style={{width:"200px"}}>
+              <Modal.Title>출근</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              출근하시겠습니까?
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={check_in} appearance="primary">
+                Ok
+              </Button>
+              <Button onClick={check_in_Close} appearance="subtle">
+                Cancel
+              </Button>
+            </Modal.Footer>
+          </Modal>
           <Button style={{ backgroundColor: '#CECEF2' }} onClick={check_out}
             disabled={!!todayAttendance.check_out_time || !todayAttendance.check_in_time}> {/* 이미 누른 경우 비활성화 */}
             <FontAwesomeIcon icon={faArrowRightFromBracket} /> <p style={{ margin: '5px' }}>퇴근</p>
@@ -151,10 +176,11 @@ const AttendMgtLeftbar = (props) => {
       {/* header 끝 */}
 
       <Sidenav style={{ marginTop: '20px' }}>
-        <Sidenav.Body style={{ backgroundColor: '#f0f0f0', paddingLeft:"20px" }}>
-          <AttendMgtTree />
+        <Sidenav.Body style={{ backgroundColor: '#f0f0f0', paddingLeft: "20px" }}>
+          <AttendMgtTree user={props.user} />
         </Sidenav.Body>
       </Sidenav>
+
     </Sidebar>
   );
 };

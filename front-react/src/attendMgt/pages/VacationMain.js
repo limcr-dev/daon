@@ -11,7 +11,6 @@ import {
   Whisper,
 } from 'rsuite';
 
-
 // 공통 js
 import Leftbar from '../../common/pages/Leftbar';
 import Header from '../../common/pages/Header';
@@ -25,6 +24,8 @@ import AttendMgtLeftbar from './AttendMgtLeftbar';
 import VacationFooter from './VacationFooter';
 import { useUser } from '../../common/contexts/UserContext';
 import VacationHistory from './VacationHistory';
+import { getCurrentVacationCycle, getExpireDate, getUsedVacation } from '../components/VacationUtil';
+import { formatDate } from '../components/CommonUtil';
 
 const VacationMain = () => {
 
@@ -37,23 +38,14 @@ const VacationMain = () => {
 
   const [vacationHistoryList, setVacationHistoryList] = useState([]);
 
-  // 가장 빠른 만료 예정일 불러오기
-  let maxExpireDate = "";
-  // 잔여 연차 불러오기
-  let sumVacation = "";
-  if (vacation_occurList.length > 0) {
-    // 만료일이 현재 날짜 이후인 데이터만 추출
-    const futureVacations = vacation_occurList.filter(v => new Date(v.expire_date) > new Date());
-    // alert("test " + JSON.stringify(futureVacations));
-    // 현재 날짜 이후 목록중 가장 작은 값 추출
-    const maxExpire = Math.min(
-      ...futureVacations.map(v => new Date(v.expire_date).getTime())
-    );
-    sumVacation = futureVacations.map(v => v.available_days).reduce((sum, available_days) => sum + available_days, 0);
-    // 형식 변환
-    maxExpireDate = new Date(maxExpire).toISOString().slice(0, 10);
-  }
-  // 총 연차 불러오기
+  // 가장 빠른 만료 예정일, 잔여 연차, 총 연차 불러오기
+  const { maxExpireDate, remainVacation, createVacation } = getExpireDate(vacation_occurList);
+
+  // 입사일 기준 이번 주기 시작,끝 날짜 불러오기
+  const {start, end } = getCurrentVacationCycle(employees.hire_date);
+
+  // 사용연차 수 불러오기
+  const { useVacation } = getUsedVacation(vacationHistoryList, start, end);
 
   useEffect(() => {
     // 입사일 가져오기
@@ -92,14 +84,6 @@ const VacationMain = () => {
     endDate: currentDate.getFullYear() + "-12-31",
   });
 
-  // 날짜 형식 지정 ${yyyy}-${mm}-${dd}
-  const formatDate = (date) => {
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, '0'); // 월 2자리로 맞추기
-    const dd = String(date.getDate()).padStart(2, '0');      // 일 2자리로 맞추기
-    return `${yyyy}-${mm}-${dd}`;
-  };
-
   // 1번 데이트피커 선택
   const startDatePick = (startDatePick) => {
     if (startDatePick != null) {
@@ -119,11 +103,6 @@ const VacationMain = () => {
     }
   }
   // <<< 날짜 선택 끝 >>>
-
-  // 상단 오늘날짜
-  const today = new Date();
-  const dayOfWeek = today.toLocaleDateString("ko-KR", { weekday: "short" });
-  const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}일(${dayOfWeek})`;
 
   // 연차 목록
 
@@ -156,7 +135,7 @@ const VacationMain = () => {
     </Popover>
   )
   const vacationInfo3 = (
-    <Popover style={{ whiteSpace: "pre-line", padding: "10px" }} arrow={false} >
+    <Popover style={{ minWidth: "250px", whiteSpace: "pre-line", padding: "10px" }} arrow={false} >
       <div>가장 빠르게 만료되는 연차의 만료일입니다.</div>
     </Popover>
   )
@@ -171,7 +150,7 @@ const VacationMain = () => {
         <Leftbar />
         <Container>
 
-          <AttendMgtLeftbar emp_no={user.emp_no} />
+          <AttendMgtLeftbar user={user} />
 
           <Content style={{ marginTop: '20px' }}>
             <Header />
@@ -183,7 +162,17 @@ const VacationMain = () => {
                 {/* 상단 날짜 */}
                 <div style={{ display: 'flex' }}>
                   <b style={{ fontSize: "20px" }}>내 연차 내역</b>
-                  <div className='headCenter'><h5>{formattedDate}</h5></div><br /><br />
+                  <div className='headCenter'>
+                    <h5>
+                      {start} ~ {end}
+                      <Whisper
+                        placement="right"
+                        trigger="click"
+                        speaker={vacationInfo2}
+                      > 💡
+                      </Whisper>
+                    </h5>
+                  </div><br/><br/>
                 </div>
 
                 {/* 상단 연차 내역 시작 */}
@@ -196,19 +185,11 @@ const VacationMain = () => {
                         speaker={vacationInfo}
                       > 💡
                       </Whisper>
-                      <p>0</p>
+                      <p>{createVacation}</p>
                     </div>
-
-                    <div>총 연차
-                      <Whisper
-                        placement="right"
-                        trigger="click"
-                        speaker={vacationInfo2}
-                      > 💡
-                      </Whisper>
-                      <p>17</p></div>
-                    <div>사용 연차<br /> <p>3</p></div>
-                    <div>잔여 연차<br /> <p>{sumVacation}</p></div>
+                    <div>사용 연차<br /> <p>{useVacation}</p></div>
+                    {/* 결재승인 시 사용가능연차 업데이트 완료 후{remainVacation}로 바꿀 예정 */}
+                    <div>잔여 연차<br /> <p>{createVacation - useVacation}</p></div> 
                     <div>만료 예정
                       <Whisper
                         placement="right"
