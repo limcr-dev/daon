@@ -1,0 +1,78 @@
+.default-button {
+    background-color: white;
+    color: black;
+    border: 1px solid f0eded;
+    padding: 10px;
+    
+    /* border-radius: 5px; */
+  }
+  
+  .clicked-button {
+    background-color: #e8d4f2 !important; /* 클릭했을 때 색상 변경 */
+    border: 1px solid #e4d1ed !important;
+    
+    color: black;
+    padding: 10px;
+    /* border-radius: 5px; */
+    box-shadow : 5,5,5;
+    
+  }
+
+  .comp-table {
+    border : 1px solid lightgray;
+    border-collapse: collapse;
+    
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+  }
+  .comp-th{
+    border : 1px solid lightgray;
+    border-collapse: collapse;
+    background-color: #f0eded;
+    padding: 2px;
+    text-align: center;
+    width:"40px";
+  }
+  
+  .comp-td{
+    border : 1px solid lightgray;
+    border-collapse: collapse;
+    padding: 2px;
+    text-align: center;
+  }
+
+
+  .subutt{
+    width: 180px;
+    border: 2px solid #CCCCFB;
+  }
+  .subutt:hover{
+    background-color: #d2d2fc;
+  }
+
+  .subutt1{
+    margin-left: 20px;
+    width: 140px;
+    border: 2px solid #CCCCFB;
+  }
+  .subutt1:hover{
+    background-color: #d2d2fc;
+  }
+  
+
+  .subno{
+    /* width: 30px;
+    height: 30px; */
+    border : 1px solid lightgray; 
+    background-color: #f0eded;
+  }
+
+  .line{
+    line-height: 2.1;
+  }
+  
+  .linenomal{
+    font-size: 5px;
+    line-height: normal;
+  }

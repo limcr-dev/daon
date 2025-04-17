@@ -26,4 +26,23 @@ public interface BoardMapper {
 	
 	// 공지사항 삭제
 	public int deleteNotice(int notice_no);
+	
+	// 자료 목록
+	public List<Library> libraryList();
+	
+	// 자료 등록
+	public int insertLibrary(Library library);
+	
+	// 자료 상세 페이지
+	public Library libraryDetail(int library_no);
+	
+	// 자료 조회수 증가
+	public void libraryViews(int library_no);
+	
+	// 자료 수정
+	public int updateLibrary(Library library);
+	
+	// 자료 삭제
+	public String deleteLibrary(int library_no) ;
+	
 }

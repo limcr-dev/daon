@@ -65,4 +65,48 @@ public class BoardController {
 		System.out.println("<<< updateNotice >>> ");
 		return new ResponseEntity<>(service.updateNotice(notice), HttpStatus.OK);
 		}
+	
+	// 자료 목록 조회
+	@GetMapping("/library")
+	public ResponseEntity<?> libraryList() {
+		System.out.println("<<< libraryList >>>");
+		return new ResponseEntity<>(service.libraryList(), HttpStatus.OK);
+	}
+		
+	// 자료 상세 페이지
+	@GetMapping("/library/{library_no}")
+	public ResponseEntity<?> libraryDetail(@PathVariable int library_no){
+		System.out.println("<<< libraryDetail >>> ");
+		System.out.println("<<< library_no >>> " + library_no);
+					
+		Library library = service.libraryDetail(library_no);
+		if(library != null) {
+			service.libraryViews(library_no);
+		}
+		return new ResponseEntity<>(library, HttpStatus.OK);
+	}
+	
+	// 자료 삭제(notice_delete 컬럼 update로 처리)
+	@DeleteMapping("/library/{library_no}")
+	public ResponseEntity<?> deleteLibrary(@PathVariable int library_no){
+		System.out.println("<<< deleteLibrary >>> ");
+		
+		return new ResponseEntity<>(service.deleteLibrary(library_no), HttpStatus.OK);
+	}
+	
+	// 자료 작성
+	@PostMapping("/library")
+	public ResponseEntity<?> insertLibrary(@RequestBody Library library){
+		System.out.println("<<< insertLibrary >>> ");
+		
+		return new ResponseEntity<>(service.insertLibrary(library), HttpStatus.CREATED);
+	}
+	
+	// 자료 수정
+	@PutMapping("/library/{library_no}")
+	public ResponseEntity<?> updateLibrary(@RequestBody Library library){
+		System.out.println("<<< updateLibrary >>> ");
+		return new ResponseEntity<>(service.updateLibrary(library), HttpStatus.OK);
+	}
+		
 }

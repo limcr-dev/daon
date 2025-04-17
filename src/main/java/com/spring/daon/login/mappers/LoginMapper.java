@@ -1,4 +1,4 @@
-package com.spring.daon.login;
+package com.spring.daon.login.mappers;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -9,7 +9,10 @@ import com.spring.daon.hrMgt.Employees;
 @Repository
 public interface LoginMapper {
 	
-	// 사용자 사내 이메일, 비밀번호 조회
-	public Employees checkIdPwd(Employees dto); 	
+	public Employees findByEmp_email(String emp_email);
+	
+	public Employees toEmployees(Employees dto); 
+	
+	public Employees findByEmp_no(int emp_no); 	
 
 }

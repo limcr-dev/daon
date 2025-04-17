@@ -37,7 +37,7 @@ const data = [
 const ApproveMenu = () => {
     return(
       <div className="height_change">
-        <Tree data={data} defaultExpandAll h-full/>
+        <Tree data={data} defaultExpandAll className='h-full'/>
       </div>
 );
 };

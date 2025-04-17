@@ -1,0 +1,52 @@
+.attendContainer{
+    min-height: 100vh;
+    width: 100%;
+}
+
+.attendCard{
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.cardHeaderContents{
+    min-width: 800px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+.cardHeaderContents div {
+    border-right: 2px solid #EAEAEA; 
+    height: 50px; 
+    width:20%; 
+    text-align:center;
+    vertical-align:middle;
+}
+
+.cardHeaderContents div:last-child {
+    border-right: none; /* 마지막 div에 border-right 제거 */
+  }
+
+  .cardHeaderContents div p{
+    font-Size:24px;
+    color:#7888f3
+}
+
+.cardHeaderList{
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+
+.headCenter{
+    display: flex;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}

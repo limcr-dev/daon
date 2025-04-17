@@ -28,8 +28,7 @@ function Weather() {
         "구름많음": process.env.PUBLIC_URL + "/image/weather/many_cloudy.png",
         "비": process.env.PUBLIC_URL + "/image/weather/rainy.png",
         "눈": process.env.PUBLIC_URL + "/image/weather/snowy.png",
-        "구름많고 한때 비": process.env.PUBLIC_URL + "/image/weather/cloudy_and_rainy.png",
-        "흐리고 비": process.env.PUBLIC_URL + "/image/weather/rainy.png"
+        "구름많고 한때 비": process.env.PUBLIC_URL + "/image/weather/cloudy_and_rainy.png"
     };
 
     const formatWeatherData = (text) => {
@@ -38,7 +37,7 @@ function Weather() {
         const date = dateMatch ? dateMatch[1] : "날짜 없음";
 
         // 앞에 날씨
-        const morningMatch = text.match(/\d+%\s*(맑음|흐림|구름많음|비|눈|구름많고 한때 비|흐리고 비)/);  // 날씨 이미지가 많아서 추후 추가예정..
+        const morningMatch = text.match(/\d+%\s*(맑음|흐림|구름많음|비|눈|구름많고 한때 비)/);  // 날씨 이미지가 많아서 추후 추가예정..
         const morningCondition = morningMatch ? morningMatch[1] : null;
 
         // 최저/최고 기온 추출

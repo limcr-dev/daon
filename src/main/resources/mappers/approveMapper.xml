@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+     
+<mapper namespace="com.spring.daon.approve.ApproveMapper">
+
+	<!-- 결재 진행중 목록 조회 -->
+	<select id="getDocumentList" parameterType="int" resultType="com.spring.daon.approve.Documents">
+		SELECT * FROM documents
+		 WHERE doc_status = #{status}
+		 ORDER BY doc_reg_date DESC    
+	</select>
+	
+	<!--  결재 진행중 목록 조회
+	<select id="getCompleteList" resultType="com.spring.daon.approve.Documents">
+		SELECT * FROM documents
+		 WHERE doc_status = 1
+		 ORDER BY doc_reg_date DESC 
+	</select> -->
+ 
+	
+</mapper>   
+
