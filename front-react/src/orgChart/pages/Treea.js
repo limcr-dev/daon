@@ -59,7 +59,8 @@ const Treea = () => {
   return (
     <div>
       <h3>조직도</h3>
-      <Tree data={treeData} defaultExpandAll />
+      <Tree data={treeData} showIndentLine defaultExpandAll />
+       
     </div>
   );
 };
