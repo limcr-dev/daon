@@ -11,15 +11,45 @@
 		FROM employees
 		WHERE leave_date IS NULL
 		ORDER BY emp_no ASC
+		LIMIT #{size} OFFSET #{startRow}
 	</select>
 	
 	<!-- 주소록 검색(검색 시 조회) -->
-	<!-- <select id="searchPerson">
-		SELECT emp_no, emp_name, emp_email, emp_ext_tel, position_id, dept_no
+	<select id="searchPerson" resultType="com.spring.daon.hrMgt.Employees">
+		SELECT *
 		FROM employees
-		WHERE emp_no LIKE CONCAT('%', #{emp_no}, '%')
-		   OR emp_name LIKE CONCAT('%', #{emp_name}, '%')
-		   OR emp_email LIKE CONCAT('%', #{emp_email}, '%')
+		WHERE leave_date IS NULL
+		AND (emp_no LIKE CONCAT('%', #{search}, '%')
+		   	 OR emp_name LIKE CONCAT('%', #{search}, '%')
+		    )
+		ORDER BY emp_no ASC
+		LIMIT #{size} OFFSET #{startRow}
+	</select>
+	
+	<!-- 검색 + 페이징 -->
+	<!-- <select id="searchPersonPage" resultType="com.spring.daon.hrMgt.Employees">
+		SELECT *
+		FROM employees
+		WHERE leave_date IS NULL
+		  AND (emp_no LIKE CONCAT('%', #{search}, '%')
+		       OR emp_name LIKE CONCAT('%', #{search}, '%'))
+		ORDER BY emp_no ASC
+		LIMIT #{size} OFFSET #{startRow}
 	</select> -->
+	
+	<!-- 주소록 갯수 -->
+	<select id="abCount" resultType="int"> 
+		SELECT COUNT(*)
+		FROM employees 
+		WHERE leave_date IS NULL
+	</select>
+	
+	<select id="abCountSearch" resultType="int">
+		SELECT COUNT(*)
+		FROM employees
+		WHERE leave_date IS NULL
+		AND (emp_no LIKE CONCAT('%', #{search}, '%')
+		     OR emp_name LIKE CONCAT('%', #{search}, '%'))
+	</select>
 	
 </mapper>
