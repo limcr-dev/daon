@@ -1,0 +1,40 @@
+
+
+
+  /* 주단위로 상단만 보는 캘린더 백업 */
+  /* <FullCalendar
+    plugins={[dayGridPlugin]}
+    initialView="dayGridWeek" // 주간 뷰 사용
+    headerToolbar={
+        {
+            start: 'prev',
+            center: 'title',
+            end: 'next'
+        }
+    }
+    locales={allLocales}  // 언어설정 가져오기
+    locale="kr"   // 한국어로 설정
+    dayHeaders={false}
+  /> */
+
+  /* 날짜버튼 아래 선 제거 */
+.DeptCalendar .fc-scrollgrid{
+    display: none !important;
+  }
+
+  /* 제목 (날짜 타이틀) 크기 조절 */
+.DeptCalendar .fc-toolbar-title {
+    font-size: 18px;  /* 원하는 크기로 */
+    font-weight: bold;
+  }
+  
+  /* 버튼 크기 조절 */
+  .DeptCalendar .fc-button {
+    font-size: 14px;   /* 글씨 크기 */
+    padding: 4px 10px; /* 버튼 크기 */
+  }
+  
+  /* 버튼 아이콘 (prev/next) 크기 조절 */
+  .DeptCalendar .fc .fc-button .fc-icon {
+    font-size: 14px;
+  }

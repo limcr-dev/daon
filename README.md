@@ -82,6 +82,10 @@
     6) react suite
         npm install rsuite --save
 
+    7) colorPicker
+        npm install @adobe/react-spectrum
+        npm install @react-spectrum/color @react-stately/color @react-aria/color    
+        
 #설치 후 package.json 파일에서 dependcy 버전 확인
     - "react": "^18.3.1",
     - "react-dom": "^18.3.1"

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.daon.hrMgt.HRMgtMapper">
+   
+   <select id="employeeList" resultType="com.spring.daon.hrMgt.Employees">
+   SELECT * 
+      FROM employees 
+    ORDER BY emp_no
+   </select>
+   
+   
+   <!-- 사원 등록 -->
+   <!-- work_type_no 제대로 안 들어가는 것 수정필요 -->
+    <insert id="insertEmployee" parameterType="com.spring.daon.hrMgt.Employees">
+        INSERT INTO employees 
+        (emp_name, emp_eng_name, emp_email, emp_ext_email, emp_pwd, emp_gender, emp_birthday, emp_mobile, emp_ext_tel, 
+         position_id, role_id, dept_no, emp_status, emp_type, emp_img, hire_date, leave_date, admin_type, work_type_no, token)
+        VALUES 
+        (
+            #{emp_name}, 
+            #{emp_eng_name}, 
+            #{emp_email}, 
+            #{emp_ext_email}, 
+            #{emp_pwd}, 
+            #{emp_gender}, 
+            #{emp_birthday}, 
+            #{emp_mobile}, 
+            #{emp_ext_tel}, 
+            #{position_id}, 
+            #{role_id}, 
+            #{dept_no}, 
+            #{emp_status}, 
+            #{emp_type}, 
+            #{emp_img}, 
+            #{hire_date}, 
+            #{leave_date}, 
+            #{admin_type},
+            1,	
+            null
+        )
+    </insert>
+
+
+
+   <select id="findByEmployee" resultType="com.spring.daon.hrMgt.Employees">
+   SELECT * 
+      FROM employees 
+     WHERE emp_no = #{emp_no}
+   </select>
+   
+   
+   <update id="updateEmployee" parameterType="com.spring.daon.hrMgt.Employees">
+   UPDATE employees 
+      SET emp_name = #{emp_name},
+            emp_eng_name = #{emp_eng_name},
+            emp_email = #{emp_email},
+            emp_ext_email = #{emp_ext_email},
+            emp_pwd = #{emp_pwd},
+            emp_gender = #{emp_gender},
+            emp_birthday = #{emp_birthday},
+            emp_mobile = #{emp_mobile},
+            emp_ext_tel = #{emp_ext_tel},
+            position_id = #{position_id},
+            role_id = #{role_id},
+            dept_no = #{dept_no},
+            emp_status = #{emp_status},
+            emp_type = #{emp_type},
+            emp_img = #{emp_img},
+            hire_date = #{hire_date},
+            leave_date = #{leave_date},
+            admin_type = #{admin_type},
+            work_type_no = #{work_type_no}
+    WHERE emp_no = #{emp_no}   
+   </update>
+   
+   
+   <delete id="deleteEmployee" parameterType="int">
+   DELETE FROM employees
+    WHERE emp_no = #{emp_no}
+   </delete>
+   
+      
+
+</mapper>

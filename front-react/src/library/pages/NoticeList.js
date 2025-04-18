@@ -60,7 +60,7 @@ const NoticeList = () => {
                         {/* 제목 클릭 시, 공지사항 상세 페이지로 이동 */}
                         <td><Link to={"/board/noticeDetail/" + notice.notice_no}>{notice.notice_title}</Link></td>
                         <td>{notice.emp_no}</td>
-                        <td>{notice.notice_reg_date}</td>
+                        <td>{new Date(notice.notice_reg_date).toLocaleDateString()}</td>
                         <td>{notice.notice_views}</td>
                       </tr>
 

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 const data = [
   {
     label: '인적 평가',
-    value: 'evaluation1',
+    value: 'evalation1',
     children: [ 
       { label: '자기 평가', value: 'evalque' },
       { label: '동료 평가', value: 'home' },

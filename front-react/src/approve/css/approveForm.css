@@ -1,0 +1,121 @@
+/* approveForm.css에 추가할 스타일 */
+
+.right-sidebar {
+  border-left: 1px solid #e5e5e5;
+  padding-left: 15px;
+  height: 100%;
+  background-color: #f9f9f9;
+}
+
+.sidebar-panel {
+  margin-top: 15px;
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+.radio-group {
+  display: flex;
+  gap: 15px;
+}
+
+.form-help-text {
+  font-size: 12px;
+  color: #888;
+  margin-top: 5px;
+}
+
+/* 결재선 탭 스타일 */
+.approver-panel {
+  padding: 15px 10px;
+}
+
+.approver-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.approver-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.approver-avatar {
+  margin-right: 12px;
+  background-color: #4d88ff;
+  color: white;
+}
+
+.approver-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.approver-name {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.approver-dept {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.approver-status {
+  font-size: 12px;
+  color: #4d88ff;
+}
+
+/* 폼 스타일 */
+.rs-form-group {
+  margin-bottom: 15px;
+}
+
+.rs-form-control-label {
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+/* 셀렉트박스 스타일 */
+.rs-picker-select, .rs-picker-input {
+  width: 100%;
+}
+
+.rs-picker-toggle-placeholder, 
+.rs-picker-toggle-value {
+  color: #333;
+}
+
+.rs-picker-toggle {
+  background-color: #fff !important;
+  border: 1px solid #ddd !important;
+}
+
+/* 체크박스 스타일 */
+.rs-checkbox-checker > label {
+  font-size: 14px;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 992px) {
+  .right-sidebar {
+    display: block;
+    border-left: none;
+    padding-left: 0;
+    margin-top: 20px;
+  }
+  
+  .document-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .document-title, .document-search, .user-actions {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}

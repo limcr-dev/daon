@@ -83,7 +83,7 @@ const NoticeDetail = (props) => {
                                     </tr>
                                     <tr>
                                         <th style={{ width: '20%' }}>작성일</th>
-                                        <td>{notice.notice_reg_date}</td>
+                                        <td>{new Date(notice.notice_reg_date).toLocaleDateString()}</td>
                                         <th style={{ width: '20%' }} >조회수</th>
                                         <td>{notice.notice_views}</td>
                                     </tr>

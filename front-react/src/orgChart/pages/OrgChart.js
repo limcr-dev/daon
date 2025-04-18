@@ -5,6 +5,7 @@ import {
 } from 'rsuite';
 
 import Leftbar from '../../common/pages/Leftbar';
+import Treea from './Treea';
 
 const OrgChart = () => {
   return (
@@ -14,7 +15,7 @@ const OrgChart = () => {
         <Container>
           <Content>organization chart
             <Content>
-              <img src="/image/organization_profile.png" alt="Daon" style={{ width: '800px', height: 'auto' }} />
+              <Treea />
             </Content>
           </Content>
         </Container>

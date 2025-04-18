@@ -40,7 +40,21 @@
     cursor: default !important;
 }
 
-/* 기본 테마 무시 */
-/* .attendCalendar .fc-theme-standard .fc-button {
-    border-color: #b1b1d3 !important;
-} */
+/* 캘린더카드 css */
+.leftCalendar{
+    padding-bottom: 16px;
+    min-width: 100px;
+    display: flex;
+    align-items: center;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+.rightCalendar{
+    padding-bottom: 16px;
+    min-width: 100px;
+    display: flex;
+    align-items: center;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    background-color: transparent !important; 
+}

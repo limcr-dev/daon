@@ -4,15 +4,22 @@ import { Button, Card, Col, Container, Content, Divider, Row } from 'rsuite';
 import Leftbar from '../../common/pages/Leftbar';
 import BoardLeftbar from './BoardLeftbar';
 import Header from '../../common/pages/Header';
+import { useUser } from '../../common/contexts/UserContext';
 
-const InsertNotice = (props) => {
+const InsertNotice = () => {
 
     // 링크 이동을 위해 선언
     const navigate = useNavigate();
 
+    // UserContext에서 사용자 정보 가져오기
+    const { user } = useUser();
+
     // useState를 사용해서 notice 변수를 초기화해줌
     const [notice, setNotice] = useState({
-        emp_no: '',
+        emp_no: user ? user.emp_no : '',
+        emp_name: user ? user.emp_name : '',
+        position_id: user ? user.position_id : '',
+        dept_no: user ? user.dept_no : '',
         notice_title: '',
         notice_content: ''
     });
@@ -51,7 +58,8 @@ const InsertNotice = (props) => {
         fetch("http://localhost:8081/board/notice", {
             method: "POST", // @PostMapping 사용
             headers: {
-                "Content-Type": "application/json;charset=utf-8"
+                "Content-Type": "application/json;charset=utf-8",
+                "Authorization": `Bearer ${localStorage.getItem("auth_token")}` // JWT 토큰 포함
             },
             body: JSON.stringify(notice)
 
@@ -108,7 +116,13 @@ const InsertNotice = (props) => {
                                     <tr>
                                         <th style={{ width: '20%' }}>작성자</th>
                                         <td style={{ width: '80%' }} colSpan={3}>
-                                            <input type="text" name="emp_no" style={{ width: '100%' }} onChange={changeValue} placeholder='작성자를 입력하세요.' />
+                                            {/* 현재 로그인한 사용자 이름을 표시하고 읽기 전용으로 설정 */}
+                                            <input
+                                                type="text"
+                                                value={user ? user.emp_name : '로그인 필요'}
+                                                style={{ width: '100%' }}
+                                                readOnly
+                                            />
                                         </td>
                                     </tr>
 
