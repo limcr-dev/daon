@@ -11,7 +11,7 @@ const HrMgtRouter = () => {
             <Route path="/:emp_no" element={<EmployeeDetail />} />
             {/* <Route path="/organizationChart" element={<OrganizationChart/>}/> */}
         </Routes>
-    );
+    )
 };
 
 export default HrMgtRouter;

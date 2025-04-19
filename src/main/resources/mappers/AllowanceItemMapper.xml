@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.daon.salary.allowance.AllowanceItemMapper">
+
+    <!-- 전체 목록 조회 -->
+    <select id="findAll" resultType="com.spring.daon.salary.allowance.AllowanceItem">
+        SELECT * FROM allowance_items
+        ORDER BY id
+    </select>
+
+    <!-- 수당 항목 등록 -->
+    <insert id="insert" parameterType="com.spring.daon.salary.allowance.AllowanceItem">
+        INSERT INTO allowance_items
+        (name, fixed_amount, is_fixed, is_tax_free, tax_free_type, tax_free_limit, is_active)
+        VALUES
+        (#{name}, #{fixed_amount}, #{is_fixed}, #{is_tax_free}, #{tax_free_type}, #{tax_free_limit}, #{is_active})
+    </insert>
+
+    <!-- 수당 항목 수정 -->
+    <update id="update" parameterType="com.spring.daon.salary.allowance.AllowanceItem">
+        UPDATE allowance_items
+        SET name = #{name},
+            fixed_amount = #{fixed_amount},
+            is_fixed = #{is_fixed},
+            is_tax_free = #{is_tax_free},
+            tax_free_type = #{tax_free_type},
+            tax_free_limit = #{tax_free_limit},
+            is_active = #{is_active}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 수당 항목 삭제 -->
+    <delete id="delete" parameterType="int">
+        DELETE FROM allowance_items
+        WHERE id = #{id}
+    </delete>
+
+</mapper>
