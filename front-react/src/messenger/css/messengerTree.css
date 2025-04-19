@@ -9,7 +9,7 @@ body {
     padding: 0;
   }
   
-  .approve-list {
+  .board-list {
     max-width: 1200px;
     margin: 20px auto;
     padding: 20px;
@@ -18,31 +18,24 @@ body {
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
   }
   
-  .approve-table {
+  .board-table {
     width: 100%;
     border-collapse: collapse;
     text-align: left;
   }
   
-  .approve-table th,
-  .approve-table td {
+  .board-table th,
+  .board-table td {
     padding: 12px 16px;
     border-bottom: 1px solid #e0e0e0;
   }
   
-  .approve-table th {
+  .board-table th {
     background-color: #f7f7f7;
     color: #333;
     font-weight: 500;
   }
   
-  .approve-table td {
+  .board-table td {
     color: #666;
   }
-  
-  .approve-table tr:hover {
-    background-color: #f0f0f0;
-    cursor: pointer;
-  }
-
-  
