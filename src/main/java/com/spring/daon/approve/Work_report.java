@@ -1,8 +1,6 @@
 package com.spring.daon.approve;
 
 import java.sql.Date;
-import java.sql.Time;
-import java.time.LocalDate;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -22,17 +20,14 @@ import lombok.ToString;
 @ToString
 @Builder
 @Entity   
-@Table(name="documents")
-public class Documents {
+@Table(name="work_report")
+public class Work_report {
 	@Id
 	private int doc_no;
-    private int doc_form;
-    private int emp_no;
-    private int dept_no;
-    private String doc_title;
+	private int emp_no;
+	private String title;
+	private String content;
+	private int coop_dept_no;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date doc_reg_date;
-    private int doc_status;
-    private String doc_reject_reason;
-    private char doc_urgent;
+	private Date execution_date;
 }

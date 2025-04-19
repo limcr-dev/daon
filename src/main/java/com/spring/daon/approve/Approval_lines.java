@@ -22,7 +22,7 @@ import lombok.ToString;
 @ToString
 @Builder
 @Entity   
-@Table(name="vacation_requests")
+@Table(name="approval_lines")
 public class Approval_lines {
 	@Id
 	private int line_id;

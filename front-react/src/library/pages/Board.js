@@ -20,7 +20,7 @@ const Board = () => {
 
   const [noticeList, setNoticeList] = useState([]);
   const [libraryList, setLibraryList] = useState([]);
-  
+
   // noticeList 링크로 들어왔을 때 처음 실행되는 부분
   // dependency가 빈 배열[]이기 때문에 처음 한 번만 실행됨
   useEffect(() => {
@@ -106,6 +106,12 @@ const Board = () => {
                 </Card.Header>
                 <table className='board-table'>
                   <tr>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>작성자</th>
+                    <th>작성일</th>
+                    <th>조회수</th>
+                  </tr>
                     {/* .map() 함수를 사용하여 libraryList 안의 값을 하나씩 꺼냄 */}
                     {/* slice(0,5) : 배열의 0번째 인덱스부터 5개의 요소만 가져옴 */}
                     {libraryList.slice(0, 5).map(library => (
@@ -113,12 +119,11 @@ const Board = () => {
                         <td>{library.library_no}</td>
                         {/* 제목 클릭 시, 자료 상세 페이지로 이동 */}
                         <td><Link to={"/board/libraryDetail/" + library.library_no}>{library.library_title}</Link></td>
-                      <td>{library.emp_no}</td>
-                      <td>{library.library_reg_date}</td>
-                      <td>{library.library_views}</td>
+                        <td>{library.emp_no}</td>
+                        <td>{library.library_reg_date}</td>
+                        <td>{library.library_views}</td>
                       </tr>
                     ))}
-                  </tr>
                 </table>
               </Card>
             </Col>
