@@ -15,9 +15,10 @@ import Header from '../../common/pages/Header';
 import "../css/approve.css";
 import { request } from '../../common/components/helpers/axios_helper';
 import { Link } from 'react-router-dom';
+import { useUser } from '../../common/contexts/UserContext';
 
 const Approve = () => {
-
+  const { user } = useUser();
   const [proceedList, setProceedList] = useState([]);
 
   const [completeList, setCompleteList] = useState([]);
@@ -25,7 +26,7 @@ const Approve = () => {
   useEffect(() => {
     try {
       const fetchData = async () => {
-        const response = await request("GET", "/approve/documents/2");
+        const response = await request("GET", "/approve/documents/2/" + parseInt(user.emp_no));
         if (response && response.data) {
           // 배열인지 확인하고 설정
           const data = Array.isArray(response.data) ? response.data : [];
@@ -41,7 +42,7 @@ const Approve = () => {
   useEffect(() => {
     try {
       const fetchData = async () => {
-        const response = await request("GET", "/approve/documents/1");
+        const response = await request("GET", "/approve/documents/1/" + parseInt(user.emp_no));
         if (response && response.data) {
           // 배열인지 확인하고 설정
           const data = Array.isArray(response.data) ? response.data : [];
@@ -142,17 +143,22 @@ const Approve = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {proceedList.slice(0, 5).map(doc => (
-                      <tr key={doc.notice_no}>
-                        <td>{doc.doc_reg_date}</td>
-                        <td>{doc.doc_form}</td>
-                        <td><Link to={"/approve/documentDetail/" + doc.doc_no}>{doc.doc_title}</Link></td>
-                        <td>첨부</td>
-                        <td>{doc.doc_urgent}</td>
-                        <td>{doc.doc_status}</td>
+                    {proceedList.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} align='center'>진행 중인 결재 문서가 존재하지 않습니다.</td>
                       </tr>
+                    ) : (
+                      proceedList.slice(0, 5).map(doc => (
+                        <tr key={doc.notice_no}>
+                          <td>{doc.doc_reg_date}</td>
+                          <td>{doc.doc_form}</td>
+                          <td><Link to={"/approve/documentDetail/" + doc.doc_no}>{doc.doc_title}</Link></td>
+                          <td>첨부</td>
+                          <td>{doc.doc_urgent}</td>
+                          <td>{doc.doc_status}</td>
+                        </tr>
 
-                    ))}
+                      )))}
 
                   </tbody>
 
@@ -179,17 +185,22 @@ const Approve = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {completeList.slice(0, 5).map(doc => (
-                      <tr key={doc.notice_no}>
-                        <td>{doc.doc_reg_date}</td>
-                        <td>{doc.doc_form}</td>
-                        <td><Link to={"/approve/documentDetail/" + doc.doc_no}>{doc.doc_title}</Link></td>
-                        <td>첨부</td>
-                        <td>{doc.doc_urgent}</td>
-                        <td>{doc.doc_status}</td>
+                  {completeList.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} align='center'>완료된 결재 문서가 존재하지 않습니다.</td>
                       </tr>
+                    ) : (
+                      completeList.slice(0, 5).map(doc => (
+                        <tr key={doc.notice_no}>
+                          <td>{doc.doc_reg_date}</td>
+                          <td>{doc.doc_form}</td>
+                          <td><Link to={"/approve/documentDetail/" + doc.doc_no}>{doc.doc_title}</Link></td>
+                          <td>첨부</td>
+                          <td>{doc.doc_urgent}</td>
+                          <td>{doc.doc_status}</td>
+                        </tr>
 
-                    ))}
+                      )))}
 
                   </tbody>
 
