@@ -1,6 +1,5 @@
 package com.spring.daon.attendMgt;
 
-import java.sql.Date;
 import java.sql.Time;
 import java.util.Collections;
 
@@ -47,7 +46,6 @@ public class AttendMgtController {
 		 else {
 			 return new ResponseEntity<>(result, HttpStatus.OK);
 		 }
-		
 	}
 	
 	// 근무 유형 조회

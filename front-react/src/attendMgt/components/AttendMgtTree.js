@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const data = [
   {
     label: "근태관리",
-    value: "",
+    value: "attendanceMgt",
     children: [
       { label: "내 근태 현황", value: "attendance" },
       { label: "내 연차 내역", value: "vacationMain" },
@@ -13,7 +13,7 @@ const data = [
   },
   {
     label: "팀 근태관리",
-    value: "team",
+    value: "teamattendanceMgt",
     children: [
       { label: "팀 근태 현황", value: "teamstatus/1" },
       { label: "팀 연차 내역", value: "teamstats/1" },
@@ -21,27 +21,29 @@ const data = [
   },
   {
     label: "부서 근태관리",
-    value: "department",
+    value: "deptattendanceMgt",
     children: [
+      { label: "부서 근태 현황", value: "deptStatus/1" },
+      { label: "부서 연차 내역", value: "deptStats/1" },
       {
-        label: "1팀",
-        value: "1team",
+        label: "팀명",
+        value: "teamattendanceMgt/1",
         children: [
           { label: "팀 근태현황", value: "teamstatus/1" },
           { label: "팀 근태통계", value: "teamstats/1" },
         ],
       },
       {
-        label: "2팀",
-        value: "2team",
+        label: "팀명",
+        value: "teamattendanceMgt/1",
         children: [
           { label: "팀 근태현황", value: "teamstatus/1" },
           { label: "팀 근태통계", value: "teamstats/1" },
         ],
       },
       {
-        label: "3팀",
-        value: "3team",
+        label: "팀명",
+        value: "teamattendanceMgt/1",
         children: [
           { label: "팀 근태현황", value: "teamstatus/1" },
           { label: "팀 근태통계", value: "teamstats/1" },
@@ -52,11 +54,11 @@ const data = [
 
   {
     label: "전체 부서 근태관리",
-    value: "allDepartment",
+    value: "allDepartmentMgt",
     children: [
       {
         label: "경영부",
-        value: "central1",
+        value: "deptStatusMgt/10",
         children: [
           { label: "경영부 근태현황", value: "deptStatus/10" },
           { label: "경영부 근태통계", value: "deptStats/10" },
@@ -64,7 +66,7 @@ const data = [
       },
       {
         label: "개발부",
-        value: "central2",
+        value: "deptStatusMgt/20",
         children: [
           { label: "개발부 근태현황", value: "deptStatus/20" },
           { label: "개발부 근태통계", value: "deptStats/20" },
@@ -72,7 +74,7 @@ const data = [
       },
       {
         label: "영업부",
-        value: "central3",
+        value: "deptStatusMgt/30",
         children: [
           { label: "영업부 근태현황", value: "deptStatus/30" },
           { label: "영업부 근태통계", value: "deptStats/30" },
@@ -115,13 +117,13 @@ const updateLabels = (data, admin_type, dept_no) => {
   };
 
   const deptName = deptMap[dept_no];
-  
-  const teamNo = teamMap[dept_no]|| [];
+
+  const teamNo = teamMap[dept_no] || [];
   const teamNames = teamNo.map(No => deptMap[No]);
 
   // 인사, 급여 관리자
   if ([2, 3, 4].includes(admin_type)) {
-    return data.filter(item => item.label !== '팀 근태관리' && item.label !== '부서 근태관리');
+    return data.filter(item => item.label !== '팀 근태관리' && item.label !== '부서 근태관리'); // 팀 근태관리와 부서 근태관리 제외
   }
 
   return data
@@ -138,10 +140,10 @@ const updateLabels = (data, admin_type, dept_no) => {
         const editChildren = item.children?.map(child => {
           return {
             ...child,
-            label: child.label.replace('팀',`${deptName}`),
+            label: child.label.replace('팀', `${deptName}`),
             value: child.value.replace('1', `${dept_no}`)
           }
-        })  
+        })
         return {
           ...item,
           label: `${deptName} 근태관리`,
@@ -151,16 +153,34 @@ const updateLabels = (data, admin_type, dept_no) => {
 
       // 부서장 일 때
       if (admin_type === 5 && item.label === "부서 근태관리") {
-        const editChildren = item.children?.map(child => {
+        const editChildren = item.children?.map((child, index) => {
+          // 처음 2개 children 요소에 부서별 근태관리,현황 replace
+          if (index === 0 || index === 1) {
+            return {
+              ...child,
+              label: child.label.replace('부서', `${deptName}`),
+              value: child.value.replace('1', `${dept_no}`)
+            }
+          }
+          // 그외 나머지 children 요소에 팀별 근태관리,현황 replace
+          const editChildren2 = child.children?.map((child) => {
+            return {
+              ...child,
+              label: child.label.replace('팀', `${teamNames[index - 2]}`),
+              value: child.value.replace('1', `${teamNo[index - 2]}`)
+            }
+          })
           return {
             ...child,
-            label: child.label.replace('팀',`${deptName}`),
-            value: child.value.replace('1', `${dept_no}`)
+            label: child.label.replace('팀명', `${teamNames[index - 2]}`),
+            value: child.value.replace('1', `${teamNo[index - 2]}`),
+            children: editChildren2
           }
-        }) 
+        })
         return {
           ...item,
           label: `${deptName} 근태관리`,
+          value: item.value.replace('1', `${dept_no}`),
           children: editChildren
         };
       }
@@ -178,8 +198,8 @@ const AttendMgtTree = (props) => {
 
   const filteredData = updateLabels(data, admin_type, dept_no);
 
-  const handleSelect = (selectedLabel) => {
-    if (selectedLabel) {
+  const handleSelect = (selectedLabel) => { // label 클릭 시
+    if (!selectedLabel.value.includes('Mgt')) { // 클릭한 value의 값안에 Mgt가 포함되지 않은 경우에만 실행
       navigate(`/attendMgt/${selectedLabel.value}`); // 클릭된 value에 따라 해당 경로로 이동
     }
   };

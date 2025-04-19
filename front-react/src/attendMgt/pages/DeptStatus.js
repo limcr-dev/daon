@@ -1,54 +1,52 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Card,
     Col,
     Container,
     Content,
     Divider,
-    Popover,
     Row,
-    Whisper,
 } from 'rsuite';
 
-import Leftbar from '../../common/pages/Leftbar';
-import AttendMgtLeftbar from './AttendMgtLeftbar';
-import Header from '../../common/pages/Header';
-import allLocales from "@fullcalendar/core/locales-all";
-import { ko } from 'date-fns/locale';
+import { useParams } from 'react-router-dom';
 
-// data
+// 공통 js
+import Leftbar from '../../common/pages/Leftbar';
+import Header from '../../common/pages/Header';
 
 // css
 import "../css/AttendCalendar.css";
 import "../css/DeptStatus.css"
-// icon
-import VacationFooter from './VacationFooter';
-import MoveDateHeader from './MoveDateHeader';
 
-import dayGridPlugin from "@fullcalendar/daygrid";
-import FullCalendar from '@fullcalendar/react';
+// icon
+
+// js
+import AttendMgtLeftbar from './AttendMgtLeftbar';
+import { useUser } from '../../common/contexts/UserContext';
+import KibanaDashboard from '../components/KibanaDashboard';
+
 const DeptStatus = () => {
 
-    const [employees, setEmployees] = useState({
-        emp_no: '1002',
-        work_type_no: ''
-    });
+    // 직원 정보
+    const { user } = useUser();
+    const { dept_no } = useParams();
+    const year = 2025;
+    const month = 4;
 
-    // 근무 유형 정보
-    const [work_schedules, setWork_schedules] = useState({
-        type_name: '',
-        start_time: '',
-        end_time: '',
-    });
+    const [deptStats, setDeptStats] = useState([])
 
-    // 날짜 이동 버튼 시작
-    const [currentDate, setCurrentDate] = useState(new Date());
-
-    // 초기 날짜 설정
-    const [moveDate, setMoveDate] = useState({
-        year: currentDate.getFullYear(),
-        month: currentDate.getMonth() + 1
-    });
+    useEffect(() => {
+        fetch("http://localhost:8081/attend/deptStats/" + user.dept_no + "/" + year + "/" + month, {
+            method: "GET"
+        })
+            .then((res) => res.json())
+            .then((res) => {
+                // moveDate 값이 변경될때만 set (날짜 이동 버튼 클릭 시에만)
+                setDeptStats(res);
+            })
+            .catch((error) => {
+                console.log('로그인정보를 확인해주세요', error);
+            })
+    }, [user.dept_no])
 
     return (
         <div>
@@ -57,7 +55,7 @@ const DeptStatus = () => {
                 <Leftbar />
                 <Container>
 
-                    <AttendMgtLeftbar emp_no={employees.emp_no} work_schedules={work_schedules} />
+                    <AttendMgtLeftbar user={user} />
 
                     <Content style={{ marginTop: '20px' }}>
                         <Header />
@@ -66,14 +64,12 @@ const DeptStatus = () => {
 
                         <Row gutter={20} style={{ padding: '15px', display: 'flex', flexDirection: 'column', }}>
                             <Col>
-                            {/* <MoveDateHeader/> */}
-                             <table>
-                                <tr>
-                                    <th>ddd</th>
-                                </tr>
-                             </table>
-                              
-                                
+                                {/* <KibanaDashboard /> */}
+                                <table>
+                                    <tr>
+                                        {/* <th>{deptStats[0].emp_no} {dept_no}</th> */}
+                                    </tr>
+                                </table>
                             </Col>
                         </Row>
                     </Content>
