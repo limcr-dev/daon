@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Container, Content, Header, Button } from "rsuite";
+import { Container, Content, Header, Button, Input } from "rsuite"; // Input 추가
 import { useNavigate } from "react-router-dom";
 
 import Registration from "./Registration";
-import { getPositionName, getRoleName, getDeptName, getEmpType } from "../components/getEmployeeInfo.js"; 
+import { getPositionName, getRoleName, getDeptName, getEmpType } from "../components/getEmployeeInfo.js";
 
 import "../css/EmployeeList.css";
 import Leftbar from "../../common/pages/Leftbar.js";
 
 const Employee = () => {
     const [employeelist, setEmployeelist] = useState([]);
+    const [searchKeyword, setSearchKeyword] = useState(""); // 🔍 검색어 상태
     const [registrationModal, setRegistrationModal] = useState(false);
-    const navigate = useNavigate(); // useNavigate 훅 사용
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch("http://localhost:8081/api/employeeList", {
@@ -24,14 +25,17 @@ const Employee = () => {
             });
     }, []);
 
-    // 등록 모달 열기/닫기
     const openRegistrationModal = () => setRegistrationModal(true);
     const closeRegistrationModal = () => setRegistrationModal(false);
 
-    // 상세 페이지로 이동
     const openDetailPage = (emp_no) => {
-        navigate("/employee/" + emp_no); // 페이지 이동
+        navigate("/employee/" + emp_no);
     };
+
+    // 🔍 검색 필터링
+    const filteredList = employeelist.filter((a) =>
+        a.emp_name.includes(searchKeyword)
+    );
 
     return (
         <Container style={{ display: "flex", minHeight: "100vh" }}>
@@ -39,6 +43,16 @@ const Employee = () => {
             <Container>
                 <Header>사원정보관리</Header>
                 <Content>
+                    {/* 🔍 검색창 */}
+                    <div style={{ marginBottom: "1rem" }}>
+                        <Input
+                            placeholder="이름으로 검색"
+                            value={searchKeyword}
+                            onChange={setSearchKeyword}
+                            style={{ width: 300 }}
+                        />
+                    </div>
+
                     <div className="employee-list">
                         <table className="employee-table">
                             <thead>
@@ -52,14 +66,14 @@ const Employee = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {employeelist.map((a) => (
+                                {filteredList.map((a) => (
                                     <tr key={a.emp_no} onClick={() => openDetailPage(a.emp_no)}>
                                         <td>{a.emp_no}</td>
-                                        <td>{getPositionName(a.position_id)}</td>  
+                                        <td>{getPositionName(a.position_id)}</td>
                                         <td>{a.emp_name}</td>
-                                        <td>{getDeptName(a.dept_no)}</td>  
-                                        <td>{getRoleName(a.role_id)}</td>  
-                                        <td>{getEmpType(a.emp_type)}</td>  
+                                        <td>{getDeptName(a.dept_no)}</td>
+                                        <td>{getRoleName(a.role_id)}</td>
+                                        <td>{getEmpType(a.emp_type)}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -68,7 +82,6 @@ const Employee = () => {
                     <Button onClick={openRegistrationModal}>등록</Button>
                 </Content>
 
-                {/* 모달들 */}
                 <Registration open={registrationModal} onClose={closeRegistrationModal} />
             </Container>
         </Container>

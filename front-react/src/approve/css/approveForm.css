@@ -10,6 +10,7 @@
 .sidebar-panel {
   margin-top: 15px;
   box-shadow: none !important;
+  height: 100%;
   background-color: transparent !important;
 }
 
@@ -118,4 +119,24 @@
     width: 100%;
     margin-bottom: 10px;
   }
+}
+
+/* 추가할 CSS */
+.side-panel {
+  width: 300px;
+  flex-shrink: 0;
+  margin-left: 15px;
+}
+
+@media (max-width: 992px) {
+  .side-panel {
+    display: none !important;
+  }
+}
+
+.buttonStyle { 
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px 16px;
+  background-color: #ffffff;
 }

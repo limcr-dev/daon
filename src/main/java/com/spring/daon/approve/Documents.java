@@ -26,10 +26,11 @@ import lombok.ToString;
 public class Documents {
 	@Id
 	private int doc_no;
-    private String doc_form;
+    private int doc_form;
     private int emp_no;
+    private int dept_no;
     private String doc_title;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private Date doc_reg_date;
     private int doc_status;
     private String doc_reject_reason;

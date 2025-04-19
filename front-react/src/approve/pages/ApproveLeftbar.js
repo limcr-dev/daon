@@ -11,7 +11,7 @@ import ApproveMenu from '../components/ApproveMenu';
 import { Icon } from '@rsuite/icons';
 import { MdDescription } from 'react-icons/md';
 import { useState } from 'react';
-import SelectForm from './SelectForm';
+import SelectForm from '../components/SelectForm';
 
 const ApproveLeftbar = () => {
 

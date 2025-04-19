@@ -30,7 +30,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {  // 요청당 한번�
 		
 		System.out.println("<<< JwtAuthFilter - doFilterInternal() >>>");
 		
-		// Autyorization 헤더에서 토큰 추출
+		// refresh 토큰 엔드포인트는 검증 없이 통과
+		String requestURI = request.getRequestURI();
+		if("/api/token/refresh".equals(requestURI)) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+		
+		// Authorization 헤더에서 토큰 추출
 		String header = request.getHeader(HttpHeaders.AUTHORIZATION);	// 르그인 시점에 보인다
 		
 		if(header != null) {    // 길이가 정확하고 Bearer 토큰이어야 한다.

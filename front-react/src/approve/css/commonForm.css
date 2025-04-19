@@ -30,7 +30,7 @@
 }
 
 .header-table {
-  width: 45%;
+  width: 300px;
   border-collapse: collapse;
 }
 
@@ -49,9 +49,9 @@
 
 /* 결재라인 테이블 */
 .approval-table {
-  width: 50%;
   border-collapse: collapse;
   table-layout: fixed;
+  margin-left: 5px;
 }
 
 .approval-table td {
@@ -68,6 +68,7 @@
 
 .approval-sign {
   vertical-align: bottom;
+  width: 90px;
   height: 60px;
 }
 
@@ -91,7 +92,7 @@
 .full-width-input {
   width: 100%;
   padding: 6px;
-  border: none;
+  border: 1px solid #ccc;
   outline: none;
 }
 

@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,16 +20,17 @@ public class ApproveController {
 	ApproveServiceImpl service;
 	
 	// 결재 진행중 문서 리스트
-	@GetMapping("/documents/{status}")
-	public ResponseEntity<?> getDocumentList(@PathVariable int status){
+	@GetMapping("/documents/{status}/{emp_no}")
+	public ResponseEntity<?> getDocumentList(@PathVariable int status, @PathVariable int emp_no){
 		System.out.println("<<< getDocumentList >>>");
-		return new ResponseEntity<>(service.getDocumentList(status), HttpStatus.OK);
+		
+		return new ResponseEntity<>(service.getDocumentList(status, emp_no), HttpStatus.OK);
 	}
 	
-	// 결재 완료 문서 리스트
-//	@GetMapping("/documents")
-//	public ResponseEntity<?> getCompleteList(@PathVariable int status){
-//		System.out.println("<<< getCompleteList >>>");
-//		return new ResponseEntity<>(service.getCompleteList(status), HttpStatus.OK);
-//	}
+	// 결재 요청
+	@PostMapping("/submit/{form_no}")
+	public ResponseEntity<?> insertDocument(@PathVariable int form_no, @RequestBody ApprovalRequest appr_req){
+		System.out.println("<<< insertDocument >>>");
+		return new ResponseEntity<>(service.insertDocument(form_no, appr_req), HttpStatus.OK);
+	}
 }

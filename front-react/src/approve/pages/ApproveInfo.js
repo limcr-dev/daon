@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { SelectPicker, InputPicker, Panel, Nav, Form, Radio, Checkbox, Avatar } from 'rsuite';
+import { SelectPicker, InputPicker, Panel, Nav, Form, Radio, Checkbox, Avatar, Divider } from 'rsuite';
 import '../css/approveForm.css'; // 스타일 파일
 import { useUser } from '../../common/contexts/UserContext';
+import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
+import { getPosition } from 'rsuite/esm/DOMHelper';
 
-const ApproveInfo = () => {
-    const [activeTab, setActiveTab] = useState('문서정보');
-    
+const ApproveInfo = ({ approveLine = [] }) => {
+    const [activeTab, setActiveTab] = useState('결재선');
+    const { user } = useUser();
+
     // 드롭다운 옵션 데이터
     const preservationOptions = [
         { label: '1년', value: '1년' },
@@ -14,26 +17,26 @@ const ApproveInfo = () => {
         { label: '10년', value: '10년' },
         { label: '영구', value: '영구' }
     ];
-    
+
     const departmentOptions = [
         { label: '영업팀', value: '영업팀' },
         { label: '개발팀', value: '개발팀' },
         { label: '인사팀', value: '인사팀' },
         { label: '총무팀', value: '총무팀' }
     ];
-    
+
     const deptDocOptions = [
         { label: '미지정', value: '미지정' },
         { label: '영업문서', value: '영업문서' },
         { label: '회의록', value: '회의록' }
     ];
-    
+
     const handleTabChange = (eventKey) => {
         setActiveTab(eventKey);
     };
 
     return (
-        <div className="right-sidebar">
+        <div className="right-sidebar" style={{height:'100%'}}>
             <Nav appearance="tabs" activeKey={activeTab} onSelect={handleTabChange}>
                 <Nav.Item eventKey="결재선">결재선</Nav.Item>
                 <Nav.Item eventKey="문서정보">문서정보</Nav.Item>
@@ -41,16 +44,34 @@ const ApproveInfo = () => {
 
             {activeTab === '결재선' ? (
                 <Panel className="sidebar-panel approver-panel">
-                    <div className="approver-list">
-                        <div className="approver-item">
-                            <Avatar className="approver-avatar">김</Avatar>
-                            <div className="approver-info">
-                                <div className="approver-name">김지연 부장</div>
-                                <div className="approver-dept">영업팀</div>
-                                <div className="approver-status">기안</div>
-                            </div>
+                    {/* 기안자 정보 */}
+                    <div style={{ marginBottom: '20px' }}>
+                        <h5 style={{ marginBottom: '10px' }}>기안자</h5>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                            <div>이름: {user.emp_name}</div>
+                            <div>부서: {getDeptName(user.dept_no)}</div>
+                            <div>직급: {getPositionName(user.position_id)}</div>
                         </div>
-                        {/* 추가 결재자가 있을 경우 여기에 더 추가할 수 있습니다 */}
+                    </div>
+
+                    <Divider />
+
+                    {/* 결재선 정보 */}
+                    <div style={{ marginBottom: '20px' }}>
+                        <h5 style={{ marginBottom: '10px' }}>결재선</h5>
+                        {approveLine.length > 0 ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                {approveLine.map((approver, index) => (
+                                    <div key={index} style={{ padding: '10px', border: '1px solid #e5e5e5', borderRadius: '4px', background: '#fff' }}>
+                                        <div style={{ fontWeight: 'bold' }}>{approver.emp_name} ({approver.position})</div>
+                                        <div>부서: {approver.dept_name}</div>
+                                        <div>상태: {approver.status}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div style={{ color: '#888' }}>지정된 결재선이 없습니다.</div>
+                        )}
                     </div>
                 </Panel>
             ) : (
@@ -75,8 +96,8 @@ const ApproveInfo = () => {
 
                         <Form.Group>
                             <Form.ControlLabel>보존연한</Form.ControlLabel>
-                            <SelectPicker 
-                                data={preservationOptions} 
+                            <SelectPicker
+                                data={preservationOptions}
                                 defaultValue="5년"
                                 block
                                 cleanable={false}
@@ -85,8 +106,8 @@ const ApproveInfo = () => {
 
                         <Form.Group>
                             <Form.ControlLabel>기안부서</Form.ControlLabel>
-                            <SelectPicker 
-                                data={departmentOptions} 
+                            <SelectPicker
+                                data={departmentOptions}
                                 defaultValue="영업팀"
                                 block
                                 cleanable={false}
@@ -95,8 +116,8 @@ const ApproveInfo = () => {
 
                         <Form.Group>
                             <Form.ControlLabel>부서문서함</Form.ControlLabel>
-                            <SelectPicker 
-                                data={deptDocOptions} 
+                            <SelectPicker
+                                data={deptDocOptions}
                                 defaultValue="미지정"
                                 block
                                 cleanable={false}

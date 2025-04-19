@@ -42,7 +42,7 @@ const InsertNotice = () => {
             return;
         }
 
-        if (!notice.emp_no.trim()) {
+        if (!notice.emp_name.trim()) {
             alert("작성자를 입력해주세요.");
             return;
         }

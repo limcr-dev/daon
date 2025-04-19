@@ -82,6 +82,11 @@
     WHERE emp_no = #{emp_no}
    </delete>
    
-      
-
+   <select id="BaseSalaryByEmpNo" resultType="java.math.BigDecimal">
+    SELECT p.base_salary
+    FROM employees e
+    JOIN positions p ON e.position_id = p.position_id
+    WHERE e.emp_no = #{empNo}
+   </select>
+   
 </mapper>

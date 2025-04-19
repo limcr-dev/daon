@@ -1,27 +1,27 @@
-import React from 'react';
 import {
   Container,
   Content,
 } from 'rsuite';
-
 import Leftbar from '../../common/pages/Leftbar';
+import MessengerLeftbar from './MessengerLeftbar';
+import "../css/messengerTree.css";
+
 
 const Messenger = () => {
+
+
   return (
     <div>
       <Container style={{ minHeight: '100vh', width: '100%' }}>
         <Leftbar />
         <Container>
-          <Content>Messenger
-            <Content>
-              <img src="/image/chat_list.jpg" alt="Daon" style={{ width: '300px', height: 'auto' }} />
-              <img src="/image/Contact.jpg" alt="Daon" style={{ width: '300px', height: 'auto' }} />
-              <img src="/image/chat_list.jpg" alt="Daon" style={{ width: '300px', height: 'auto' }} />
-            </Content>
+          <MessengerLeftbar />
+          <Content style={{ marginLeft: '15px', marginTop: '15px' }}>
           </Content>
         </Container>
       </Container>
-    </div>
+      <img src="/image/chat_list.jpg" alt="Daon" style={{ width: '300px', height: 'auto' }} />
+    </div >
   );
 };
 export default Messenger;

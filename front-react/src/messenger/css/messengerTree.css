@@ -1,0 +1,41 @@
+.height_change .rs-tree-view{
+    overflow: visible;
+}
+
+body {
+    font-family: "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    background-color: #f4f4f5;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .board-list {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .board-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+  
+  .board-table th,
+  .board-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .board-table th {
+    background-color: #f7f7f7;
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .board-table td {
+    color: #666;
+  }

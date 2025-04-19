@@ -69,3 +69,8 @@ build/
 
 # 빌드 결과물
 /node_modules/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class

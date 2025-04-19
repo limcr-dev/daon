@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+     
+<mapper namespace="com.spring.daon.login.mappers.RefreshTokenMapper">
+
+	<insert id="saveRefreshToken" parameterType="com.spring.daon.login.dto.RefreshToken">
+        INSERT INTO refresh_tokens (emp_no, token, expiry_date)
+        VALUES (#{empNo}, #{token}, #{expiryDate})
+        <selectKey keyProperty="id" resultType="long" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    
+    <select id="findByEmpNo" resultType="com.spring.daon.login.dto.RefreshToken">
+        SELECT id, emp_no as empNo, token, expiry_date as expiryDate, created_at as createdAt
+        FROM refresh_tokens
+        WHERE emp_no = #{emp_no}
+    </select>
+    
+    <select id="findByToken" resultType="com.spring.daon.login.dto.RefreshToken">
+        SELECT id, emp_no as empNo, token, expiry_date as expiryDate, created_at as createdAt
+        FROM refresh_tokens
+        WHERE token = #{token}
+    </select>
+    
+    <delete id="deleteByEmpNo">
+        DELETE FROM refresh_tokens
+        WHERE emp_no = #{emp_no}
+    </delete>
+    
+	<delete id="deleteExpiredTokens">
+		<![CDATA[
+		    DELETE FROM refresh_tokens
+		    WHERE expiry_date < NOW()
+		]]>
+	</delete>
+	
+</mapper>   
+

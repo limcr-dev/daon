@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.daon.salary.EmployeeSalarySummary.EmployeeSalarySummaryMapper">
+
+  <!-- 급여 요약 저장 (INSERT + UPDATE ON DUPLICATE) -->
+  <insert id="upsert" parameterType="com.spring.daon.salary.EmployeeSalarySummary.EmployeeSalarySummary">
+    INSERT INTO employee_salary_summary (
+      emp_no, salary_month, base_pay,
+      total_allowance, total_deduction,
+      income_tax, local_tax, total_pay, actual_pay
+    )
+    VALUES (
+      #{emp_no}, #{salary_month}, #{base_pay},
+      #{total_allowance}, #{total_deduction},
+      #{income_tax}, #{local_tax}, #{total_pay}, #{actual_pay}
+    )
+    ON DUPLICATE KEY UPDATE
+      base_pay = VALUES(base_pay),
+      total_allowance = VALUES(total_allowance),
+      total_deduction = VALUES(total_deduction),
+      income_tax = VALUES(income_tax),
+      local_tax = VALUES(local_tax),
+      total_pay = VALUES(total_pay),
+      actual_pay = VALUES(actual_pay);
+  </insert>
+
+</mapper>

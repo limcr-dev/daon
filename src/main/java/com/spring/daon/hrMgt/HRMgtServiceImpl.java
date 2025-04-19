@@ -1,5 +1,6 @@
 package com.spring.daon.hrMgt;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,11 @@ public class HRMgtServiceImpl {
 		Mapper.deleteEmployee(emp_no);
 		
 		return "ok";
+	}
+	
+	// 사원 기본급 조회
+	public BigDecimal BaseSalaryByEmpNo(int empNo) {
+		return Mapper.BaseSalaryByEmpNo(empNo);
 	}
 	
 	
