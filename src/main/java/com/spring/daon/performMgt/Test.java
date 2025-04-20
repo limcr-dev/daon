@@ -21,7 +21,7 @@ import lombok.ToString;
 @ToString
 @Builder
 @Entity   
-@Table(name="Test")
+@Table(name="eval_test")
 
 
 public class Test {
@@ -35,11 +35,14 @@ public class Test {
 	private String eval_click_emp;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" , timezone = "Asia/Seoul")
 	private Date eval_start_date;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" , timezone = "Asia/Seoul")
-	private Date eval_end_date;
-	private int eval_emp_no;
-	
-
-
+//	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" , timezone = "Asia/Seoul")
+//	private Date eval_end_date;
+//	private int eval_emp_no;
+	private String registration;
+	private int eval_num1;
+	private int eval_num2;
+	private int eval_num3;
+	private int eval_num4;
+	private int eval_num5;
 		
 }
