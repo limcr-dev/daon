@@ -5,65 +5,169 @@
      
 <mapper namespace="com.spring.daon.performMgt.PerformMgtMapper">
 	
-	<!-- 전체리스트 문제 불러오기 -->
-	<select id="evalQuesList" resultType="com.spring.daon.performMgt.EvalQuesComp"> 
-		select *
- 	 	  from eval_quescomp
- 	 	  where eval_comp_id in(select eval_click_emp from TEST)
-	</select>
-   
-   <!-- 역량 리스트 -->
-   <select id="compList" resultType="com.spring.daon.performMgt.EvalQuesComp"> 
+	<!-- 역량 리스트 불러오기 -->
+	<select id="compList" resultType="com.spring.daon.performMgt.EvalQuesComp"> 
 		select distinct eval_comp_id
-	 		, eval_comp_type
-	 		, eval_comp_name
-	 		, eval_comp_level
-	 		, eval_comp_description
-  		  from eval_quescomp	 
+	 		 , eval_comp_type
+	 		 , eval_comp_name
+	 		 , eval_comp_level
+	 		 , eval_comp_description
+	 	  from eval_quescomp	 
 	</select>
-	
-	<!-- 역량을 넣어서 테스트 insert하기 -->
+  	
+  	<!-- 역량을 넣어서 테스트 insert하기 -->
 	<insert id="insertTest" parameterType="com.spring.daon.performMgt.Test">
-		INSERT INTO TEST (eval_emp_type, eval_click_emp, eval_order_num, eval_start_date, eval_end_date, eval_emp_no)
-		SELECT 
+		INSERT INTO eval_test (eval_emp_type, eval_click_emp, eval_order_num, eval_start_date)
+		VALUES (
 		    #{eval_emp_type},
 		    #{eval_click_emp},
 		    #{eval_order_num},
-		   	current_timestamp,   
-		    DATE_ADD(NOW(), INTERVAL 7 DAY),
-		    emp_no
-		FROM (select distinct emp_no from employees	
-			 )as emp
+		   	current_timestamp)
 	</insert>
 	
-	<!-- 평가 직원 리스트 -->
-	<select id="evalList" resultType="com.spring.daon.performMgt.EvalQuesComp"> 
-		select *
- 	 	  from eval_quescomp
-	</select>
+	<!-- 테스트 리스트 삭제 -->
+	<delete id="deleteTest" parameterType="string">
+		delete from eval_test
+		where eval_order_num=#{eval_order_num}
+	</delete>
+	
+	<!-- 테스트 리스트 update 등록 -->
+	<update id="updateTest" parameterType="String">
+		update eval_test
+		   set eval_num1=TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(eval_click_emp, ',', 1), ',', -1))
+		  	 , eval_num2=TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(eval_click_emp, ',', 2), ',', -1))
+		  	 , eval_num3=TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(eval_click_emp, ',', 3), ',', -1))
+		  	 , eval_num4=TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(eval_click_emp, ',', 4), ',', -1))
+		  	 , eval_num5=TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(eval_click_emp, ',', 5), ',', -1))
+		  	 , registration = 't'
+		 where eval_order_num = #{eval_order_num}
+  	</update>
+	
+	<!--  마지막 순번 불러오기(다음번호로 올리기 위합) -->
+   	<select id="selectLastOrderNum" resultType="String">
+   		SELECT MAX(eval_order_num) FROM eval_test
+   	</select>
 	
 	<!-- 저장된 테스트 리스트 -->
 	<select id="testList" resultType="com.spring.daon.performMgt.Test"> 
 		select distinct eval_start_date
 			 , eval_emp_type
 			 ,eval_click_emp
-			 , eval_end_date
 			 , eval_order_num
-		 from test
+		 from eval_test
+		 where registration = 'f'
 	</select>
 	
-	<!-- // 삭제 테스트 리스트 -->
-	<delete id="deleteTest" parameterType="string">
-		delete from test
-		where eval_order_num=#{eval_order_num}
-	</delete>
-   
-   <!--  마지막 순번 불러오기(다음번호로 올리기 위합) -->
-   	<select id="selectLastOrderNum" resultType="String">
-   		SELECT MAX(eval_order_num) FROM test
-   	</select>
+	<!-- 등록된 테스트 리스트 -->
+	<select id="testListT" resultType="com.spring.daon.performMgt.Test"> 
+		select distinct eval_start_date
+			 , eval_emp_type
+			 , eval_click_emp
+			 , eval_order_num
+		 from eval_test
+ 	 	where registration = 't'
+	</select>
+	
+	<!-- update 역량 문제 찾기 -->
+  	<select id="updateFind" parameterType="String" resultType="com.spring.daon.performMgt.EvalQuesComp">
+	  	select * 
+		  from eval_quescomp
+		 where eval_comp_id in(
+			 select eval_num1 from eval_test where eval_order_num = #{eval_order_num}
+			 UNION
+			 select eval_num2 from eval_test where eval_order_num = #{eval_order_num}
+			 UNION
+			 select eval_num3 from eval_test where eval_order_num = #{eval_order_num}
+			 union
+			 select eval_num4 from eval_test where eval_order_num = #{eval_order_num}
+			 union
+			 select eval_num5 from eval_test where eval_order_num = #{eval_order_num}
+		 )
+  	</select>
   	
-<!--   	<update id="selectComp" >
-  		
-  	</update> -->
+  	<!--  -->
+	
+	<!-- 역량별 문제 불러오기 -->
+	<select id="evalQuesList" resultType="com.spring.daon.performMgt.EvalQuesComp"> 
+		select * 
+		  from eval_quescomp
+	</select>
+	
+	<!-- 선택된 역량별 문제 불러오기 -->
+	<select id="selectTest" resultType="com.spring.daon.performMgt.EvalQuesComp"> 
+		select * 
+		  from eval_quescomp
+		 where eval_comp_id in(
+			 select eval_num1 from eval_test where eval_order_num = #{eval_order_num}
+			 UNION
+			 select eval_num2 from eval_test where eval_order_num = #{eval_order_num}
+			 UNION
+			 select eval_num3 from eval_test where eval_order_num = #{eval_order_num}
+			 union
+			 select eval_num4 from eval_test where eval_order_num = #{eval_order_num}
+			 union
+			 select eval_num5 from eval_test where eval_order_num = #{eval_order_num}
+		 )
+	</select>
+	
+	<!-- 평가 직원 리스트 -->
+	<select id="evalList" resultType="com.spring.daon.performMgt.Test"> 
+		select distinct eval_start_date
+			 , eval_emp_type
+			 ,eval_click_emp
+			 , eval_order_num
+		 from eval_test
+ 	 	  where registration = 't'
+	</select>
+	
+	<!-- 동료 불러오기 -->
+	<select id="peerList" resultType="com.spring.daon.hrMgt.Employees"> 
+		select *
+		 from employees
+	</select>
+	
+	<!-- 동료 불러오기 -->
+	<insert id="insertPeerEval" parameterType="com.spring.daon.performMgt.EvalPeer">
+		INSERT INTO eval_peer (
+		eval_peer_no,
+            eval_no,
+            eval_type,
+            eval_comp1,
+            eval_comp1_score,
+            eval_comp2,
+            eval_comp2_score,
+            eval_comp3,
+            eval_comp3_score,
+            eval_comp4,
+            eval_comp4_score,
+            eval_comp5,
+            eval_comp5_score,
+            eval_status,
+            eval_total_score,
+            eval_start_date,
+            eval_end_date)
+		VALUES (
+		  #{eval_peer_no},
+            #{eval_no},
+            #{eval_type},
+            #{eval_comp1},
+            #{eval_comp1_score},
+            #{eval_comp2},
+            #{eval_comp2_score},
+            #{eval_comp3},
+            #{eval_comp3_score},
+            #{eval_comp4},
+            #{eval_comp4_score},
+            #{eval_comp5},
+            #{eval_comp5_score},
+            #{eval_status},
+            #{eval_total_score},
+            NOW(),         <!-- 현재 날짜 저장 -->
+            #{eval_end_date}
+            )
+	</insert>
+	
+	
+	
+	
 </mapper>   

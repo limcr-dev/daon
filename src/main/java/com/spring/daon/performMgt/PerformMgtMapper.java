@@ -3,7 +3,12 @@ package com.spring.daon.performMgt;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import com.spring.daon.hrMgt.Employees;
 
 @Mapper
 @Repository
@@ -21,6 +26,9 @@ public interface PerformMgtMapper {
 	// 평가 직원 리스트
 	public List<EvalQuesComp> evalList();
 	
+	// 등록된 테스트 리스트
+	public List<Test> testListT();
+	
 	// 저장된 테스트 리스트
 	public List<Test> testList();
 
@@ -29,6 +37,18 @@ public interface PerformMgtMapper {
 	
 	// 마지막 순번 불러오기(다음번호로 올리기 위합)
 	public String selectLastOrderNum();
+	
+	// test update 등록
+	public int updateTest(String eval_order_num);
+	
+	// update 역량 문제 찾기
+	public List<EvalQuesComp> updateFind(String eval_order_num);
+	
+	// 동료 불러오기
+	public List<Employees> peerList() ;
+	
+	// 평가 결과 저장하기
+	public int insertPeerEval(EvalPeer evalPeer);
 	
 	// 역량별 문제 불러오기
 	

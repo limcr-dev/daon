@@ -8,8 +8,7 @@ import { useNavigate } from "react-router-dom";
 const TestList = () => {
 
   const [testList, setTestList] = useState([]);
-  // const [test, setTest] = useState(null);
-
+  
   const navigate = useNavigate();
 
 
@@ -28,7 +27,7 @@ const TestList = () => {
 
   const evalList = (e) => {
     e.preventDefault();
-    navigate('/performMgt/EvalList');
+    navigate('/performMgt/eval_list');
   }
 
   // 삭제
@@ -50,14 +49,36 @@ const TestList = () => {
         });
   }
 
+  // 업데이트
+  const updateTest = async (orderNum) => {
+    if (window.confirm(`${orderNum}번 데이터를 등록 하시겠습니까?`)) {
+      
+      try {
+        const updateRes = await fetch(`http://localhost:8081/performMgt/testList/${orderNum}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            eval_order_num: orderNum,
+            registration:'',
+            // 추가 데이터 필요 시 여기에
 
+          }),
+          headers: {
+            "Content-Type": "application/json;charset=utf-8"
+          }
+        });
+        if (!updateRes.ok) {
+          throw new Error('업데이트 실패');
+        }
+        alert("등록 완료!");
 
-
-  // const insertTest = (e) => {
-  //   e.preventDefault();
-
-  //   fetch("")
-  // }
+        // 등록 성공후 페이지로 이동 
+        navigate(`/performMgt/evalList/${orderNum}`);
+      } catch (err) {
+        console.error(err);
+        
+      }
+    }
+  };
 
   return (
     <div>
@@ -72,8 +93,6 @@ const TestList = () => {
             <tr>
               <th className="comp-th">순번</th>
               <th className="comp-th"> 등록일 </th>
-
-              <th className="comp-th"> 종료일 </th>
               <th className="comp-th"> 평가유형 </th>
               <th className="comp-th"> 평가역량 </th>
               <th className="comp-th">  </th>
@@ -88,12 +107,10 @@ const TestList = () => {
                   <tr key={index}>
                     <td className="comp-td">{test.eval_order_num || "정보 없음"}</td>
                     <td className="comp-td">{test.eval_start_date || "정보 없음"}</td>
-
-                    <td className="comp-td">{test.eval_end_date || "정보 없음"}</td>
                     <td className="comp-td">{test.eval_emp_type || "정보 없음"}</td>
                     <td className="comp-td">{test.eval_click_emp || "정보 없음"}</td>
                     <td className="comp-td">
-                      {/* <button className="subno" type="submit" onClick={insertTest} >등록</button>  */}
+                      <button className="subno" type="button" onClick={() => updateTest(test.eval_order_num)} >등록</button>
                       <button className="subno" type="button" onClick={() => deleteTest(test.eval_order_num)}>삭제</button>
                     </td>
                   </tr>
@@ -101,7 +118,7 @@ const TestList = () => {
               </>
             ) : (
               <tr>
-                <td colSpan={6}>
+                <td colSpan={6} align="center">
                   테스트 데이터가 없습니다.
                 </td>
               </tr>

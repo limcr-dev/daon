@@ -7,8 +7,8 @@ const data = [
     label: '인적 평가',
     value: 'evalation1',
     children: [ 
-      { label: '자기 평가', value: 'evalque' },
-      { label: '동료 평가', value: 'home' },
+      { label: '자기 평가', value: 'selfques' },
+      { label: '동료 평가', value: 'peerques' },
       { label: '근태 평가', value: 'attendance' },
     ],
   },
@@ -26,7 +26,7 @@ const data = [
     value: 'evaluation3',
     children: [
       { label: '평가 조회', value: 'eval_select' },
-      { label: '평가 리스트', value: 'eval_list' },
+      { label: '평가 리스트', value: 'evalList' },
       { label: '평가 관리', value: 'eval_mgnt' },
     ],
   },

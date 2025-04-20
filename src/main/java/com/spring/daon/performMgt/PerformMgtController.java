@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +32,15 @@ public class PerformMgtController {
 		
 		
 		return new ResponseEntity<>(service.evalQuesList(), HttpStatus.OK);	// 200
+	}
+	
+	// 문제 리스트 페이지 => 선택한 문제 리스트
+	@GetMapping("/queslist/{eval_order_num}")
+	public ResponseEntity<?> selectTest(@PathVariable String eval_order_num){
+		System.out.println("<<< 역량 선택한 문제 리스트 >>>" + eval_order_num);
+
+		return new ResponseEntity<>(service.selectTest(eval_order_num), HttpStatus.OK);
+		
 	}
 	
 	// 역량 리스트
@@ -59,6 +69,14 @@ public class PerformMgtController {
 		return new ResponseEntity<>(service.evalList(), HttpStatus.OK);	// 200
 	}
 	
+	// 등록된 테스트 리스트
+	@GetMapping("/testListT")
+	public ResponseEntity<?> findTestT(){
+		System.out.println("<<< 평가 직원 리스트 세팅 >>>");
+		
+		return new ResponseEntity<>(service.testListT(), HttpStatus.OK);	// 200
+	}
+	
 	// 저장된 테스트 리스트
 	@GetMapping("/testList")
 	public ResponseEntity<?> findTestAll(){
@@ -85,6 +103,38 @@ public class PerformMgtController {
 		result.put("lastOrderNum", lastNum);
 		
 		return new ResponseEntity<>(lastNum, HttpStatus.OK);	// 200
+	}
+	
+	// update 역량별 테스리스트를 update
+	@PutMapping("/testList/{eval_order_num}")
+	public ResponseEntity<?> updateTest(@PathVariable String eval_order_num){
+		System.out.println("<<< update 테스트 >>>");
+		
+		return new ResponseEntity<>(service.updateTest(eval_order_num), HttpStatus.OK);	// 200
+	}
+	
+	// select 역량별 테스리스트를 select -- 이것을 나중에 테스트 불러오는것으로
+	@GetMapping("/testList/{eval_order_num}")
+	public ResponseEntity<?> updateFind(@PathVariable String eval_order_num){
+		System.out.println("<<< update 테스트 찾기? >>>" + eval_order_num);
+		
+		return new ResponseEntity<>(service.updateFind(eval_order_num), HttpStatus.OK);	// 200
+	}
+	
+	
+	// 동료 불러오기 
+	@GetMapping("/peerList")
+	public ResponseEntity<?> peerList(){
+		System.out.println("<< 동료 불러오기 >>");
+		
+		return new ResponseEntity<>(service.peerList(), HttpStatus.OK);	// 200
+	}
+	
+	// 평가 결과 저장하기
+	@PostMapping("/performMgt/evalPeerInsert")
+	public ResponseEntity<?> insertPeerEval(@RequestBody EvalPeer evalPeer) {
+		System.out.println("<< 평가 결과 저장하기 >>");
+	    return new ResponseEntity<>(service.insertPeerEval(evalPeer), HttpStatus.CREATED);
 	}
 	
 	
