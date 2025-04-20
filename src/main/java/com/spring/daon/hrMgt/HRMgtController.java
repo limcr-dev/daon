@@ -1,5 +1,6 @@
 package com.spring.daon.hrMgt;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,5 +61,11 @@ public class HRMgtController {
 		System.out.println("deleteEmployee");
 		
 		return new ResponseEntity<>(service.deleteEmplyee(emp_no), HttpStatus.OK);
+	}
+	
+	// 사원 기본급 조회
+	@GetMapping("/employee/{emp_no}/baseSalary")
+	public ResponseEntity<BigDecimal> BaseSalaryByEmpNo(@PathVariable("emp_no") int empNo) {
+		return new ResponseEntity<>(service.BaseSalaryByEmpNo(empNo), HttpStatus.OK);
 	}
 }
