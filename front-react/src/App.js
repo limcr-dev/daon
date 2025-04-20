@@ -12,6 +12,7 @@ import PerformMgtRouter from "./performMgt/PerformMgtRouter";
 import ScheduleRouter from "./schedule/ScheduleRouter";
 import BoardRouter from "./library/BoardRouter";
 import { UserProvider, useUser } from "./common/contexts/UserContext";
+import SalaryRouter from "./salary/SalaryRouter";
 
 // 인증 라우트 컴포넌트 - 로그인하지 않은 사용자는 로그인 페이지로 리다이렉트
 const ProtectedRoute = ({ element }) => {
@@ -61,6 +62,7 @@ const AppRoutes = () => {
       <Route path="/performMgt/*" element={<ProtectedRoute element={<PerformMgtRouter />} />} />
       <Route path="/schedule/*" element={<ProtectedRoute element={<ScheduleRouter />} />} />
       <Route path="/board/*" element={<ProtectedRoute element={<BoardRouter />} />} />
+      <Route path="/salary/*" element={<ProtectedRoute element={<SalaryRouter />} />} />
     </Routes>
   );
 };

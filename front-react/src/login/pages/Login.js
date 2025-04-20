@@ -52,17 +52,21 @@ const Login = () => {
       console.log("응답 전체 데이터:", response.data);
 
       // 토큰 추출 및 확인
-      const token = response.data.token;
-      console.log("추출된 토큰:", token);
+      const user = response.data.user;
+      const accessToken = user?.token;
+      const refreshToken = response.data.refreshToken;
 
-      if (!token) {
-        console.error("토큰이 없거나 null/undefined 입니다");
+      console.log("추출된 액세스 토큰:", accessToken);
+      console.log("추출된 리프레시 토큰:", refreshToken);
+
+      if (!accessToken) {
+        console.error("액세스 토큰이 없거나 null/undefined 입니다");
         throw new Error("토큰이 제공되지 않았습니다.");
       }
 
       // 토큰 저장 및 사용자 정보 설정
       console.log("===== 로그인 함수 호출 전 =====");
-      await login(token);
+      await login(accessToken, refreshToken);
       console.log("===== 로그인 함수 호출 완료 =====");
 
       // 홈 화면 이동

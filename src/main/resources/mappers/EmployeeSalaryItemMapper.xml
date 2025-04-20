@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.daon.salary.EmployeeSalaryItem.EmployeeSalaryItemMapper">
+
+  <!-- 사원의 수당/공제 항목 목록 조회 (월별) -->
+  <select id="findByEmpNo" resultType="com.spring.daon.salary.EmployeeSalaryItem.EmployeeSalaryItem">
+  SELECT 
+    i.id,
+    i.emp_no,
+    i.item_type,
+    i.item_id,
+    CASE 
+      WHEN i.item_type = 'ALLOWANCE' THEN a.name
+      WHEN i.item_type = 'DEDUCTION' THEN d.name
+      ELSE NULL
+    END AS item_name,
+    i.amount,
+    i.salary_month,
+    i.created_at
+  FROM employee_salary_items i
+  LEFT JOIN allowance_items a 
+    ON i.item_type = 'ALLOWANCE' AND i.item_id = a.id
+  LEFT JOIN deduction_items d 
+    ON i.item_type = 'DEDUCTION' AND i.item_id = d.id
+  WHERE i.emp_no = #{emp_no}
+    AND i.salary_month = #{salary_month}
+  ORDER BY i.item_type, i.item_id
+</select>
+
+
+  <!-- 항목 등록 -->
+  <insert id="insert" parameterType="com.spring.daon.salary.EmployeeSalaryItem.EmployeeSalaryItem">
+    INSERT INTO employee_salary_items
+    (emp_no, item_type, item_id, amount, salary_month)
+    VALUES
+    (#{emp_no}, #{item_type}, #{item_id}, #{amount}, #{salary_month})
+  </insert>
+
+  <!-- 항목 수정 -->
+  <update id="update" parameterType="com.spring.daon.salary.EmployeeSalaryItem.EmployeeSalaryItem">
+    UPDATE employee_salary_items
+    SET amount = #{amount}
+    WHERE id = #{id}
+  </update>
+
+  <!-- 항목 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM employee_salary_items
+    WHERE id = #{id}
+  </delete>
+
+</mapper>
