@@ -3,6 +3,7 @@ import React, { createContext, useState, useContext, useEffect, useCallback } fr
 import { setAuthToken, request, getAuthToken } from '../components/helpers/axios_helper';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 // Context 생성
 const UserContext = createContext(null);
@@ -93,20 +94,24 @@ export const UserProvider = ({ children }) => {
 
         try {
             setRefreshingToken(true);
+            console.log("리프레시 토큰을 사용하여 새로운 액세스 토큰 요청 중...");
+            console.log("사용하는 리프레시 토큰:", refreshToken.substring(0, 20) + "...");
 
             // 리프레시 토큰으로 새 액세스 토큰 요청
-            const response = await request(
-                "POST",
-                "/api/token/refresh",
-                {},
-                {
-                    headers: {
-                        'Authorization': `Bearer ${refreshToken}`
-                    }
+            // axios 인스턴스를 직접 사용하여 인터셉터 우회
+            const response = await axios({
+                method: 'post',
+                url: '/api/token/refresh',
+                headers: {
+                    'Authorization': `Bearer ${refreshToken}`
                 }
-            );
+            }); 
+            if (!response || !response.data || !response.data.accessToken) {
+                throw new Error("서버 응답에 액세스 토큰이 없습니다.");
+            }
 
             const newAccessToken = response.data.accessToken;
+            console.log("새 액세스 토큰 발급 성공:", newAccessToken.substring(0, 10) + "...");
             setAuthToken(newAccessToken);
 
             // 토큰에서 사용자 정보 추출 및 업데이트
@@ -118,6 +123,10 @@ export const UserProvider = ({ children }) => {
 
         } catch (error) {
             console.error("토큰 갱신 실패:", error);
+            // 오류 상세 정보 로깅
+            if (error.response) {
+                console.error("서버 응답:", error.response.status, error.response.data);
+            }
             handleSessionExpired();
             return null;
         } finally {
@@ -136,8 +145,13 @@ export const UserProvider = ({ children }) => {
                 const refreshToken = getRefreshToken();
                 if (refreshToken) {
                     const newToken = await refreshAccessToken();
-                    if (!newToken) return; // 갱신 실패
+                    if (!newToken) {
+                        console.log("토큰 갱신 실패");
+                        return; // 갱신 실패
+                    }
+                    console.log("토큰 갱신 성공");
                 } else {
+                    console.log("리프레시 토큰 없음");
                     handleSessionExpired();
                     return;
                 }
@@ -203,6 +217,7 @@ export const UserProvider = ({ children }) => {
             const token = getAuthToken();
             if (token && token !== "null") {
                 if (!isTokenValid(token)) {
+                    console.log("주기적 확인 중 토큰 만료 감지");
                     // 액세스 토큰이 만료되었지만 리프레시 토큰이 없으면 갱신 시도
                     const refreshToken = getRefreshToken();
                     if (refreshToken) {
@@ -230,6 +245,8 @@ export const UserProvider = ({ children }) => {
             console.error("토큰이 제공되지 않았습니다.");
             return;
         }
+
+        console.log("로그인 함수 호출됨, 토큰 저장 및 사용자 정보 로드 중");
 
         // 토큰 저장
         setAuthToken(accessToken);

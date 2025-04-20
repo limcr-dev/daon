@@ -36,10 +36,11 @@ public class LoginController {
 	@Autowired
 	private RefreshTokenService refreshTokenService;
 	
-	public LoginController(LoginService loginService, UserAuthProvider userAuthProvider) {
+	public LoginController(LoginService loginService, UserAuthProvider userAuthProvider, RefreshTokenService refreshTokenService) {
 		super();
 		this.loginService = loginService;
 		this.userAuthProvider = userAuthProvider;
+	    this.refreshTokenService = refreshTokenService;
 	}
 	
 	// login 페이지
@@ -97,7 +98,8 @@ public class LoginController {
 	public ResponseEntity<?> refreshToken(HttpServletRequest request) {
         // 헤더에서 리프레시 토큰 추출
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        
+        System.out.println("토큰 리프레시 요청 수신. 헤더: " + (header != null ? (header.substring(0, Math.min(20, header.length())) + "...") : "null"));
+
         if (header == null || !header.startsWith("Bearer ")) {
             return ResponseEntity.badRequest().body("Refresh token is required");
         }
@@ -113,7 +115,7 @@ public class LoginController {
             
             return ResponseEntity.ok(tokenMap);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token: " + e.getMessage());
         }
     }
 

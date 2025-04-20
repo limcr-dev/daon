@@ -8,7 +8,11 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ApproveMapper {
 	
-	public List<Documents> getDocumentList(Map<String, Object> map);
+	public List<Documents> getDocList(Map<String, Object> map);
+	
+	public List<Documents> getAllDocList(int emp_no);
+	
+	public List<Documents> getApproverDocList(Map<String, Object> map);
 	
 	public int insertDocument(Documents document);
 	
