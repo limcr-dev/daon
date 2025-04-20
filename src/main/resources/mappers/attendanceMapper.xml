@@ -102,14 +102,9 @@
 	</select>
 	
 	<!-- 휴가 사용기록 불러오기 -->
-	<select id="vacationHistory" parameterType="int" resultType="com.spring.daon.approve.Vacation_requests">
-	     SELECT vr.doc_no
-	     	  , vr.start_date 
-			  , vr.end_date 
-			  , vr.used_days
-			  , vr.vacation_type
-			  , vr.vacation_reason 
-		   FROM vacation_requests vr
+	<select id="vacationHistory" parameterType="int" resultType="com.spring.daon.approve.Vacation_req">
+	     SELECT vr.*
+		   FROM vacation_req vr
 		   join documents d
 		   join employees e 
 		  WHERE d.doc_no =vr.doc_no

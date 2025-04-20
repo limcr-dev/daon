@@ -38,3 +38,13 @@
   .DeptCalendar .fc .fc-button .fc-icon {
     font-size: 14px;
   }
+
+
+  .deptCardHeaderList{
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #FAFBFD;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}

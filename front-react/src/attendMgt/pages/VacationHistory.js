@@ -29,7 +29,7 @@ const VacationHistory = (props) => {
                 <td>{vacation.vacation_type}</td>
                 <td>{vacation.start_date} ~ {vacation.end_date}</td>
                 <td >{vacation.used_days}</td>
-                <td>{vacation.vacation_reason}</td>
+                <td>{vacation.content}</td>
               </tr>
             ))}
         </tbody>
