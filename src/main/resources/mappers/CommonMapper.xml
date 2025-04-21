@@ -7,7 +7,7 @@
 	
 	<!-- 출근 버튼 클릭 시 -->
 	<select id="getEmpInfo" parameterType="int" resultType="com.spring.daon.hrMgt.Employees">
-		select * from Employees
+		select * from employees
 		where emp_no = #{emp_no}
 	</select>
 </mapper>

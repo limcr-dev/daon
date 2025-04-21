@@ -10,7 +10,6 @@ import {
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 import allLocales from "@fullcalendar/core/locales-all";
 import listPlugin from "@fullcalendar/list";
 import FullCalendar from '@fullcalendar/react';
@@ -53,7 +52,7 @@ const AttendMgt = () => {
       .catch((error) => {
         console.log('로그인정보를 확인해주세요', error);
       })
-  }, [])
+  }, [user.emp_no])
 
   // 날짜 이동 버튼 시작
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -123,7 +122,7 @@ const AttendMgt = () => {
       <Leftbar />
       <Container>
 
-        <AttendMgtLeftbar emp_no={user.emp_no} />
+        <AttendMgtLeftbar user={user} />
 
         <Content style={{ marginTop: '20px' }}>
           <Header />
@@ -175,11 +174,9 @@ const AttendMgt = () => {
                         ref={calendarRef}
                         plugins={
                           [dayGridPlugin,
-                            bootstrap5Plugin,
                             timeGridPlugin,
                             interactionPlugin,
-                            listPlugin,
-                            interactionPlugin]
+                            listPlugin]
                         }
                         initialView={'dayGridMonth'}
                         locales={allLocales}  // 언어설정 가져오기
@@ -213,7 +210,6 @@ const AttendMgt = () => {
                         ref={dayRef}
                         plugins={
                           [dayGridPlugin,
-                            bootstrap5Plugin,
                             timeGridPlugin,
                             interactionPlugin,
                             listPlugin]
