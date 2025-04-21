@@ -3,6 +3,7 @@ import React, { createContext, useState, useContext, useEffect, useCallback } fr
 import { setAuthToken, request, getAuthToken } from '../components/helpers/axios_helper';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 // Context 생성
 const UserContext = createContext(null);
@@ -14,6 +15,7 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [sessionExpired, setSessionExpired] = useState(false);
+    const [refreshingToken, setRefreshingToken] = useState(false);
 
     // JWT 토큰에서 사용자 정보 추출
     const extractUserFromToken = (token) => {
@@ -39,7 +41,7 @@ export const UserProvider = ({ children }) => {
 
     // 토큰 유효성 검사
     const isTokenValid = (token) => {
-        if(!token) return false;
+        if (!token) return false;
 
         try {
             const decoded = jwtDecode(token);
@@ -47,9 +49,88 @@ export const UserProvider = ({ children }) => {
 
             // 토큰이 만료되지 않았는지 확인
             return decoded.exp > currentTime;
-        } catch(error) {
+        } catch (error) {
             console.error("토큰 유효성 검사 오류:", error);
             return false;
+        }
+    };
+
+    // 리프레시 토큰 저장
+    const setRefreshToken = (token) => {
+        if (token) {
+            localStorage.setItem('refreshToken', token);
+        } else {
+            localStorage.removeItem('refreshToken');
+        }
+    };
+
+    // 리프레시 토큰 가져오기
+    const getRefreshToken = () => {
+        return localStorage.getItem('refreshToken');
+    };
+
+    // 엑세스 토큰 갱신 함수
+    const refreshAccessToken = async () => {
+        const refreshToken = getRefreshToken();
+
+        if (!refreshToken) {
+            console.log("리프레시 토큰이 없습니다.");
+            handleSessionExpired();
+            return null;
+        }
+
+        if (refreshingToken) {
+            // 이미 토큰이 갱신 중이면 대기
+            return new Promise((resolve) => {
+                const checkToken = setInterval(() => {
+                    const token = getAuthToken();
+                    if (token && isTokenValid(token)) {
+                        clearInterval(checkToken);
+                        resolve(token);
+                    }
+                }, 100);
+            });
+        }
+
+        try {
+            setRefreshingToken(true);
+            console.log("리프레시 토큰을 사용하여 새로운 액세스 토큰 요청 중...");
+            console.log("사용하는 리프레시 토큰:", refreshToken.substring(0, 20) + "...");
+
+            // 리프레시 토큰으로 새 액세스 토큰 요청
+            // axios 인스턴스를 직접 사용하여 인터셉터 우회
+            const response = await axios({
+                method: 'post',
+                url: '/api/token/refresh',
+                headers: {
+                    'Authorization': `Bearer ${refreshToken}`
+                }
+            }); 
+            if (!response || !response.data || !response.data.accessToken) {
+                throw new Error("서버 응답에 액세스 토큰이 없습니다.");
+            }
+
+            const newAccessToken = response.data.accessToken;
+            console.log("새 액세스 토큰 발급 성공:", newAccessToken.substring(0, 10) + "...");
+            setAuthToken(newAccessToken);
+
+            // 토큰에서 사용자 정보 추출 및 업데이트
+            const userInfo = extractUserFromToken(newAccessToken);
+            setUser(userInfo);
+            setSessionExpired(false);
+
+            return newAccessToken;
+
+        } catch (error) {
+            console.error("토큰 갱신 실패:", error);
+            // 오류 상세 정보 로깅
+            if (error.response) {
+                console.error("서버 응답:", error.response.status, error.response.data);
+            }
+            handleSessionExpired();
+            return null;
+        } finally {
+            setRefreshingToken(false);
         }
     };
 
@@ -57,14 +138,26 @@ export const UserProvider = ({ children }) => {
     const fetchUserData = useCallback(async () => {
         const token = getAuthToken();
 
-        if(token && token !== "null"){
+        if (token && token !== "null") {
             // 토큰 유효성 검사
-            if(!isTokenValid(token)){
-                handleSessionExpired();
-                return;
+            if (!isTokenValid(token)) {
+                // 토큰이 만료되었지만 리프레시 토큰이 있으면 갱신 시도
+                const refreshToken = getRefreshToken();
+                if (refreshToken) {
+                    const newToken = await refreshAccessToken();
+                    if (!newToken) {
+                        console.log("토큰 갱신 실패");
+                        return; // 갱신 실패
+                    }
+                    console.log("토큰 갱신 성공");
+                } else {
+                    console.log("리프레시 토큰 없음");
+                    handleSessionExpired();
+                    return;
+                }
             }
-            
-            try{
+
+            try {
                 setLoading(true);
 
                 // 1. 토큰에서 기본 사용자 정보 추출
@@ -82,19 +175,26 @@ export const UserProvider = ({ children }) => {
                 // }
                 setUser(tokenUserInfo);
                 setSessionExpired(false);
-            } catch(error){
+            } catch (error) {
                 console.error("사용자 데이터를 가져오는데 실패했습니다.", error);
 
-                if(error.response && (error.response.status === 401 || error.response.status === 403)){
-                    handleSessionExpired();
+                if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                    // 401 에러 시 토큰 갱신 시도
+                    const refreshToken = getRefreshToken();
+                    if (refreshToken) {
+                        await refreshAccessToken();
+                    } else {
+                        handleSessionExpired();
+                    }
                 }
 
-                setAuthToken(null);
-                setUser(null);
-            } finally{
+                if (!getRefreshToken()) {
+                    setAuthToken(null);
+                    setUser(null);
+                }
+            } finally {
                 setLoading(false);
             }
- 
         } else {
             setUser(null);
             setLoading(false);
@@ -106,17 +206,25 @@ export const UserProvider = ({ children }) => {
         setSessionExpired(true);
         setUser(null);
         setAuthToken(null);
+        setRefreshToken(null);
         alert("세션이 만료되었습니다. 다시 로그인해주세요.");
         navigate('/');
     };
 
     // 주기적으로 토큰 유효성 확인
     useEffect(() => {
-        const tokenCheckInterval = setInterval(() => {
+        const tokenCheckInterval = setInterval(async () => {
             const token = getAuthToken();
-            if(token && token !== "null"){
-                if(!isTokenValid(token)){
-                    handleSessionExpired();
+            if (token && token !== "null") {
+                if (!isTokenValid(token)) {
+                    console.log("주기적 확인 중 토큰 만료 감지");
+                    // 액세스 토큰이 만료되었지만 리프레시 토큰이 없으면 갱신 시도
+                    const refreshToken = getRefreshToken();
+                    if (refreshToken) {
+                        await refreshAccessToken();
+                    } else {
+                        handleSessionExpired();
+                    }
                 }
             }
         }, 5 * 60 * 1000);  // 5분마다 확인
@@ -132,14 +240,21 @@ export const UserProvider = ({ children }) => {
     }, [fetchUserData]);
 
     // 로그인 처리 함수
-    const login = async(token) => {
-        if(!token){
+    const login = async (accessToken, refreshToken) => {
+        if (!accessToken) {
             console.error("토큰이 제공되지 않았습니다.");
             return;
         }
 
+        console.log("로그인 함수 호출됨, 토큰 저장 및 사용자 정보 로드 중");
+
         // 토큰 저장
-        setAuthToken(token);
+        setAuthToken(accessToken);
+
+        // 리프레시 토큰이 있으면 저장
+        if (refreshToken) {
+            setRefreshToken(refreshToken);
+        }
 
         // 토큰에서 사용자 정보 추출 및 상태 업데이트
         await fetchUserData();
@@ -147,24 +262,27 @@ export const UserProvider = ({ children }) => {
     };
 
     // 로그아웃 처리 함수
-    const logout = useCallback(() => {
-        // 백엔드에 로그아웃 요청(필요한 경우)
-        // try{
-        //     request("POST", "/api/logout", null);
-        // } catch (error) {
-        //     console.error("로그아웃 요청 처리 중 오류:", error);
-        // } finally {
-        //     // 로컬 상태 정리
+    const logout = useCallback(async () => {
+        try {
+            // 백엔드에 로그아웃 요청
+            const refreshToken = getRefreshToken();
+            if (refreshToken) {
+                await request("POST", "/api/logout", {});
+            }
+        } catch (error) {
+            console.log("로그아웃 요청 처리 중 오류:", error);
+        } finally {
             setAuthToken(null);
+            setRefreshToken(null);
             setUser(null);
             // 로그아웃 후 로그인 페이지로 리다이렉션
             navigate("/");
-        //}
+        }
     }, [navigate]);
 
     // 현재 사용자가 특정 권한을 가지고 있는지 확인하는 유틸리티 함수
     const hasPermission = (requiredAdminType) => {
-        if(!user) return false;
+        if (!user) return false;
         return user.admin_type >= requiredAdminType;
     };
 
@@ -175,6 +293,7 @@ export const UserProvider = ({ children }) => {
         login,
         logout,
         fetchUserData,
+        refreshAccessToken,
         sessionExpired,
         hasPermission,
         isAdmin: user ? user.admin_type >= 2 : false,
@@ -189,7 +308,7 @@ export const UserProvider = ({ children }) => {
 // 사용자 컨텍스트를 사용하기 위한 커스텀 훅
 export const useUser = () => {
     const context = useContext(UserContext);
-    if(context === undefined) {
+    if (context === undefined) {
         throw new Error('useUser는 UserProvider 내부에서만 사용할 수 있습니다.');
     }
     return context;

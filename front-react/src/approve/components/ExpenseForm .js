@@ -35,7 +35,6 @@ const ExpenseForm = () => {
         e.preventDefault();
         // 여기에 결재 제출 로직 구현
         console.log('제출된 지출 결의서:', expenseForm);
-        // API 호출 등의 로직이 들어갈 수 있습니다
     };
 
     return (

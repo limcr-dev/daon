@@ -59,7 +59,7 @@ const Leftbar = () => {
               인사평가
             </Nav.Item>
             <Nav.Item eventKey="7" onClick={() => navigate('/employee')} icon={<Icon as={MdGroup} />}>
-              인사관리
+              인사
             </Nav.Item>
             <Nav.Item eventKey="8" onClick={() => navigate('/board')} icon={<Icon as={MdDescription} />}>
               게시판
@@ -72,6 +72,9 @@ const Leftbar = () => {
           </Nav.Item>
           <Nav.Item eventKey="10" onClick={() => navigate('/messenger')} icon={<Icon as={MdSupervisorAccount} />}>
             메신저
+          </Nav.Item>
+          <Nav.Item eventKey="10" onClick={() => navigate('/salary')} icon={<Icon as={MdSupervisorAccount} />}>
+            급여
           </Nav.Item>
         </Nav>
       </Sidenav>

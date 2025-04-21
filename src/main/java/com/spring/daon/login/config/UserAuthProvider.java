@@ -18,6 +18,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.spring.daon.hrMgt.Employees;
 import com.spring.daon.login.service.LoginService;
+import com.spring.daon.login.service.RefreshTokenService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,7 +31,15 @@ public class UserAuthProvider {
 	@Value("${security.jwt.token.secret-key:secret-value}")
 	private String secretKey;
 	
+	@Value("${security.jwt.token.access-expiration:3600000}")	// 1시간
+    private long accessTokenValidity;
+    
+    @Value("${security.jwt.token.refresh-expiration:259200000}")	// 3일
+    private long refreshTokenValidity;
+    
 	private final LoginService loginService;
+	
+	private final RefreshTokenService refreshTokenService;
 	
 	@PostConstruct
 	protected void init() {
@@ -39,11 +48,11 @@ public class UserAuthProvider {
 	}
 	
 	// 토큰 생성
-	public String createToken(Employees employee) {
+	public String createAccessToken(Employees employee) {
 		System.out.println("<<< UserAuthProvider - createToken() >>>");
 		
 		Date now = new Date();  // java.util.Date (import 주의)
-		Date validity = new Date(now.getTime() + 3600000);   // 토큰 유효시간 1시간
+		Date validity = new Date(now.getTime() + accessTokenValidity);   // 토큰 유효시간 1시간
 		String jwtId = UUID.randomUUID().toString();
 		
 		// JWT를 사용하려면 pom.xml에 java-jwt 추가
@@ -59,7 +68,28 @@ public class UserAuthProvider {
 				.withClaim("dept_no", employee.getDept_no())
 				.withClaim("position_id", employee.getPosition_id())
 				.withClaim("admin_type", employee.getAdmin_type())
+				.withClaim("token_type", "access")
 				.sign(Algorithm.HMAC256(secretKey));	// HMAC256 알고리즘으로 서명하여 토큰 생성
+	}
+	
+	// 리프레시 토큰 생성
+	public String createRefreshToken(Employees employee) {
+		System.out.println("<<< UserAuthProvider - createRefreshToken() >>>");
+		
+		Date now = new Date();
+		Date validity = new Date(now.getTime() + refreshTokenValidity);
+		String jwtId = UUID.randomUUID().toString();
+		System.out.println("리프레시 토큰 만료 일시:" + validity);
+		
+		return JWT.create()
+				.withSubject(String.valueOf(employee.getEmp_no()))
+				.withIssuer("daon-approval-system")
+				.withJWTId(jwtId)
+				.withIssuedAt(now)
+				.withExpiresAt(validity)
+				.withClaim("token_type", "refresh")
+				.sign(Algorithm.HMAC256(secretKey));
+				
 	}
 	
 	// 토큰 검증
@@ -70,13 +100,15 @@ public class UserAuthProvider {
 		// import com.auth0.jwt.JWTVerifier; // 주의
 		// 토큰 서명 검증 (HMAC256 알고리즘)
 		JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secretKey)).build();
-		
-		System.out.println("<<< UserAuthProvider - validationToken() 1 >>>");
-		
+
 		// 토큰 만료 여부 확인
 		DecodedJWT decoded = verifier.verify(token);  // JWT를 확인하기 위해 먼저 디코딩한다. 유효기간을 초과하면 예외가 발생한다.
 		
-		System.out.println("<<< UserAuthProvider - validationToken() 2 >>>");
+		// 토큰 타입 확인
+		String tokenType = decoded.getClaim("token_type").asString();
+		if(!"access".equals(tokenType)) {
+			throw new RuntimeException("Invalid token type");
+		}
 		
 		// 토큰의 발급자(Issuer) 정보로 사용자 조회
 		Employees emp = loginService.findByEmp_no(Integer.parseInt(decoded.getSubject()));
@@ -84,6 +116,51 @@ public class UserAuthProvider {
 		// 사용자가 데이터베이스에 존재하는지 확인
 		return new UsernamePasswordAuthenticationToken(emp, null, Collections.emptyList());
 		
+	}
+	
+	public String validateRefreshToken(String refreshToken) {
+	    System.out.println("<<< UserAuthProvider - validateRefreshToken() >>>");
+	    System.out.println("리프레시 토큰 검증 시작: " + refreshToken.substring(0, Math.min(20, refreshToken.length())) + "...");
+	    
+	    try {
+	        // 토큰이 유효한지 확인 (만료 등)
+	        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secretKey)).build();
+	        DecodedJWT decoded = verifier.verify(refreshToken);
+	        
+	        // 토큰 타입 확인
+	        String tokenType = decoded.getClaim("token_type").asString();
+	        System.out.println("토큰 타입: " + tokenType);
+	        if (!"refresh".equals(tokenType)) {
+	            System.out.println("토큰 타입 불일치: " + tokenType);
+	            throw new RuntimeException("Invalid token type");
+	        }
+	        
+	        // 토큰의 발급 및 만료 시간 출력
+	        System.out.println("토큰 발급 시간: " + decoded.getIssuedAt());
+	        System.out.println("토큰 만료 시간: " + decoded.getExpiresAt());
+	        System.out.println("현재 시간: " + new Date());
+	        
+	        // 사용자 정보 확인
+	        String subStr = decoded.getSubject();
+	        System.out.println("토큰에서 subject 추출: " + subStr);
+	        int empNo = Integer.parseInt(subStr);
+	        
+	        // 사용자 및 DB의 토큰 확인
+	        Employees emp = loginService.findByEmp_no(empNo);
+	        boolean isValid = refreshTokenService.validateRefreshToken(empNo, refreshToken);
+	        System.out.println("DB에서 리프레시 토큰 검증 결과: " + isValid);
+	        
+	        if (!isValid) {
+	            throw new RuntimeException("Invalid refresh token in database");
+	        }
+	        
+	        // 새 액세스 토큰 생성
+	        return createAccessToken(emp);
+	    } catch (Exception e) {
+	        System.out.println("리프레시 토큰 검증 실패: " + e.getMessage());
+	        e.printStackTrace(); // 스택 트레이스 출력
+	        throw new RuntimeException("Invalid refresh token: " + e.getMessage(), e);
+	    }
 	}
 
 }

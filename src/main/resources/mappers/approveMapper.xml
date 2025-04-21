@@ -5,13 +5,60 @@
      
 <mapper namespace="com.spring.daon.approve.ApproveMapper">
 
-	<!-- 결재 진행중 목록 조회 -->
-	<select id="getDocumentList" parameterType="int" resultType="com.spring.daon.approve.Documents">
+	<!-- 작성자 - 결재 목록 조회(상태별) -->
+	<select id="getDocList" parameterType="java.util.Map" resultType="com.spring.daon.approve.Documents">
 		SELECT * FROM documents
 		 WHERE doc_status = #{status}
-		 ORDER BY doc_reg_date DESC    
+		   AND emp_no = #{emp_no}
+		 ORDER BY doc_reg_date DESC
 	</select>
 	
+	<!-- 전체 결재 목록 조회(임시저장 제외) -->
+	<select id="getAllDocList" parameterType="int" resultType="com.spring.daon.approve.Documents">
+		SELECT * FROM documents
+		 WHERE doc_status NOT LIKE 4
+		   AND emp_no = #{emp_no}
+		 ORDER BY doc_reg_date DESC
+	</select>
+	
+	<!-- 결재자 - 결재 목록 조회 -->
+	<select id="getApproverDocList" parameterType="java.util.Map" resultType="com.spring.daon.approve.Documents">
+		SELECT d.*
+		  FROM documents d, approval_lines al
+		 WHERE al.approver_no = #{emp_no}
+		   AND al.approval_status = #{status}
+		   AND d.doc_no = al.doc_no
+		   AND d.doc_status = 1
+	</select>
+	
+	<insert id="insertDocument">
+		INSERT INTO documents(doc_form, emp_no, dept_no, doc_title, doc_reg_date, doc_status, doc_urgent)
+		VALUES(#{doc_form}, #{emp_no}, #{dept_no}, #{doc_title}, #{doc_reg_date}, #{doc_status}, #{doc_urgent})
+	</insert>
+	
+	<select id="getDocNo" parameterType="int" resultType="int">
+		SELECT MAX(doc_no)
+		  FROM documents
+		 WHERE emp_no = #{emp_no}
+	</select>
+	
+	<insert id="insertApprovalLines">
+		INSERT INTO approval_lines(doc_no, approver_no, approval_order, approval_status)
+		VALUES(#{doc_no}, #{approver_no}, #{approval_order}, #{approval_status})
+	</insert>
+	
+	<insert id="insertWorkReport">
+    INSERT INTO work_report(doc_no, emp_no, title, content, coop_dept_no, execution_date)
+    VALUES(
+        #{doc_no}, 
+        #{emp_no}, 
+        #{title}, 
+        #{content}, 
+        <if test="coop_dept_no != 0">#{coop_dept_no}</if>
+        <if test="coop_dept_no == 0">null</if>, 
+        #{execution_date}
+    )
+</insert>
 	<!--  결재 진행중 목록 조회
 	<select id="getCompleteList" resultType="com.spring.daon.approve.Documents">
 		SELECT * FROM documents

@@ -1,5 +1,6 @@
 package com.spring.daon.hrMgt;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -23,5 +24,8 @@ public interface HRMgtMapper {
 	
 	// 사원 삭제
 	public int deleteEmployee(int emp_no);
+	
+	// 사원 기본급 조회
+	public BigDecimal BaseSalaryByEmpNo(int empNo);
 	
 }

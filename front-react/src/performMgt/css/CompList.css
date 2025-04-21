@@ -47,9 +47,11 @@
     width: 180px;
     border: 2px solid #CCCCFB;
   }
+
   .subutt:hover{
     background-color: #d2d2fc;
   }
+
 
   .subutt1{
     margin-left: 20px;
@@ -60,6 +62,16 @@
     background-color: #d2d2fc;
   }
   
+  .subutt2{
+    width: 180px;
+    border: 2px solid #CCCCFB;
+    text-align: right;
+  }
+
+  .subutt2:hover{
+    background-color: #d2d2fc;
+  }
+
 
   .subno{
     /* width: 30px;

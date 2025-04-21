@@ -34,6 +34,9 @@ public interface AttendMgtMapper {
 	// <<< 휴가 관련 >>>
 	
 	// 휴가 생성 내역
-	public List<Vacation_occur> vacation_log(Map<String, Object> map);
+	public List<Vacation_occur> vacation_log(int emp_no);
 	
+	// 휴가 사용기록 입사일기준 현재 분기에 승인된 연차만 불러오기
+	public List<Vacation_occur> vacationHistory(int emp_no);
+		
 }

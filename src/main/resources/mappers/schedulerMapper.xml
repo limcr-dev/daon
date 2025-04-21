@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+     
+<mapper namespace="com.spring.daon.common.SchedulerMapper">
+	
+	<!-- 결근 처리 스케쥴러 -->
+	<insert id="mark_absent" >		
+		INSERT INTO attendance (emp_no, date, absent)
+		SELECT e.emp_no, CURDATE(), 1
+		FROM employees e
+		LEFT JOIN attendance a 
+		    ON e.emp_no = a.emp_no AND a.date = CURDATE()
+		WHERE a.emp_no IS NULL
+		AND DAYOFWEEK(CURDATE()) NOT IN (1, 7) -- 주말 제외 (1: 일요일, 7: 토요일)
+		AND NOT EXISTS (SELECT 1 FROM holidays h WHERE h.holiday_date = CURDATE());
+	</insert>
+	
+	<!-- 월차 자동 발생 스케쥴러 -->
+	<insert id="create_month_vacation">
+	INSERT INTO vacation_occur (emp_no, earned_days, expire_date, occur_reason, create_at)
+	SELECT e.emp_no, 1, CURDATE() + INTERVAL 1 year, '월간 연차 자동 발생', curdate() 
+	FROM employees e
+	LEFT JOIN vacation_occur v 
+	    ON e.emp_no = v.emp_no
+	WHERE datediff(curdate(), e.hire_date) between 30 and 365
+	  and DAY(e.hire_date) = DAY(CURDATE())
+	   AND NOT EXISTS (
+	      SELECT 1 FROM vacation_occur v
+	      WHERE v.emp_no = e.emp_no
+	        AND v.occur_reason = '월간 연차 자동 발생'
+	        AND MONTH(v.expire_date - INTERVAL 1 YEAR) = MONTH(CURDATE())
+	        AND YEAR(v.expire_date - INTERVAL 1 YEAR) = YEAR(CURDATE())
+	        )
+	</insert>
+	<!-- 연차 자동 발생 스케쥴러 -->
+	<insert id="create_year_vacation">
+	INSERT INTO vacation_occur (emp_no, earned_days, expire_date, occur_reason, create_at)
+	SELECT e.emp_no,
+	       LEAST(15 + FLOOR((DATEDIFF(CURDATE(), e.hire_date) - 365) / 730), 10) AS earned_days,
+	       e.hire_date + INTERVAL (LEAST(15 + FLOOR((DATEDIFF(CURDATE(), e.hire_date) - 365) / 730), 10) + 15) DAY,
+	       '연간 연차 자동 발생',
+	       CURDATE()
+	FROM employees e
+	WHERE DATEDIFF(CURDATE(), e.hire_date) >= 365
+	  AND MONTH(e.hire_date) = MONTH(CURDATE())
+	  AND DAY(e.hire_date) = DAY(CURDATE())
+	  AND NOT EXISTS (
+	      SELECT 1
+	      FROM vacation_occur v
+	      WHERE v.emp_no = e.emp_no
+	        AND v.occur_reason = '연간 연차 자동 발생'
+	        AND YEAR(v.create_at) = YEAR(CURDATE())
+	  )
+	</insert>
+	
+</mapper>

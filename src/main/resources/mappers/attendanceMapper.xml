@@ -95,10 +95,21 @@
 	<!-- <<< 휴가관련 >>> -->
 	
 	<!-- 휴가 생성 내역 -->
-	<select id="vacation_log" parameterType="java.util.Map" resultType="com.spring.daon.attendMgt.Vacation_occur">
+	<select id="vacation_log" parameterType="int" resultType="com.spring.daon.attendMgt.Vacation_occur">
 	     SELECT *
-		    FROM Vacation_occur
+		    FROM vacation_occur
 		    WHERE emp_no = #{emp_no}
-		      AND create_at between #{startDate} and #{endDate}
+	</select>
+	
+	<!-- 휴가 사용기록 불러오기 -->
+	<select id="vacationHistory" parameterType="int" resultType="com.spring.daon.approve.Vacation_req">
+	     SELECT vr.*
+		   FROM vacation_req vr
+		   join documents d
+		   join employees e 
+		  WHERE d.doc_no =vr.doc_no
+		    AND d.emp_no = e.emp_no 
+		    AND vr.emp_no = #{emp_no}
+		    AND d.doc_status = 2
 	</select>
 </mapper>

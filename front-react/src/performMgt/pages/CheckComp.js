@@ -22,6 +22,7 @@ const CheckComp = () => {
         eval_emp_type: '',
         eval_click_emp: '',
         eval_order_num: '',
+        registration:'',
     });
 
 

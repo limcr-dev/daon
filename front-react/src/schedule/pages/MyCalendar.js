@@ -161,7 +161,7 @@ const MyCalendar = () => {
           backdrop="" centered
           dialogClassName="modal-300w"
         >
-          <div style={{ boxShadow: "3px 3px 50px 1px #555555" }}>
+          <div >
             <Modal.Header closeButton>
               <Modal.Title>{date}참석자 추가</Modal.Title>
             </Modal.Header>
