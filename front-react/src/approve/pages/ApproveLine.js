@@ -14,7 +14,6 @@ const ApproveLine = ({ closeModal, onSave, approveLine = []}) => {
     const [approver, setApprover] = useState(null); // 선택된 직원 정보
     const [deptTree, setDeptTree] = useState([]); // 조직도 정보
     const [searchTerm, setSearchTerm] = useState('');   // 실시간 검색을 위한 변수
-    const test = approveLine;
     const handleInputChange = (e) => {
         const newSearchTerm = e.target.value;
         setSearchTerm(newSearchTerm);
@@ -26,7 +25,6 @@ const ApproveLine = ({ closeModal, onSave, approveLine = []}) => {
             .then((res) => res.json())
             .then((data) => setDeptTree(transformToTree(data)))
             .catch((error) => console.error("조직도 불러오기 에러:", error));
-        console.log("test:",test);
     }, []);
 
     const transformToTree = (departments) => {

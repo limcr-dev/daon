@@ -17,8 +17,8 @@ import { setSeconds } from 'date-fns';
 
 const ApproveForm = () => {
     const { user } = useUser();     // 로그인 유저 정보
-    const propsParam = useParams(); // form_no를 가져오기 위한 변수
-    const form_no = parseInt(propsParam.form_no);
+    const params = useParams(); // form_no를 가져오기 위한 변수
+    const form_no = parseInt(params.form_no);
 
     const navigate = useNavigate(); // 화면 이동을 위한 변수
 
@@ -70,16 +70,16 @@ const ApproveForm = () => {
     const handleUrgentChange = (event) => {
         const checked = event.target.checked;
         console.log("event.target.checked 값:", checked);
-        
+
         // isUrgent 상태 업데이트
         setIsUrgent(checked);
-        
+
         // document 상태도 업데이트 - 이 부분이 빠져있었습니다!
         setDocument({
             ...document,
             doc_urgent: checked ? 'Y' : 'N'
         });
-        
+
         console.log("업데이트될 문서:", {
             ...document,
             doc_urgent: checked ? 'Y' : 'N'
@@ -172,6 +172,89 @@ const ApproveForm = () => {
 
     };
 
+    // 임시저장 처리 함수
+    const handleSaveRequest = async (e) => {
+        e.preventDefault();
+
+        // 필수 입력 체크
+        if (!formData.title) {
+            alert("제목을 작성해주세요.");
+            return;
+        }
+
+        if (!formData.content) {
+            alert("내용을 작성해주세요.");
+            return;
+        }
+
+        if (!formData.execution_date) {
+            alert("업무 시행일을 지정해주세요.");
+            return;
+        }
+
+        // document 객체에 임시저장 상태값(4) 추가
+        const tempDocument = {
+            ...document,
+            doc_status: 4  // 임시저장 상태코드
+        };
+
+        // 결재 요청 데이터 구성 (원래 함수 대신 직접 구성)
+        let requestData = {
+            document: tempDocument,
+            lineList: line.length > 0 ? line : []  // 결재선이 없어도 임시저장 가능하게 함
+        };
+
+        // 양식별 데이터 추가
+        switch (form_no) {
+            case 1:
+                requestData = {
+                    ...requestData,
+                    vacation_req: formData
+                };
+                break;
+            case 2:
+                requestData = {
+                    ...requestData,
+                    vacation_req: formData
+                };
+                break;
+            case 3:
+                requestData = {
+                    ...requestData,
+                    vacation_req: formData
+                };
+                break;
+            case 5:
+                requestData = {
+                    ...requestData,
+                    work_report: formData
+                };
+                break;
+            default:
+                alert("유효한 양식이 아닙니다.");
+                return;
+        }
+
+        console.log("임시저장 데이터:", requestData);
+
+        try {
+            request("POST", "/approve/submit/" + form_no, JSON.stringify(requestData))
+                .then(response => {
+                    console.log("임시저장 성공:", response);
+                    alert("임시저장 요청이 완료되었습니다.");
+                    navigate('/approve');
+                })
+                .catch(error => {
+                    console.error("임시저장 요청 오류:", error);
+                    alert("임시저장 요청 중 오류가 발생했습니다.");
+                });
+        } catch (error) {
+            console.error("임시저장 요청 오류:", error);
+            alert("임시저장 요청 중 오류가 발생했습니다.");
+        }
+
+    };
+
     // form_no에 따라 다른 양식 컴포넌트를 렌더링
     const renderFormContent = () => {
         switch (form_no) {
@@ -204,7 +287,7 @@ const ApproveForm = () => {
                     {/* 문서 액션 버튼 */}
                     <div className="document-actions" style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
                         <Button onClick={handleSubmitRequest} className='buttonStyle'>결재요청</Button>
-                        <Button className='buttonStyle'>임시저장</Button>
+                        <Button onClick={handleSaveRequest} className='buttonStyle'>임시저장</Button>
                         <Button className='buttonStyle'>취소</Button>
                         <Button className='buttonStyle' onClick={() => setInfoOpen(true)}>결재선 지정</Button>
                         <div style={{ display: 'flex', alignItems: 'center' }}>

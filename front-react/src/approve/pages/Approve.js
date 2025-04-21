@@ -16,6 +16,7 @@ import "../css/approve.css";
 import { request } from '../../common/components/helpers/axios_helper';
 import { Link } from 'react-router-dom';
 import { useUser } from '../../common/contexts/UserContext';
+import { getStatusText } from '../components/ApprCodeToText';
 
 const Approve = () => {
   const { user } = useUser();
@@ -26,7 +27,7 @@ const Approve = () => {
   useEffect(() => {
     try {
       const fetchData = async () => {
-        const response = await request("GET", "/approve/documents/2/" + parseInt(user.emp_no));
+        const response = await request("GET", "/approve/documents/1/" + parseInt(user.emp_no));
         if (response && response.data) {
           // 배열인지 확인하고 설정
           const data = Array.isArray(response.data) ? response.data : [];
@@ -42,7 +43,7 @@ const Approve = () => {
   useEffect(() => {
     try {
       const fetchData = async () => {
-        const response = await request("GET", "/approve/documents/1/" + parseInt(user.emp_no));
+        const response = await request("GET", "/approve/documents/2/" + parseInt(user.emp_no));
         if (response && response.data) {
           // 배열인지 확인하고 설정
           const data = Array.isArray(response.data) ? response.data : [];
@@ -155,7 +156,7 @@ const Approve = () => {
                           <td><Link to={"/approve/documentDetail/" + doc.doc_no}>{doc.doc_title}</Link></td>
                           <td>첨부</td>
                           <td>{doc.doc_urgent}</td>
-                          <td>{doc.doc_status}</td>
+                          <td>{getStatusText(doc.doc_status)}</td>
                         </tr>
 
                       )))}
@@ -197,18 +198,15 @@ const Approve = () => {
                           <td><Link to={"/approve/documentDetail/" + doc.doc_no}>{doc.doc_title}</Link></td>
                           <td>첨부</td>
                           <td>{doc.doc_urgent}</td>
-                          <td>{doc.doc_status}</td>
+                          <td>{getStatusText(doc.doc_status)}</td>
                         </tr>
 
                       )))}
 
                   </tbody>
-
                 </table>
               </Card>
             </Col>
-
-
           </Row>
         </Content>
       </Container>
