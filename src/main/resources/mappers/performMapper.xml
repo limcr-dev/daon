@@ -129,7 +129,7 @@
 	<!-- 동료 불러오기 -->
 	<insert id="insertPeerEval" parameterType="com.spring.daon.performMgt.EvalPeer">
 		INSERT INTO eval_peer (
-		eval_peer_no,
+			eval_peer_no,
             eval_no,
             eval_type,
             eval_comp1,
@@ -145,9 +145,10 @@
             eval_status,
             eval_total_score,
             eval_start_date,
-            eval_end_date)
+            eval_end_date,
+            eval_order_num)
 		VALUES (
-		  #{eval_peer_no},
+		  	#{eval_peer_no},
             #{eval_no},
             #{eval_type},
             #{eval_comp1},
@@ -163,8 +164,10 @@
             #{eval_status},
             #{eval_total_score},
             NOW(),         <!-- 현재 날짜 저장 -->
-            #{eval_end_date}
+            DATE_ADD(NOW(), INTERVAL 7 DAY),
+            eval_order_num
             )
+   
 	</insert>
 	
 	

@@ -99,7 +99,7 @@ public class PerformMgtServiceImpl {
 	
 	// 평가 결과 저장하기
 	public int insertPeerEval(EvalPeer evalPeer) {
-		System.out.println("<< 평가 결과 저장 하기 >>"+perMapper.insertPeerEval(evalPeer));
+		System.out.println("<< 평가 결과 저장 하기 >>");
 		
 		return  perMapper.insertPeerEval(evalPeer);
 	}

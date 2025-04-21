@@ -22,66 +22,7 @@ const EvalPeerQue = () => {
     const [selectedPeer, setSelectedPeer] = useState("");
 
     const [answers, setAnswers] = useState({});
-
-    const handleScoreChange = (quesId, { comp, score }) => {
-        setAnswers(prev => ({
-            ...prev,
-            [quesId]: { comp, score }
-        }));
-    };
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-    
-        if (!user || !selectedPeer) {
-            alert("사용자 정보 또는 피평가자를 선택해주세요.");
-            return;
-        }
-    
-        const answerList = Object.values(answers);
-    
-        // if (answerList.length !== 5) {
-        //     alert("모든 질문에 응답해주세요.");
-        //     return;
-        // }
-    
-        const payload = {
-            eval_peer_no: selectedPeer,       // 피평가자
-            eval_no: user.emp_no,             // 평가자
-            eval_type: "동료평가",
-            eval_comp1: answerList[0].comp,
-            eval_comp1_score: answerList[0].score,
-            eval_comp2: answerList[1].comp,
-            eval_comp2_score: answerList[1].score,
-            eval_comp3: answerList[2].comp,
-            eval_comp3_score: answerList[2].score,
-            eval_comp4: answerList[3].comp,
-            eval_comp4_score: answerList[3].score,
-            eval_comp5: answerList[4].comp,
-            eval_comp5_score: answerList[4].score,
-            eval_total_score: answerList.reduce((acc, cur) => acc + cur.score, 0),
-            eval_status: "제출완료",
-        };
-    
-        try {
-            const res = await fetch("http://localhost:8081/performMgt/evalPeerInsert", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("auth_token")}`
-                },
-                body: JSON.stringify(payload)
-            });
-    
-            if (res.ok) {
-                alert("평가가 성공적으로 저장되었습니다!");
-                // 초기화하거나, 다른 페이지로 이동하는 코드 여기에!
-            } else {
-                alert("저장에 실패했습니다.");
-            }
-        } catch (err) {
-            console.error("평가 저장 중 오류:", err);
-        }
-    };
+    //console.log("현재 토큰 : ", localStorage.getItem("auth_token"));
 
     // 테스트 리스트 불러오기
     useEffect(() => {
@@ -124,13 +65,14 @@ const EvalPeerQue = () => {
 
     // 문제 불러오기
     const startTest = (orderNum) => {
+        //만약에 평가하고자 하는 사람을 선택안했으면 안돼! 
         if (!selectedPeer) {
             alert("평가할 동료를 먼저 선택해 주세요!");
             return;
         }
 
         if (window.confirm(`${orderNum}번 테스트를 ${selectedPeer}에게 시작할까요?`)) {
-            //만약에 평가하고자 하는 사람을 선택안했으면 안돼! 
+
             fetch(`http://localhost:8081/performMgt/queslist/${orderNum}`, {
                 method: "GET",
             })
@@ -138,13 +80,81 @@ const EvalPeerQue = () => {
                 .then((data) => {
                     console.log("응답", data);
                     setQuesList(data);
-
                 })
                 .catch((error) =>
                     console.error("데이터 가져오기 오류 : ", error));
         }
     };
+    const handleScoreChange = (quesId, { comp, score }) => {
+        setAnswers(prev => ({
+            ...prev,
+            [quesId]: { comp, score }
+        }));
+    };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
+        if (!user || !selectedPeer) {
+            alert("사용자 정보 또는 피평가자를 선택해주세요.");
+            return;
+        }
+
+        // 답변 수와 질문 수 비교
+        const answerCount = Object.keys(answers).length;
+        const questionCount = quesList.length;
+
+        if (answerCount < questionCount) {
+            alert("모든 질문에 응답해주세요.");
+            return;
+        }
+
+        // 답들의 value들만 가져와서 배열로 변환 
+        const answerList = Object.values(answers);
+
+        // 역량 별 점수 누적 객체 만들기
+        const compScoreMap = {};
+
+        answerList.forEach(({ comp, score }) => {
+            if (!compScoreMap[comp]) {
+                compScoreMap[comp] = 0;
+            }
+            compScoreMap[comp] += score;
+        });
+        const compEntries = Object.entries(compScoreMap);
+
+        const payload = {
+            eval_peer_no: selectedPeer,       // 피평가자
+            eval_no: user.emp_no,             // 평가자
+            eval_type: "동료평가",
+            eval_status: "제출완료",
+            eval_total_score: answerList.reduce((sum, item) => sum + item.score, 0),
+            // eval_order_num: test.eval_order_num,
+        };
+        // comp1~comp5 채워넣기
+        for (let i = 0; i < 5; i++) {
+            payload[`eval_comp${i + 1}`] = compEntries[i]?.[0] || null;
+            payload[`eval_comp${i + 1}_score`] = compEntries[i]?.[1] || 0;
+        }
+
+        try {
+            const res = await fetch("http://localhost:8081/performMgt/evalPeerInsert", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                alert("평가가 성공적으로 저장되었습니다!");
+                // 초기화하거나, 다른 페이지로 이동하는 코드 여기에!
+            } else {
+                alert("저장에 실패했습니다.");
+            }
+        } catch (err) {
+            console.error("평가 저장 중 오류:", err);
+        }
+    };
 
 
     return (
@@ -238,7 +248,7 @@ const EvalPeerQue = () => {
 
                                 </Card.Body>
                                 <div align='right'>
-                                    <Button className="subutt" type="submit"  onClick={handleSubmit}> 제출하기  </Button>
+                                    <Button className="subutt" type="submit" onClick={handleSubmit}> 제출하기  </Button>
                                 </div>
                             </form>
                         </Card>
