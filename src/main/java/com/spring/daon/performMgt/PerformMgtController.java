@@ -131,7 +131,7 @@ public class PerformMgtController {
 	}
 	
 	// 평가 결과 저장하기
-	@PostMapping("/performMgt/evalPeerInsert")
+	@PostMapping("/evalPeerInsert")
 	public ResponseEntity<?> insertPeerEval(@RequestBody EvalPeer evalPeer) {
 		System.out.println("<< 평가 결과 저장하기 >>");
 	    return new ResponseEntity<>(service.insertPeerEval(evalPeer), HttpStatus.CREATED);
