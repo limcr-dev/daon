@@ -18,7 +18,7 @@ const PerformMgtRouter = () => {
             <Route path="/selfques" exact={true} element={<EvalSelQue />} />      {/* 자기평가 */}  
             <Route path="/peerques" exact={true} element={<EvalPeerQue />} />  {/* 동료평가 */} 
             <Route path="/peerList" exact={true} element={<EvalPeerQue />} />  {/* 동료불러오기 */} 
-            
+            <Route path="/peerinsert" exact={true} element={<EvalPeerQue />} />  {/* insert 동료평가 결과 */} 
             <Route path="/eval_mgnt" exact={true} element={<CheckComp />} />  
             <Route path="/evalList" exact={true} element={<EvalList />} />
             <Route path="/testList" exact={true} element={<TestList />} />
