@@ -60,7 +60,7 @@ const ScheduleLeftbar = (user) => {
 
       <Sidenav style={{ marginTop: '20px' }}>
         <Sidenav.Body style={{ backgroundColor: '#f0f0f0', padding: "20px" }}>
-          <ScheduleTree emp_no={user.emp_no} />
+          <ScheduleTree user={user} />
         </Sidenav.Body>
       </Sidenav>
     </Sidebar>

@@ -35,10 +35,10 @@ public class SecurityConfig {
 			.csrf(csrf -> csrf.disable())  // csrf 설정 비활성화
 			.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests((requests) -> requests	// 접근 권한 설정
-					.antMatchers(HttpMethod.POST, "/login" ,"/home", "/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**").permitAll() // 인증이 필요하지 않은 유일한 엔드포인트(모두에게 회원 가입, 로그인은 시도할 수 있도록 허용)
-					.antMatchers(HttpMethod.GET,"/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**").permitAll()
-					.antMatchers(HttpMethod.PUT,"/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**").permitAll()
-					.antMatchers(HttpMethod.DELETE,"/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**").permitAll()
+					.antMatchers(HttpMethod.POST, "/login" ,"/home", "/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**", "/schedule/**").permitAll() // 인증이 필요하지 않은 유일한 엔드포인트(모두에게 회원 가입, 로그인은 시도할 수 있도록 허용)
+					.antMatchers(HttpMethod.GET,"/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**", "/schedule/**").permitAll()
+					.antMatchers(HttpMethod.PUT,"/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**", "/schedule/**").permitAll()
+					.antMatchers(HttpMethod.DELETE,"/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**", "/schedule/**").permitAll()
 					.anyRequest().authenticated()
 		);			
 		

@@ -1,128 +1,129 @@
-import { Checkbox, Divider } from 'rsuite';
+import { Checkbox, Col, Divider, Dropdown, Input } from "rsuite";
 import "../css/ScheduleTree.css";
-import { defaultTheme, ColorSwatch, ColorSwatchPicker, Provider } from '@adobe/react-spectrum';
-import { ColorPicker, Flex, ColorEditor } from '@adobe/react-spectrum';
-import React, { useEffect, useState } from 'react';
+
+import React, { useEffect, useState } from "react";
+
+// 공통 js
+import { request } from "../../common/components/helpers/axios_helper";
 
 // icon
-import { faPenToSquare } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
-const ScheduleTree = (props) => {
-  const categoryEdit = () => {
+import CategoryFilter from "./CategoryFilter";
 
-  }
-  const emp_no = props.emp_no;
-
+const ScheduleTree = ({ user }) => {
+  // 스케쥴 카테고리 저장 함수
   const [schedule_setting, setSchedule_setting] = useState([]);
 
   // 스케쥴 카테고리 가져오기
   useEffect(() => {
-    fetch("http://localhost:8081/attend/getCategory/" + emp_no, {
-      method: "GET"
-    })
-      .then((res) => res.json())
+    request("GET", "/schedule/getCategory/" + user.emp_no)
       .then((res) => {
-        // moveDate 값이 변경될때만 set (날짜 이동 버튼 클릭 시에만)
-        if (JSON.stringify(emp_no) !== JSON.stringify(res)) {
-          setSchedule_setting(res);
-          console.log(res)
-        }
+        setSchedule_setting(res.data);
       })
       .catch((error) => {
-        console.log('로그인정보를 확인해주세요', error);
-      })
-  }, [emp_no])
+        console.log("로그인정보를 확인해주세요", error);
+      });
+  }, [user.emp_no]);
 
+  // 카테고리 수정
+  const [editMode, setEditMode] = useState({
+    top: false,
+    bottom: false,
+  });
+  const handleCategoryEdit = (section) => {
+    setEditMode((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
+  const submitCategortEdit = (e) => {};
   return (
     <div className="height_change">
+      <form onSubmit={submitCategortEdit}>
+        <table style={{ margin: "auto", width: "200px", zIndex: "100" }}>
+          <thead>
+            <tr>
+              <td colSpan={2}>
+                일정 관리 &nbsp;&nbsp;
+                {/* 버튼 전환 */}
+                {!editMode.top ? (
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    onClick={() => handleCategoryEdit("top")}
+                  />
+                ) : (
+                  <FontAwesomeIcon
+                    icon={faCheck}
+                    onClick={() => handleCategoryEdit("top")}
+                  />
+                )}
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            {/* 일정 목록 */}
+            <CategoryFilter
+              schedule_setting={schedule_setting}
+              type={"I"}
+              edit={editMode.top}
+            />
+            <CategoryFilter
+              schedule_setting={schedule_setting}
+              type={"S"}
+              edit={editMode.top}
+            />
 
-      <table style={{ margin: "auto", width: "200px", zIndex: "100" }}>
-        <thead>
-          <tr>
-            <td colSpan={2}>
-              일정 관리 &nbsp;&nbsp;<FontAwesomeIcon icon={faPenToSquare} onClick={categoryEdit} />
-            </td>
-          </tr>
-        </thead>
-        {/* 스케쥴 카테고리 목록 */}
-        <tbody>
-          {schedule_setting
-            .filter(category => category.full_schedule === false)
-            .map(category => (
-              <tr key={category.sch_category_no}>
-                <td style={{ width: "10%", paddingLeft: "10px"}}>
-                  <Checkbox defaultChecked></Checkbox>
-                </td>
-                <td>{category.sch_category_title}</td>
-                <td >
-                  <Provider theme={defaultTheme} >
-                    <ColorPicker
-                      size="XS"
-                      rounding="full"
-                      defaultValue={category.sch_category_color}
-                      backgroundColor="black"
-                      style={{backgroundColor:"black" }}>
-                      <Flex direction="column" gap="size-300">
-                        <ColorEditor />
-                        <ColorSwatchPicker>
-                          <ColorSwatch color="#A00" />
-                          <ColorSwatch color="#f80" />
-                          <ColorSwatch color="#080" />
-                          <ColorSwatch color="#08f" />
-                          <ColorSwatch color="#088" />
-                          <ColorSwatch color="#008" />
-                        </ColorSwatchPicker>
-                      </Flex>
-                    </ColorPicker>
-                  </Provider>
+            {/* 카테고리 추가  */}
+            {!editMode.top && (
+              <tr>
+                <td colSpan={2}>
+                  <button type="button" style={{ color: "gray" }}>
+                    + 내 일정 카테고리 추가
+                  </button>
                 </td>
               </tr>
-            ))}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
+      </form>
       <Divider />
-      <table style={{ margin: "auto", width: "200px" }}>
-        <thead>
-          <tr>
-            <td colSpan={2}>
-              전사 일정 &nbsp;&nbsp;<FontAwesomeIcon icon={faPenToSquare} />
-            </td>
-          </tr>
-        </thead>
-        <tbody>
-          {schedule_setting
-            .filter(category => category.full_schedule === true)
-            .map(category => (
-              <tr key={category.sch_category_no}>
-                <td style={{ width: "10%", paddingLeft: "10px" }}>
-                  <Checkbox defaultChecked></Checkbox>
-                </td>
-                <td > {category.sch_category_title}</td>
-                <td>
-                  <Provider theme={defaultTheme} >
-                    <ColorPicker
-                      size="XS"
-                      rounding="full"
-                      defaultValue={category.sch_category_color}>
-                      <Flex direction="column" gap="size-300">
-                        <ColorEditor />
-                        <ColorSwatchPicker>
-                          <ColorSwatch color="#A00" />
-                          <ColorSwatch color="#f80" />
-                          <ColorSwatch color="#080" />
-                          <ColorSwatch color="#08f" />
-                          <ColorSwatch color="#088" />
-                          <ColorSwatch color="#008" />
-                        </ColorSwatchPicker>
-                      </Flex>
-                    </ColorPicker>
-                  </Provider>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
+
+      {/* 하단 */}
+      <form onSubmit={submitCategortEdit}>
+        <table style={{ margin: "auto", width: "200px" }}>
+          <thead>
+            <tr>
+              <td colSpan={2}>
+                전사 일정 &nbsp;&nbsp;
+                {/* 버튼 전환 */}
+                {!editMode.bottom ? (
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    onClick={() => handleCategoryEdit("bottom")}
+                  />
+                ) : (
+                  <FontAwesomeIcon
+                    icon={faCheck}
+                    onClick={() => handleCategoryEdit("bottom")}
+                  />
+                )}
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            {/* 전사 일정 목록 */}
+            <CategoryFilter
+              schedule_setting={schedule_setting}
+              type={"A"}
+              edit={editMode.bottom}
+            />
+          </tbody>
+        </table>
+      </form>
     </div>
   );
 };

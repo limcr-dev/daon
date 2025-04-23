@@ -30,7 +30,7 @@ const ScheduleMain = () => {
           <Divider style={{ margin: "0px" }} />
           <Row gutter={20} style={{ padding: '15px', display: 'flex', flexDirection: 'column' }}>
             <Col>
-              <Card style={{maxWidth:"1400px", margin:"auto"}} >
+              <Card style={{width:"100%", margin:"auto"}} >
                 <Card.Header className="">
                   {/* 캘린더 출력 */}
                   <MyCalendar user={user}/>

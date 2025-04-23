@@ -13,3 +13,10 @@
   .YqfL3a_spectrum--light {
     background-color: #F0F0F0 !important;
   }
+  .CustomColorPicker{
+    width: 30px; 
+    height: 30px;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+  }

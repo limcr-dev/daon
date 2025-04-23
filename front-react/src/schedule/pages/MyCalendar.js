@@ -48,7 +48,7 @@ const MyCalendar = ({user}) => {
 
 
   return (
-    <div style={{ margin: "auto", maxWidth: "1200px" }}>
+    <div style={{ margin: "auto", width: "100%" }}>
 
       {/* 일정추가모달창 */}
       <ScheduleAdd open={modalShow} onClose={closeModal} user={user} pickDate={pickDate}/>
@@ -59,7 +59,7 @@ const MyCalendar = ({user}) => {
         <FullCalendar
           plugins={[dayGridPlugin, bootstrap5Plugin, timeGridPlugin, interactionPlugin, listPlugin]}
           initialView={'dayGridMonth'}  // 첫 화면 뷰어 설정
-          editable={true} // 수정 가능 여부
+          // editable={true} // 수정 가능 여부
           selectable={true} // 선택 가능 여부
           selectMirror={true} // TimeGrid 뷰에서 자리 표시자 여부
           dayMaxEvents={true} // 한 셀에 최대 이벤트(more) 표시 여부
@@ -105,7 +105,7 @@ const MyCalendar = ({user}) => {
             timeGridDay: { buttonText: "일간" },
             listMonth: { buttonText: "목록" }
           }}
-          height={"95vh"}
+          height={"90vh"}
           dateClick={openAddPage}
           events={event}
           dayMaxEventRows="3" // 이벤트 최대 수 잘안됌
