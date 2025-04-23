@@ -17,7 +17,7 @@ import FullCalendar from '@fullcalendar/react';
 // 공통 js
 import Leftbar from '../../common/pages/Leftbar';
 import Header from '../../common/pages/Header';
-
+import { request } from '../../common/components/helpers/axios_helper';
 // data
 import History from './History'
 
@@ -29,7 +29,7 @@ import "../css/AttendCommon.css";
 import AttendFooter from './AttendFooter';
 import MoveDateHeader from './MoveDateHeader';
 import AttendMgtLeftbar from './AttendMgtLeftbar';
-import ColorLegned from '../components/ColorLegned';
+import ColorLegend from '../components/ColorLegend';
 import { useUser } from '../../common/contexts/UserContext';
 
 const AttendMgt = () => {
@@ -44,10 +44,9 @@ const AttendMgt = () => {
 
   // 직원 코드에 따른 근무유형 이름 가져오기
   useEffect(() => {
-    fetch("http://localhost:8081/attend/workType/" + user.emp_no)
-      .then((res) => res.json())
+    request("GET", "/attend/workType/" + user.emp_no)
       .then((res) => {
-        setWork_schedules(res);
+        setWork_schedules(res.data);
       })
       .catch((error) => {
         console.log('로그인정보를 확인해주세요', error);
@@ -87,7 +86,7 @@ const AttendMgt = () => {
     setAttendHistoryList(data);
   };
 
-  // 출퇴근 통계 불러오기
+  // 출퇴근 통계 불러올 변수
   const [attendance, setAttendance] = useState({
     date: '',
     normal: '',
@@ -99,24 +98,17 @@ const AttendMgt = () => {
     absent: ''
   });
 
+  // 출퇴근 통계 불러오기
   useEffect(() => {
-    fetch("http://localhost:8081/attend/attendCnt/" + user.emp_no + "/" + moveDate.year + "/" + moveDate.month, {
-      method: "GET"
-    })
-      .then((res) => res.json())
+    request("GET", "/attend/attendCnt/" + user.emp_no + "/" + moveDate.year + "/" + moveDate.month)
       .then((res) => {
-        // moveDate 값이 변경될때만 set (날짜 이동 버튼 클릭 시에만)
-        if (JSON.stringify(moveDate) !== JSON.stringify(res)) {
-          setAttendance(res);
-        }
+          setAttendance(res.data);
       })
       .catch((error) => {
         console.log('로그인정보를 확인해주세요', error);
       })
   }, [user.emp_no, moveDate])
-  // 출퇴근 통계 불러오기 끝
 
-  // return
   return (
     <Container className="attendContainer">
       <Leftbar />
@@ -142,7 +134,8 @@ const AttendMgt = () => {
               <MoveDateHeader
                 currentDate={currentDate}
                 setCurrentDate={setCurrentDate}
-                setMoveDate={setMoveDate} />
+                setMoveDate={setMoveDate}
+                pageName={'내 근태 현황'} />
 
               <p style={{ fontSize: "16px" }}>
                 {work_schedules.type_name}
@@ -157,7 +150,7 @@ const AttendMgt = () => {
                   <div>조퇴<br /> <p>{attendance.early_leave}</p></div>
                   <div>외출<br /> <p>{attendance.out_status}</p></div>
                   <div>결근<br /> <p>{attendance.absent}</p></div>
-                  <div>이번달 연장<br /> <p>1h30m</p></div>
+                  <div>연차/휴가 사용 횟수<br /> <p>{attendance.vacation}</p></div>
                 </Card.Header>
               </Card>
               <br />
@@ -181,7 +174,7 @@ const AttendMgt = () => {
                         initialView={'dayGridMonth'}
                         locales={allLocales}  // 언어설정 가져오기
                         locale="kr"   // 한국어로 설정
-                        height={"58vh"}
+                        height={"58vh"} // 높이 설정
                         dayCellContent={(info) => { // 일 지우기
                           return info.date.getDate();
                         }}
@@ -194,7 +187,7 @@ const AttendMgt = () => {
                         }
                         dateClick={handleShow}
                         eventClick={eventhandleShow}
-                        dayMaxEventRows={2}
+                        dayMaxEventRows={2} // 한번에 보여줄 이벤트 갯수
                         events={attendHistoryList}
                       />
                     </div>
@@ -202,7 +195,7 @@ const AttendMgt = () => {
                 </Card>
                 {/* 날짜 선택 캘린더 끝 */}
 
-                {/* 근태 정보 캘린더 시작 */}
+                {/* 세부 정보 캘린더 시작 */}
                 <Card className="attendCard" style={{ width: "30%" }}>
                   <Card.Header className="rightCalendar">
                     <div style={{ width: '100%' }}>
@@ -227,11 +220,11 @@ const AttendMgt = () => {
                         }
                         events={attendHistoryList}
                       />
-                      <ColorLegned />
+                      <ColorLegend />
                     </div>
                   </Card.Header>
                 </Card>
-                {/* 근태 정보 캘린더 끝 */}
+                {/* 세부 정보 캘린더 끝 */}
               </div>
               {/* 캘린더 끝 */}
               <br />

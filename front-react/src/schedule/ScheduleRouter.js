@@ -1,12 +1,12 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Schedule from './pages/Schedule';
+import ScheduleMain from './pages/ScheduleMain';
 
 const ScheduleRouter = () => {
     return (
         <Routes>
-            <Route path="/" element={<Schedule />} />       {/* 일정 */}
-            <Route path="/schedule" element={<Schedule />} />       {/* 일정 */}
+            <Route path="/" element={<ScheduleMain />} />       {/* 일정 */}
+            <Route path="/schedule" element={<ScheduleMain />} />       {/* 일정 */}
         </Routes>
         
     );

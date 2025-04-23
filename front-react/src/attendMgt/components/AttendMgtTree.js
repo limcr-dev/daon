@@ -1,7 +1,7 @@
 import { Tree } from "rsuite";
 import "../css/AttendMgtTree.css";
 import { useNavigate } from "react-router-dom";
-
+import GearIcon from '@rsuite/icons/Gear';
 const data = [
   {
     label: "근태관리",
@@ -16,7 +16,7 @@ const data = [
     value: "teamattendanceMgt",
     children: [
       { label: "팀 근태 현황", value: "teamstatus/1" },
-      { label: "팀 연차 내역", value: "teamstats/1" },
+      { label: "팀 근태 통계", value: "teamstats/1" },
     ],
   },
   {
@@ -24,7 +24,6 @@ const data = [
     value: "deptattendanceMgt",
     children: [
       { label: "부서 근태 현황", value: "deptStatus/1" },
-      { label: "부서 연차 내역", value: "deptStats/1" },
       {
         label: "팀명",
         value: "teamattendanceMgt/1",
@@ -84,18 +83,23 @@ const data = [
   },
 
   {
-    label: "전사 근태관리",
-    value: "all",
+    label: (
+      <span>
+        전사 근태관리 <GearIcon style={{ marginLeft: 5 }} />
+      </span>
+    ),
+    value: "attendSetting",
     children: [
-      { label: "전사 근태현황", value: "inbox" },
-      { label: "전사 근태통계", value: "sent" },
-      { label: "전사 연차현황", value: "swpam" },
-      { label: "전사 연차 사용내역", value: "sqpam" },
+      { label: "전사 근태현황", value: "deptStatus/1" },
+      { label: "전사 근태통계", value: "deptStats/1" },
+      { label: "전사 연차 생성내역", value: "AllVacationCreate" },
+      { label: "전사 연차 사용내역", value: "allVacationUsed" },
     ],
   },
 ];
 
-const updateLabels = (data, admin_type, dept_no) => {
+// 부서명 지정
+export const updateLabels = (data, admin_type, dept_no) => {
   const deptMap = {
     10: "경영부",
     20: "개발부",
@@ -155,7 +159,7 @@ const updateLabels = (data, admin_type, dept_no) => {
       if (admin_type === 5 && item.label === "부서 근태관리") {
         const editChildren = item.children?.map((child, index) => {
           // 처음 2개 children 요소에 부서별 근태관리,현황 replace
-          if (index === 0 || index === 1) {
+          if (index === 0) {
             return {
               ...child,
               label: child.label.replace('부서', `${deptName}`),
@@ -166,14 +170,14 @@ const updateLabels = (data, admin_type, dept_no) => {
           const editChildren2 = child.children?.map((child) => {
             return {
               ...child,
-              label: child.label.replace('팀', `${teamNames[index - 2]}`),
-              value: child.value.replace('1', `${teamNo[index - 2]}`)
+              label: child.label.replace('팀', `${teamNames[index - 1]}`),
+              value: child.value.replace('1', `${teamNo[index - 1]}`)
             }
           })
           return {
             ...child,
-            label: child.label.replace('팀명', `${teamNames[index - 2]}`),
-            value: child.value.replace('1', `${teamNo[index - 2]}`),
+            label: child.label.replace('팀명', `${teamNames[index - 1]}`),
+            value: child.value.replace('1', `${teamNo[index - 1]}`),
             children: editChildren2
           }
         })
@@ -191,6 +195,7 @@ const updateLabels = (data, admin_type, dept_no) => {
 
 const AttendMgtTree = (props) => {
   const navigate = useNavigate();
+
   // 관리자 유형
   const admin_type = props.user.admin_type;
   // 부서 코드

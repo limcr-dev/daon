@@ -15,10 +15,10 @@ const VacationFooter = (props) => {
       <table className='board-table'>
         <thead>
           <tr>
-            <th style={{ width: "10%" }}>등록일</th>
-            <th style={{ width: "15%" }}>사용기간</th>
-            <th style={{ width: "11%" }}>발생일수</th>
-            <th style={{ width: "11%" }}>사용가능일수</th>
+            <th style={{ width: "10%" }}>생성일</th>
+            <th style={{ width: "15%" }}>만료 예정일</th>
+            <th style={{ width: "11%" }}>발생 연차</th>
+            <th style={{ width: "11%" }}>사용 가능 일수</th>
             <th style={{ width: "29%" }}>내용</th>
           </tr>
         </thead>

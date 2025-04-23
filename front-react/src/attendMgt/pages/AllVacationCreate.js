@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Card, Col, Container, Content, DatePicker, Divider, Input, InputGroup, Row, Whisper } from "rsuite";
-
-import { useParams } from "react-router-dom";
 
 // 공통 js
 import Leftbar from "../../common/pages/Leftbar";
@@ -15,36 +13,32 @@ import "../css/DeptStatus.css";
 // js
 import AttendMgtLeftbar from "./AttendMgtLeftbar";
 import { useUser } from "../../common/contexts/UserContext";
-import { deptStatusInfo } from "../components/Info";
+import { AllVacationCreateInfo } from "../components/Info";
 import { formatDate, getStatusText } from '../components/CommonUtil';
-import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
 import AttendPaging from "../components/AttendPaging";
-import ColorLegend from "../components/ColorLegend";
-import AttendUpdate from "./AttendEdit";
-// import {updateLabels} from "../components/AttendMgtTree";
+import { getPositionName } from '../../hrMgt/components/getEmployeeInfo';
 
-const DeptStatus = () => {
+const AllVacationCreate = () => {
   // 직원 정보
   const { user } = useUser();
-  const { pickDept_no } = useParams();
 
-  // 부서별근태현황 초기값
-  const [deptStatusList, setDeptStatusList] = useState([]);
-  // 필터링된 부서별근태현황
+  // 부서별연차생성현황 초기값
+  const [vacationList, setVacationList] = useState([]);
+  // 필터링된 부서별연차생성현황
   const [filteredList, setFilteredList] = useState([]);
-  // 페이징처리된 부서별근태현황
-  const [pageDeptStatusList, setPageDeptStatusList] = useState([]);
+  // 페이징처리된 부서별연차생성현황
+  const [pageVacationList, setPageVacationList] = useState([]);
 
-  // 선택한 부서에 따른 근태데이터 가져오기
+  // 연차생성현황 불러오기
   useEffect(() => {
-    request("GET", "/attend/deptStatus/" + pickDept_no)
+    request("GET", "/attend/vacation_log")
       .then((res) => {
-        setDeptStatusList(res.data);
+        setVacationList(res.data);
       })
       .catch((error) => {
         console.log("로그인정보를 확인해주세요", error);
       });
-  }, [pickDept_no]);
+  }, []);
 
   // 직원 검색
   const [keyword, setKeyword] = useState('');
@@ -76,44 +70,26 @@ const DeptStatus = () => {
       }));
     }
   }
+  // 부서별연차생성현황 초기값의 생성일이 지정한 날짜안에 포함하는 데이터만 필터
   useEffect(() => {
-    // 날짜 필터링이 변경될 때마다 실행
-    const filtered = deptStatusList.filter(
-      (deptStatus) =>
-        deptStatus.date >= moveDate.startDate &&
-        deptStatus.date <= moveDate.endDate &&
-        deptStatus.emp_name.includes(keyword)
+    const filtered = vacationList.filter(
+      (vacationList) =>
+        vacationList.create_at >= moveDate.startDate &&
+        vacationList.create_at <= moveDate.endDate &&
+      vacationList.emp_name.includes(keyword)
     );
     setFilteredList(filtered);
-    setPageDeptStatusList(filtered.slice(0, 10)); // 초기 1페이지 세팅
-  }, [deptStatusList, moveDate, keyword]);
+    setPageVacationList(filtered.slice(0, 10)); // 초기 1페이지 세팅
+  }, [vacationList, moveDate, keyword]);
   // <<< 날짜 선택 끝 >>>
 
   // 페이지 변경 시 호출되는 함수
   const handlePageChange = (page) => {
     const startIndex = (page - 1) * 10;  // 10개씩 표시
     const endIndex = startIndex + 10;
-    setPageDeptStatusList(filteredList.slice(startIndex, endIndex));  // 해당 페이지에 맞는 데이터를 잘라서 set
+    setPageVacationList(filteredList.slice(startIndex, endIndex));  // 해당 페이지에 맞는 데이터를 잘라서 set
   };
 
-  // 수정 모달창
-  const [editModal, setEditModal] = useState(false);
-  const [attendance_no, setAttendance_no] = useState();
-
-  // 권한을 가진 직원만 수정창 오픈
-  const openEditPage = (attendance_no) => {
-    if (user.admin_type === 2 || user.admin_type === 3) {
-      setAttendance_no(attendance_no);
-      setEditModal(true);
-    }
-    else {
-      alert("관리자만 수정할 수 있습니다.")
-    }
-  }
-  // 수정창 닫기
-  const closeModal = () => {
-    setEditModal(false);
-  }
   return (
     <div>
       <Container style={{ minHeight: "100vh", width: "100%" }}>
@@ -136,13 +112,13 @@ const DeptStatus = () => {
             >
               <Col>
                 <div style={{ display: 'flex' }}>
-                  <b style={{ fontSize: "20px" }}>{getDeptName(pickDept_no)} 근태 현황</b><br /><br />
+                  <b style={{ fontSize: "20px" }}>전사 연차 생성내역</b><br /><br />
                 </div>
                 <p style={{ fontSize: "16px" }}>기간 선택
                   <Whisper
                     placement="right"
                     trigger="click"
-                    speaker={deptStatusInfo}
+                    speaker={AllVacationCreateInfo}
                   > 💡
                   </Whisper></p>
                 <div style={{ display: "flex" }}>
@@ -167,52 +143,39 @@ const DeptStatus = () => {
                 <br /><br />
                 <Card className="attendCard">
                   <Card.Header className="cardHeaderList">
-                    <span style={{ fontWeight: '600', fontSize: '16px' }}>근태현황</span>
+                    <span style={{ fontWeight: '600', fontSize: '16px' }}>생성내역</span>
                   </Card.Header>
                   <table className='board-table'>
                     <thead>
                       <tr>
                         <th style={{ width: "10%", textAlign: "center" }}>직원명</th>
-                        <th style={{ width: "10%", textAlign: "center" }}>근무타입</th>
                         <th style={{ width: "10%", textAlign: "center" }}>부서명</th>
                         <th style={{ width: "8%", textAlign: "center" }}>직급</th>
-                        <th style={{ width: "12%", textAlign: "center" }}>날짜</th>
-                        <th style={{ width: "8%", textAlign: "center" }}>출근</th>
-                        <th style={{ width: "8%", textAlign: "center" }}>퇴근</th>
-                        <th style={{ width: "16%", textAlign: "center" }}>비고 </th>
-                        <th style={{ width: "35%", textAlign: "center" }}>수정메시지 </th>
+                        <th style={{ width: "10%", textAlign: "center" }}>생성일</th>
+                        <th style={{ width: "20%", textAlign: "center" }}>만료 예정일</th>
+                        <th style={{ width: "10%", textAlign: "center" }}>발생 연차</th>
+                        <th style={{ width: "10%", textAlign: "center" }}>사용 가능 일수</th>
+                        <th style={{ width: "35%", textAlign: "center" }}>내용</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {pageDeptStatusList
-                        .filter(deptStatus => deptStatus.date >= moveDate.startDate && deptStatus.date <= moveDate.endDate)
-                        .map((deptStatus) => (
-                          <tr key={deptStatus.attendance_no} onClick={() => openEditPage(deptStatus.attendance_no)}>
-                            <td align="center">{deptStatus.emp_name}</td>
-                            <td align="center">{deptStatus.type_name}</td>
-                            <td align="center">{deptStatus.dept_name}</td>
-                            <td align="center">{getPositionName(deptStatus.position_id)}</td>
-                            <td align="center">{deptStatus.date}</td>
-                            <td style={{ color: deptStatus.late ? '#FF6B6B' : '#49A902' }} align="center">
-                              <b>{deptStatus.check_in_time || '-'}</b>
-                            </td>
-                            <td style={{ color: deptStatus.early_leave ? '#FFA500' : '#49A902' }} align="center">
-                              <b>{deptStatus.check_out_time || '-'}</b>
-                            </td>
-                            <td style={{ color: deptStatus.vacation ? '#3B82F6' : deptStatus.absent ? '#D32F2F' : 'black' }} align="center">
-                              {getStatusText(deptStatus)}
-                            </td>
+                      {pageVacationList
+                        .map((vacation) => (
+                          <tr key={vacation.vac_no} >
+                            <td align="center">{vacation.emp_name}</td>
+                            <td align="center">{vacation.dept_name}</td>
+                            <td align="center">{getPositionName(vacation.position_id)}</td>
+                            <td align="center">{vacation.create_at }</td>
+                            <td align="center">{vacation.expire_date}</td>
+                            <td align="center">{vacation.earned_days}</td>
+                            <td align="center">{vacation.available_days}</td>
                             <td className="customText-truncate" align="center">
-                              {deptStatus.message || '-'}
+                              {vacation.occur_reason || '-'}
                             </td>
                           </tr>
                         ))}
                     </tbody>
                   </table>
-
-                  <div style={{ paddingLeft: "10px" }}>
-                    <ColorLegend />
-                  </div>
                   <div style={{ margin: 'auto' }}>
                     <AttendPaging deptStatusList={filteredList} onPageChange={handlePageChange} />
                   </div>
@@ -222,9 +185,8 @@ const DeptStatus = () => {
           </Content>
         </Container>
       </Container>
-      <AttendUpdate open={editModal} onClose={closeModal} attendance_no={attendance_no} user={user} />
     </div>
   );
 };
 
-export default DeptStatus;
+export default AllVacationCreate;

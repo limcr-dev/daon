@@ -66,7 +66,8 @@
 		    SUM(late) AS late, 
 		    SUM(early_leave) AS early_leave, 
 		    SUM(out_status) AS out_status, 
-		    SUM(absent) AS absent
+		    SUM(absent) AS absent,
+		    SUM(vacation) AS vacation
 		FROM attendance
 		where emp_no = #{emp_no}
 		 AND MONTH(date) = #{month}
@@ -92,6 +93,101 @@
 		      AND a.message IS NOT NULL
 	</select>
 	
+	<!-- 선택한 근태기록 불러오기기 -->
+	<select id="pickAttend" parameterType="int" resultType="com.spring.daon.attendMgt.Attendance">
+		select a.* 
+			 , e.emp_name
+		from attendance a, employees e
+	 	where attendance_no = #{attendance_no}
+	 	and a.emp_no = e.emp_no
+	 	
+	</select>
+	
+	<!-- 근태 기록 수정 -->
+	<update id="attendEdit" parameterType="com.spring.daon.attendMgt.Attendance">
+		update attendance
+		   set  check_in_time = #{check_in_time},
+		   		check_out_time = #{check_out_time},
+				normal = #{normal},
+				late = #{late},
+				early_leave = #{early_leave},
+				out_status = #{out_status},
+				absent = #{absent},
+				message = #{message},
+				modifier = #{modifier},
+				modifyTime = NOW(),
+				vacation = #{vacation}
+		where  attendance_no = #{attendance_no}
+	</update>
+	
+	<!-- 부서별 출퇴근 통계 불러오기 -->
+	<select id="deptAttendCnt" parameterType="java.util.Map" resultType="com.spring.daon.attendMgt.Attendance">
+		SELECT 
+		    SUM(a.normal) AS normal, 
+		    SUM(a.late) AS late, 
+		    SUM(a.early_leave) AS early_leave, 
+		    SUM(a.absent) AS absent,
+		    SUM(a.vacation) AS vacation
+		FROM attendance a
+		JOIN employees e
+		JOIN departments d
+		where a.emp_no = e.emp_no
+		 AND e.dept_no = d.dept_no 
+		 AND (#{dept_no} = 1 OR CAST(e.dept_no AS CHAR) LIKE CONCAT(#{dept_no}, '%'))
+		 AND MONTH(date) = #{month}
+ 		 AND YEAR(date) = #{year}
+	</select>
+	
+	<!-- 부서별 근태현황 불러오기 -->
+	<select id="deptStatus" parameterType="int" resultMap="deptStatus">
+	 SELECT a.attendance_no
+	 	  , a.emp_no
+	 	  , a.date
+	 	  , a.check_in_time
+	 	  , a.check_out_time
+	 	  , a.absent
+	 	  , d.dept_name
+	 	  , e.emp_name
+	 	  , d.dept_no
+	 	  , e.position_id
+	 	  , a.late
+	 	  , a.early_leave
+	 	  , a.modifier
+	 	  , a.vacation
+	 	  , a.out_status
+	 	  , a.message
+	 	  , ws.work_type_no
+	 	  , ws.type_name
+		FROM attendance a
+		JOIN employees e
+		JOIN departments d
+		JOIN work_schedules ws
+		where e.emp_no = a.emp_no
+		  AND e.dept_no = d.dept_no 
+		  AND ws.work_type_no = e.work_type_no
+		  AND (#{dept_no} = 1 OR CAST(e.dept_no AS CHAR) LIKE CONCAT(#{dept_no}, '%'))
+		ORDER BY e.position_id asc, a.date DESC, e.emp_name ASC 
+
+	</select>
+	<resultMap id="deptStatus" type="com.spring.daon.attendMgt.Attendance" >
+		<id property="attendance_no" column="attendance_no"/>
+		<result property="emp_no" column="emp_no"/>
+		<result property="date" column="date"/>
+		<result property="check_in_time" column="check_in_time"/>
+		<result property="check_out_time" column="check_out_time"/>
+		<result property="absent" column="absent"/>
+		<result property="late" column="late"/>
+		<result property="early_leave" column="early_leave"/>
+		<result property="modifier" column="modifier"/>
+		<result property="vacation" column="vacation"/>
+		<result property="out_status" column="out_status"/>
+		<result property="message" column="message"/>
+		
+		<result property="emp_name" column="emp_name"/>
+		<result property="dept_name" column="dept_name"/>
+		<result property="position_id" column="position_id"/>
+	</resultMap>
+	
 	<!-- <<< 휴가관련 >>> -->
 	
 	<!-- 휴가 생성 내역 -->
@@ -101,6 +197,19 @@
 		    WHERE emp_no = #{emp_no}
 	</select>
 	
+	<!-- 휴가 생성 내역 전체 불러오기 -->
+	<select id="allVacation_log" resultType="com.spring.daon.attendMgt.Vacation_occur">
+   	     SELECT vo.*
+   	     	  , e.emp_name
+   	     	  , e.position_id
+   	     	  , d.dept_name
+		   FROM vacation_occur vo
+		   JOIN employees e
+		   JOIN departments d
+		   where vo.emp_no = e.emp_no
+		     AND e.dept_no = d.dept_no
+	       ORDER BY e.position_id asc, vo.create_at DESC 
+	</select>	
 	<!-- 휴가 사용기록 불러오기 -->
 	<select id="vacationHistory" parameterType="int" resultType="com.spring.daon.approve.Vacation_req">
 	     SELECT vr.*
@@ -111,5 +220,22 @@
 		    AND d.emp_no = e.emp_no 
 		    AND vr.emp_no = #{emp_no}
 		    AND d.doc_status = 2
+	</select>
+	
+	<!-- 휴가 사용기록 불러오기 -->
+	<select id="allVacationHistory" resultType="com.spring.daon.approve.Vacation_req">
+	     SELECT vr.*
+	     	  , e.emp_name
+	     	  , e.position_id
+	     	  , de.dept_name
+		   FROM vacation_req vr
+		   join documents d
+		   join employees e 
+		   JOIN departments de
+		  WHERE d.doc_no =vr.doc_no
+		    AND d.emp_no = e.emp_no 
+		    AND e.dept_no = de.dept_no
+		    AND d.doc_status = 2
+		  ORDER BY e.position_id asc, vr.start_date DESC 
 	</select>
 </mapper>

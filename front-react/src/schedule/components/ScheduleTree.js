@@ -51,16 +51,18 @@ const ScheduleTree = (props) => {
             .filter(category => category.full_schedule === false)
             .map(category => (
               <tr key={category.sch_category_no}>
-                <td style={{ width: "10%", paddingLeft: "10px" }}>
+                <td style={{ width: "10%", paddingLeft: "10px"}}>
                   <Checkbox defaultChecked></Checkbox>
                 </td>
                 <td>{category.sch_category_title}</td>
-                <td>
+                <td >
                   <Provider theme={defaultTheme} >
                     <ColorPicker
                       size="XS"
                       rounding="full"
-                      defaultValue={category.sch_category_color}>
+                      defaultValue={category.sch_category_color}
+                      backgroundColor="black"
+                      style={{backgroundColor:"black" }}>
                       <Flex direction="column" gap="size-300">
                         <ColorEditor />
                         <ColorSwatchPicker>

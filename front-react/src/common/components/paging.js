@@ -18,6 +18,7 @@ const Paging = ({ paging, onPageChange }) => {
 			limit={size}
 			activePage={page}
 			onChangePage={onPageChange}
+			maxButtons={10}
 		/>
 	);
 

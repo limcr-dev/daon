@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -78,22 +79,63 @@ public class AttendMgtController {
 		
 		return new ResponseEntity<>(service.changeLog(emp_no, year, month), HttpStatus.OK);
 	}
-	
+	// 선택한 근태기록 불러오기
+	@GetMapping("/pickAttend/{attendance_no}")
+	public ResponseEntity<?> pickAttend(@PathVariable int attendance_no) {
+		System.out.println("<<< pickAttend >>>" + attendance_no);
+		
+		return new ResponseEntity<>(service.pickAttend(attendance_no), HttpStatus.OK);
+	}	
+	// 근태기록 수정
+	@PutMapping("/attendEdit")
+	public ResponseEntity<?> attendEdit(@RequestBody Attendance attendance) {
+		System.out.println("<<< attendEdit >>>" + attendance);
+		service.attendEdit(attendance);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	// 부서별 근태통계 불러오기
+	@GetMapping("/deptAttendCnt/{dept_no}/{year}/{month}")
+	public ResponseEntity<?> deptAttendCnt(@PathVariable int dept_no, @PathVariable int year, @PathVariable int month) {
+		System.out.println("<<< deptAttendCnt >>>" + dept_no + year + month);
+		
+		System.out.println("test" + service.deptAttendCnt(dept_no, year, month));
+		return new ResponseEntity<>(service.deptAttendCnt(dept_no, year, month), HttpStatus.OK);
+	}
+	// 부서별 근태현황 불러오기
+	@GetMapping("/deptStatus/{dept_no}")
+	public ResponseEntity<?> deptStatus(@PathVariable int dept_no) {
+		System.out.println("<<< deptStatus >>>" + dept_no);
+		
+		return new ResponseEntity<>(service.deptStatus(dept_no), HttpStatus.OK);
+	}
 	// <<< 휴가 관련 >>>
 	
 	// 휴가 생성 내역
-	@GetMapping("vacation_log/{emp_no}")
+	@GetMapping("/vacation_log/{emp_no}")
 	public ResponseEntity<?> vacation_log(@PathVariable int emp_no) {
 		System.out.println("<<< vacation_log >>>" + emp_no);
 		
 		return new ResponseEntity<>(service.vacation_log(emp_no), HttpStatus.OK);
 	}
-	
+	// 휴가 생성 내역 전체 불러오기
+	@GetMapping("/vacation_log")
+	public ResponseEntity<?> vacation_log() {
+		System.out.println("<<< allVacation_log >>>");
+		
+		return new ResponseEntity<>(service.allVacation_log(), HttpStatus.OK);
+	}
 	// 휴가 사용기록 입사일기준 현재 분기에 승인된 연차만 불러오기
-	@GetMapping("vacationHistory/{emp_no}")
+	@GetMapping("/vacationHistory/{emp_no}")
 	public ResponseEntity<?> vacationHistory(@PathVariable int emp_no) {
 		System.out.println("<<< vacationHistory >>>" + emp_no);
 		
 		return new ResponseEntity<>(service.vacationHistory(emp_no), HttpStatus.OK);
+	}
+	// 휴가 사용기록 전체 불러오기
+	@GetMapping("/vacationHistory")
+	public ResponseEntity<?> vacationHistory() {
+		System.out.println("<<< allVacationHistory >>>");
+		
+		return new ResponseEntity<>(service.allVacationHistory(), HttpStatus.OK);
 	}
 }
