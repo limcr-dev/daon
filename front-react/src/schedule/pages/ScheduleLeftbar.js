@@ -45,14 +45,14 @@ const ScheduleLeftbar = (user) => {
         <Text size={24} style={{ marginTop: '20px' }}>일정</Text>
         <Divider />
 
-        {/* 출퇴근 버튼 시작 */}
+        {/* 일정 등록 버튼 시작 */}
         <div style={{ gap: "10px", display: "flex" }}>
 
           <Button style={{ backgroundColor: '#CECEF2' }} onClick={openAddPage}>
             <FontAwesomeIcon icon={faCalendarPlus} /> <p style={{ margin: '5px' }}>일정 등록</p>
           </Button>
         </div>
-        {/* 출퇴근 버튼 끝 */}
+        {/* 일정 등록 버튼 끝 */}
 
       </Sidenav.Header>
       <Divider />

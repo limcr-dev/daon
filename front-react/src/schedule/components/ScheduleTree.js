@@ -40,7 +40,7 @@ const ScheduleTree = ({ user }) => {
     }));
   };
 
-  const submitCategortEdit = (e) => {};
+  const submitCategortEdit = (e) => { };
   return (
     <div className="height_change">
       <form onSubmit={submitCategortEdit}>
@@ -84,6 +84,9 @@ const ScheduleTree = ({ user }) => {
                   <button type="button" style={{ color: "gray" }}>
                     + 내 일정 카테고리 추가
                   </button>
+                  {/* <Input
+                    placeholder={"카테고리 명"}
+                  /> */}
                 </td>
               </tr>
             )}

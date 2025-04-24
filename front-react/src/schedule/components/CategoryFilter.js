@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Checkbox, Input } from "rsuite";
+import { Button, Checkbox, Input } from "rsuite";
 import { request } from "../../common/components/helpers/axios_helper";
 
 const CategoryFilter = ({ schedule_setting, type, edit }) => {
@@ -31,20 +31,20 @@ const CategoryFilter = ({ schedule_setting, type, edit }) => {
   // 카테고리 색 저장
   useEffect(() => {
     if (categoryNo) {
-    request("PUT", `/schedule/colorEdit/${categoryNo}/${encodeURIComponent(color)}`)
-      .then((res) => {
-        if (res.status === 200) {
-          window.location.reload(); // 새로고침
-        } else {
-          alert("색 수정 실패하였습니다");
-        }
-      })
-      .catch((error) => {
-        console.log("실패", error);
-      });
+      request("PUT", `/schedule/colorEdit/${categoryNo}/${encodeURIComponent(color)}`)
+        .then((res) => {
+          if (res.status === 200) {
+            window.location.reload(); // 새로고침
+          } else {
+            alert("색 수정 실패하였습니다");
+          }
+        })
+        .catch((error) => {
+          console.log("실패", error);
+        });
 
-    console.log("test" + color + categoryNo);
-    console.log("test" + categoryNo);
+      console.log("test" + color + categoryNo);
+      console.log("test" + categoryNo);
     }
   }, [color]);
 
@@ -79,11 +79,13 @@ const CategoryFilter = ({ schedule_setting, type, edit }) => {
             .filter((category) => category.c_sch_type === type)
             .map((category) => (
               <tr key={category.c_sch_no}>
-                <td>
+                <td style={{display:"flex"}}>
                   <Input
+                    name="c_sch_title"
                     placeholder={category.c_sch_title}
                     defaultValue={category.c_sch_title}
                   />
+                  <Button>수정</Button>
                 </td>
               </tr>
             ))}

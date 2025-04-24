@@ -44,7 +44,6 @@ const DeptStats = () => {
     check_out_time: '',
     late: '',
     early_leave: '',
-    out_status: '',
     absent: ''
   });
   // 출퇴근 통계 불러오기
@@ -90,7 +89,6 @@ const DeptStats = () => {
                     <div>정상근무<br /> <p>{attendance.normal}</p></div>
                     <div>지각<br /> <p>{attendance.late}</p></div>
                     <div>조퇴<br /> <p>{attendance.early_leave}</p></div>
-                    <div>외출<br /> <p>{attendance.out_status}</p></div>
                     <div>결근<br /> <p>{attendance.absent}</p></div>
                     <div>연차/휴가 사용 횟수<br /> <p>{attendance.vacation}</p></div>
                   </Card.Header>
@@ -98,8 +96,9 @@ const DeptStats = () => {
                 <div style={{ width: "auto", border: 'none' }}>
 
                 </div>
-                ~~부 통계로 들어오면 부서의 통계 + 팀별 통계그래프 출력
-                ~~팀 통계로 들어오면 팀의 통계 + 직원별 통계그래프 출력
+                <br></br>
+                {/* ~~부 통계로 들어오면 부서의 통계 + 팀별 통계그래프 출력
+                ~~팀 통계로 들어오면 팀의 통계 + 직원별 통계그래프 출력 */}
                 <KibanaDashboard pickDept_no={pickDept_no} />
               </Col>
             </Row>

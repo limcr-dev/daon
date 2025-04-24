@@ -94,7 +94,6 @@ const AttendMgt = () => {
     check_out_time: '',
     late: '',
     early_leave: '',
-    out_status: '',
     absent: ''
   });
 
@@ -148,7 +147,6 @@ const AttendMgt = () => {
                   <div>정상근무<br /> <p>{attendance.normal}</p></div>
                   <div>지각<br /> <p>{attendance.late}</p></div>
                   <div>조퇴<br /> <p>{attendance.early_leave}</p></div>
-                  <div>외출<br /> <p>{attendance.out_status}</p></div>
                   <div>결근<br /> <p>{attendance.absent}</p></div>
                   <div>연차/휴가 사용 횟수<br /> <p>{attendance.vacation}</p></div>
                 </Card.Header>
