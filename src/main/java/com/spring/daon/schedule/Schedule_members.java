@@ -16,10 +16,13 @@ import lombok.ToString;
 @ToString
 @Builder
 @Entity   
-@Table(name="Schedule_members")
+
+@Table(name="schedule_members")
 public class Schedule_members {
 	// Schedule_members table
 	@Id
 	private int emp_no;			// 사원번호
+	
+	
 	private int sch_no ;		// 스케쥴번호
 }

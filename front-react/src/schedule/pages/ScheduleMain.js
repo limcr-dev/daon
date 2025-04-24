@@ -12,27 +12,28 @@ import Leftbar from '../../common/pages/Leftbar';
 import MyCalendar from './MyCalendar';
 import ScheduleLeftbar from './ScheduleLeftbar';
 import Header from '../../common/pages/Header';
+import { useUser } from '../../common/contexts/UserContext';
 
-const Schedule = () => {
-  const [employees, setEmployees] = useState({
-    emp_no: '1001'
-  });
+const ScheduleMain = () => {
+  // UserContext에서 사용자 정보 가져오기
+  const { user } = useUser();
 
   return (
     <Container style={{ minHeight: '100vh', width: '100%' }}>
       <Leftbar />
       <Container>
 
-        <ScheduleLeftbar emp_no={employees.emp_no} />
+        <ScheduleLeftbar emp_no={user.emp_no} />
 
         <Content style={{ marginTop: '20px' }}>
           <Header />
           <Divider style={{ margin: "0px" }} />
           <Row gutter={20} style={{ padding: '15px', display: 'flex', flexDirection: 'column' }}>
             <Col>
-              <Card style={{maxWidth:"1400px", margin:"auto"}} >
+              <Card style={{width:"100%", margin:"auto"}} >
                 <Card.Header className="">
-                  <MyCalendar />
+                  {/* 캘린더 출력 */}
+                  <MyCalendar user={user}/>
                 </Card.Header>
               </Card>
             </Col>
@@ -42,4 +43,4 @@ const Schedule = () => {
     </Container>
   );
 };
-export default Schedule;
+export default ScheduleMain;

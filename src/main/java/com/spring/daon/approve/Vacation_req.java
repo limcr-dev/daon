@@ -35,4 +35,8 @@ public class Vacation_req {
     private Date end_date;
     private float used_days;
     private int vacation_type;
+    
+    private String emp_name;		// 이름
+	private String dept_name;		// 부서명
+	private int position_id;		// 직급
 }

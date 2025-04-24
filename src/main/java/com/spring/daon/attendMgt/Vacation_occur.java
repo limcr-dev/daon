@@ -34,4 +34,8 @@ public class Vacation_occur {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
 	private Date create_at;				// 생성 날짜
 	private BigDecimal  available_days;	// 사용 가능 일수
+
+    private String emp_name;		// 이름
+	private String dept_name;		// 부서명
+	private int position_id;		// 직급
 }

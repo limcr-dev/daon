@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card } from 'rsuite';
+import { request } from '../../common/components/helpers/axios_helper';
 
 const AttendFooter = (props) => {
 
@@ -8,14 +9,14 @@ const AttendFooter = (props) => {
   const year = props.year;
   const month = props.month;
 
+  // 수정 기록 
   const [changeLog, setChangeLog] = useState([])
+  
+  // 수정 기록  불러오기
   useEffect(() => {
-    fetch("http://localhost:8081/attend/changeLog/" + emp_no + "/" + year + "/" + month, {
-      method: "GET"
-    })
-      .then((res) => res.json())
+    request("GET", "/attend/changeLog/" + emp_no + "/" + year + "/" + month)
       .then((res) => {
-        setChangeLog(res);
+        setChangeLog(res.data);
       })
   }, [emp_no, year, month]);
 
@@ -26,13 +27,16 @@ const AttendFooter = (props) => {
           <span style={{ fontWeight: '600', fontSize: '16px' }}>변경이력 {changeLog.length}</span>
         </Card.Header>
         <table className='board-table'>
-          {/* .map() 함수를 사용하여 noticeList 안의 값을 하나씩 꺼냄 */}
           <tbody>
             {changeLog.map(log => (
-              <tr>
+              <tr key={log.attendance_no}>
                 {/* <td>{log.emp_img}</td> */}
                 <td style={{ width: "100px" }}>daon_logo.png</td>
-                <td>{log.emp_name} {log.modifyTime}<br></br>{log.message}</td>
+                <td>{log.emp_name}
+                  {/* 수정 날짜 회색,작은글씨 */}
+                  <small style={{ color: "#9FA19F" }}>{log.modifyTime}</small>
+                  <br></br>
+                  {log.message}</td>
                 <td></td>
               </tr>
             ))}

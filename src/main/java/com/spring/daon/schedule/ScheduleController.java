@@ -6,13 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
 
 @RestController
-@RequestMapping("/attend") // 임시 토큰 수정 후 바꿀거
+@RequestMapping("/schedule") // 임시 토큰 수정 후 바꿀거
 @CrossOrigin
 public class ScheduleController {
 	
@@ -25,5 +26,12 @@ public class ScheduleController {
 		System.out.println("<<< getCategory >>>" +service.getCategory(emp_no));
 	
 		return new ResponseEntity<>(service.getCategory(emp_no), HttpStatus.OK);
+	}	
+	// 일정 카테고리 색변경
+	@PutMapping("/colorEdit/{c_sch_no}/{c_sch_color}")
+	public ResponseEntity<?> colorEdit(@PathVariable int c_sch_no, @PathVariable String c_sch_color) {
+		System.out.println("<<< colorEdit >>>");
+		service.colorEdit(c_sch_no, c_sch_color);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}	
 }

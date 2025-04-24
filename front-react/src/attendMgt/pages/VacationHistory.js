@@ -26,7 +26,7 @@ const VacationHistory = (props) => {
             .filter(vacation => vacation.start_date >= startDate && vacation.start_date <= endDate)
             .map(vacation => (
               <tr key={vacation.doc_no} >
-                <td>{vacation.vacation_type}</td>
+                <td>{vacation.vacation_type === 1? '연차': vacation.vacation_type === 2? '경조휴가' : '병가'}</td>
                 <td>{vacation.start_date} ~ {vacation.end_date}</td>
                 <td >{vacation.used_days}</td>
                 <td>{vacation.content}</td>

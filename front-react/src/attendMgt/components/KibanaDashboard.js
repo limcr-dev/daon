@@ -56,15 +56,18 @@ const KibanaDashboard = (props) => {
         title="DeptDashboard"
         src={kibanaUrl}
         width="100%"
-        height="430px"
+        height="550px"
         style={{ border: "none" }}
       />
     );
   };
-  const kibanaUrl = `http://localhost:5601/goto/${dashboardId}?embed=true`;
+  // const kibanaUrl = `http://localhost:5601/goto/${dashboardId}?embed=true`;
+
+  // 임시 url
+  const kibanaUrl = `http://localhost:5601/goto/6ac55ec96f9017bdda5122c186309b35?embed=true`;
   return (
-    <Card className="attendCard">
-      <Card.Header className="deptCardHeaderList">
+    <Card className="attendCard" style={{height:"600px"}}>
+      <Card.Header className="" >
         <Tabs defaultActiveKey="1">
           <Tabs.Tab eventKey="1" title="결근통계">
             <Dashboard />
