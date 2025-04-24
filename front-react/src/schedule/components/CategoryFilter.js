@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Checkbox, Input } from "rsuite";
 import { request } from "../../common/components/helpers/axios_helper";
+import { useCategory } from "./CategoryContext";
 
 const CategoryFilter = ({ schedule_setting, type, edit }) => {
   // 수정할 색/카테고리번호 변수
@@ -31,7 +32,10 @@ const CategoryFilter = ({ schedule_setting, type, edit }) => {
   // 카테고리 색 저장
   useEffect(() => {
     if (categoryNo) {
-      request("PUT", `/schedule/colorEdit/${categoryNo}/${encodeURIComponent(color)}`)
+      request(
+        "PUT",
+        `/schedule/colorEdit/${categoryNo}/${encodeURIComponent(color)}`
+      )
         .then((res) => {
           if (res.status === 200) {
             window.location.reload(); // 새로고침
@@ -51,7 +55,10 @@ const CategoryFilter = ({ schedule_setting, type, edit }) => {
   // 카테고리 명 수정
   const name = useRef();
   const editName = (c_sch_no, name) => {
-    request("PUT", `/schedule/categoryNameEdit/${c_sch_no}/${name.current.value}`)
+    request(
+      "PUT",
+      `/schedule/categoryNameEdit/${c_sch_no}/${name.current.value}`
+    )
       .then((res) => {
         if (res.status === 200) {
           window.location.reload(); // 새로고침
@@ -62,19 +69,17 @@ const CategoryFilter = ({ schedule_setting, type, edit }) => {
       .catch((error) => {
         console.log("실패", error);
       });
-  }
+  };
 
   // 카테고리 삭제
   const deleteCategory = (c_sch_no) => {
     request("DELETE", `/schedule/deleteCategory/${c_sch_no}`)
       .then((res) => {
         if (res.status === 200) {
-          if(res.data !== ""){
+          if (res.data !== "") {
             alert(res.data); // 기본일정 삭제불가 메시지
-          }
-          else{
+          } else {
             window.location.reload(); // 새로고침
-
           }
         } else {
           alert("삭제 실패하였습니다");
@@ -83,7 +88,28 @@ const CategoryFilter = ({ schedule_setting, type, edit }) => {
       .catch((error) => {
         console.log("실패", error);
       });
-  }
+  };
+
+  // 카테고리 필터
+  const { selectedCategoryNos, handleCategoryChange } = useCategory([]); // Context에서 값 불러오기
+
+  const handleCheckboxChange = (categoryNo, isChecked) => {
+    alert("dd" + categoryNo);
+    console.log("체크박스 상태:", isChecked);
+    if (isChecked) {
+      if (!selectedCategoryNos.includes(categoryNo)) {
+        handleCategoryChange([...selectedCategoryNos, categoryNo]);
+      }
+    } else {
+      handleCategoryChange(
+        selectedCategoryNos.filter((no) => no !== categoryNo)
+      );
+    }
+  };
+
+  useEffect(() => {
+    console.log("selectedCategoryNos:", selectedCategoryNos); // 상태 출력
+  }, [selectedCategoryNos]);
   return (
     <>
       {!edit && (
@@ -93,7 +119,13 @@ const CategoryFilter = ({ schedule_setting, type, edit }) => {
             .map((category) => (
               <tr key={category.c_sch_no}>
                 <td style={{ width: "10%", paddingLeft: "10px" }}>
-                  <Checkbox defaultChecked></Checkbox>
+                  <Checkbox
+                  // defaultChecked
+                    checked={selectedCategoryNos.includes(category.c_sch_no)}
+                    onChange={(_, checked) =>
+                      handleCheckboxChange(category.c_sch_no, checked)
+                    } // 상태 변경
+                  ></Checkbox>
                 </td>
                 <td>{category.c_sch_title}</td>
                 <td className="CustomColorPicker">
@@ -122,8 +154,15 @@ const CategoryFilter = ({ schedule_setting, type, edit }) => {
                     defaultValue={category.c_sch_title}
                     ref={name}
                   />
-                  <Button style={{backgroundColor:"#CECEF2"}} onClick={() => editName(category.c_sch_no, name)}>수정</Button>
-                  <Button onClick={() => deleteCategory(category.c_sch_no)}>삭제</Button>
+                  <Button
+                    style={{ backgroundColor: "#CECEF2" }}
+                    onClick={() => editName(category.c_sch_no, name)}
+                  >
+                    수정
+                  </Button>
+                  <Button onClick={() => deleteCategory(category.c_sch_no)}>
+                    삭제
+                  </Button>
                 </td>
               </tr>
             ))}

@@ -52,6 +52,12 @@ public class ScheduleServiceImpl {
     	return scheduleMapper.deleteCategory(c_sch_no);
     }
     
+	// 일정 저장
+    public int addSchedule(Schedule schedule) {
+    	
+    	return scheduleMapper.addSchedule(schedule);
+    }
+    
 	// 일정 불러오기
     public List<Schedule> getSchedules(int emp_no) {
     	

@@ -1,4 +1,12 @@
-import { Button, Checkbox, Col, Divider, Dropdown, Input, InputGroup } from "rsuite";
+import {
+  Button,
+  Checkbox,
+  Col,
+  Divider,
+  Dropdown,
+  Input,
+  InputGroup,
+} from "rsuite";
 import "../css/ScheduleTree.css";
 
 import React, { useEffect, useState } from "react";
@@ -46,7 +54,7 @@ const ScheduleTree = ({ user }) => {
 
   const handleCategoryAdd = () => {
     setAddMode((prev) => !prev);
-  }
+  };
   const categoryAdd = () => {
     request("POST", `/schedule/addCategory/${user.emp_no}/${addName}`)
       .then((res) => {
@@ -59,11 +67,10 @@ const ScheduleTree = ({ user }) => {
       .catch((error) => {
         console.log("실패", error);
       });
-  }
+  };
   // 카테고리 추가 끝
 
-  const submitCategoryEdit = (e) => { };
-
+  const submitCategoryEdit = (e) => {};
 
   return (
     <div className="height_change">
@@ -106,7 +113,11 @@ const ScheduleTree = ({ user }) => {
               <>
                 <tr>
                   <td align="left" colSpan={3}>
-                    <button type="button" style={{ color: "gray" }} onClick={handleCategoryAdd}>
+                    <button
+                      type="button"
+                      style={{ color: "gray" }}
+                      onClick={handleCategoryAdd}
+                    >
                       + 내 일정 카테고리 추가
                     </button>
                   </td>
@@ -114,13 +125,17 @@ const ScheduleTree = ({ user }) => {
                 {/* 추가 버튼 눌렀을 시 전환 */}
                 {addMode && (
                   <tr>
-                    <td align="right" colSpan={3} >
-                      <InputGroup >
-                        <Input maxLength={15} onChange={(e) => setAddName(e)} onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            categoryAdd();
-                          }
-                        }} />
+                    <td align="right" colSpan={3}>
+                      <InputGroup>
+                        <Input
+                          maxLength={15}
+                          onChange={(e) => setAddName(e)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              categoryAdd();
+                            }
+                          }}
+                        />
                         <InputGroup.Button onClick={categoryAdd}>
                           추가
                         </InputGroup.Button>

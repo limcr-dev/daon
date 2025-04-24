@@ -25,6 +25,9 @@ public interface ScheduleMapper {
 	// 일정 카테고리 삭제
 	public int deleteCategory(int c_sch_no);
 	
+	// 일정 저장
+	public int addSchedule(Schedule schedule); 	 
+		
 	// 일정 불러오기
 	public List<Schedule> getSchedules(int emp_no); 	 
 	

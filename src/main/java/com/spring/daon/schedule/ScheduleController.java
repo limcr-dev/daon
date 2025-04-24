@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.spring.daon.attendMgt.Attendance;
 
 
 
@@ -66,6 +69,13 @@ public class ScheduleController {
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
 	}
+	// 일정 저장
+	@PostMapping("/addSchedule/")
+	public ResponseEntity<?> addSchedule(@RequestBody Schedule schedule) {
+		System.out.println("<<< addSchedule >>>" +schedule);
+	 
+		return new ResponseEntity<>(service.addSchedule(schedule), HttpStatus.OK);
+	}	
 	// 일정 불러오기
 	@GetMapping("/getSchedules/{emp_no}")
 	public ResponseEntity<?> getSchedules(@PathVariable int emp_no) {

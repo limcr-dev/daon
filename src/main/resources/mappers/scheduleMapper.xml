@@ -36,7 +36,18 @@
   		    and c_default = 'N'
 	</update>
 	
-	<!-- 일정 불러오기 -->
+	<!-- 일정 저장 -->
+	<insert id="addSchedule" parameterType="com.spring.daon.schedule.Schedule">
+		  INSERT INTO schedule (emp_no, sch_title, sch_content, sch_start_time, sch_end_time, c_sch_no)
+  			VALUES (
+    		#{emp_no}, #{sch_title}, #{sch_content}, #{sch_start_time}, #{sch_end_time}
+    		<if test="c_sch_type != 'A'"> , #{c_sch_no}</if>
+    		<if test="c_sch_type != null and c_sch_type == 'A'">
+      		,(SELECT c_sch_no FROM schedule_setting WHERE emp_no = #{emp_no} AND c_sch_type = 'A' LIMIT 1)
+    		</if>
+  )
+	</insert>	
+	<!-- 일정 불러오기 -->
 	<select id="getSchedules" parameterType="int" resultType="com.spring.daon.schedule.Schedule">		
 		select s.*
 			 , ss.c_sch_color
