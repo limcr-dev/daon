@@ -1,4 +1,4 @@
-import { Checkbox, Col, Divider, Dropdown, Input } from "rsuite";
+import { Button, Checkbox, Col, Divider, Dropdown, Input, InputGroup } from "rsuite";
 import "../css/ScheduleTree.css";
 
 import React, { useEffect, useState } from "react";
@@ -28,7 +28,7 @@ const ScheduleTree = ({ user }) => {
       });
   }, [user.emp_no]);
 
-  // 카테고리 수정
+  // 카테고리 수정 전환
   const [editMode, setEditMode] = useState({
     top: false,
     bottom: false,
@@ -40,10 +40,34 @@ const ScheduleTree = ({ user }) => {
     }));
   };
 
-  const submitCategortEdit = (e) => { };
+  // 카테고리 추가
+  const [addMode, setAddMode] = useState(false);
+  const [addName, setAddName] = useState("");
+
+  const handleCategoryAdd = () => {
+    setAddMode((prev) => !prev);
+  }
+  const categoryAdd = () => {
+    request("POST", `/schedule/addCategory/${user.emp_no}/${addName}`)
+      .then((res) => {
+        if (res.status === 200) {
+          window.location.reload(); // 새로고침
+        } else {
+          alert("카테고리 추가 실패하였습니다");
+        }
+      })
+      .catch((error) => {
+        console.log("실패", error);
+      });
+  }
+  // 카테고리 추가 끝
+
+  const submitCategoryEdit = (e) => { };
+
+
   return (
     <div className="height_change">
-      <form onSubmit={submitCategortEdit}>
+      <form onSubmit={submitCategoryEdit}>
         <table style={{ margin: "auto", width: "200px", zIndex: "100" }}>
           <thead>
             <tr>
@@ -79,16 +103,32 @@ const ScheduleTree = ({ user }) => {
 
             {/* 카테고리 추가  */}
             {!editMode.top && (
-              <tr>
-                <td colSpan={2}>
-                  <button type="button" style={{ color: "gray" }}>
-                    + 내 일정 카테고리 추가
-                  </button>
-                  {/* <Input
-                    placeholder={"카테고리 명"}
-                  /> */}
-                </td>
-              </tr>
+              <>
+                <tr>
+                  <td align="left" colSpan={3}>
+                    <button type="button" style={{ color: "gray" }} onClick={handleCategoryAdd}>
+                      + 내 일정 카테고리 추가
+                    </button>
+                  </td>
+                </tr>
+                {/* 추가 버튼 눌렀을 시 전환 */}
+                {addMode && (
+                  <tr>
+                    <td align="right" colSpan={3} >
+                      <InputGroup >
+                        <Input maxLength={15} onChange={(e) => setAddName(e)} onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            categoryAdd();
+                          }
+                        }} />
+                        <InputGroup.Button onClick={categoryAdd}>
+                          추가
+                        </InputGroup.Button>
+                      </InputGroup>
+                    </td>
+                  </tr>
+                )}
+              </>
             )}
           </tbody>
         </table>
@@ -96,7 +136,7 @@ const ScheduleTree = ({ user }) => {
       <Divider />
 
       {/* 하단 */}
-      <form onSubmit={submitCategortEdit}>
+      <form onSubmit={submitCategoryEdit}>
         <table style={{ margin: "auto", width: "200px" }}>
           <thead>
             <tr>

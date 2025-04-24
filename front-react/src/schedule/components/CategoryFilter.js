@@ -48,6 +48,42 @@ const CategoryFilter = ({ schedule_setting, type, edit }) => {
     }
   }, [color]);
 
+  // 카테고리 명 수정
+  const name = useRef();
+  const editName = (c_sch_no, name) => {
+    request("PUT", `/schedule/categoryNameEdit/${c_sch_no}/${name.current.value}`)
+      .then((res) => {
+        if (res.status === 200) {
+          window.location.reload(); // 새로고침
+        } else {
+          alert("이름 수정을 실패하였습니다");
+        }
+      })
+      .catch((error) => {
+        console.log("실패", error);
+      });
+  }
+
+  // 카테고리 삭제
+  const deleteCategory = (c_sch_no) => {
+    request("DELETE", `/schedule/deleteCategory/${c_sch_no}`)
+      .then((res) => {
+        if (res.status === 200) {
+          if(res.data !== ""){
+            alert(res.data); // 기본일정 삭제불가 메시지
+          }
+          else{
+            window.location.reload(); // 새로고침
+
+          }
+        } else {
+          alert("삭제 실패하였습니다");
+        }
+      })
+      .catch((error) => {
+        console.log("실패", error);
+      });
+  }
   return (
     <>
       {!edit && (
@@ -79,13 +115,15 @@ const CategoryFilter = ({ schedule_setting, type, edit }) => {
             .filter((category) => category.c_sch_type === type)
             .map((category) => (
               <tr key={category.c_sch_no}>
-                <td style={{display:"flex"}}>
+                <td style={{ display: "flex" }}>
                   <Input
                     name="c_sch_title"
                     placeholder={category.c_sch_title}
                     defaultValue={category.c_sch_title}
+                    ref={name}
                   />
-                  <Button>수정</Button>
+                  <Button style={{backgroundColor:"#CECEF2"}} onClick={() => editName(category.c_sch_no, name)}>수정</Button>
+                  <Button onClick={() => deleteCategory(category.c_sch_no)}>삭제</Button>
                 </td>
               </tr>
             ))}

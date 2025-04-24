@@ -5,7 +5,7 @@
      
 <mapper namespace="com.spring.daon.schedule.ScheduleMapper">
 	
-	<!-- 출근 버튼 클릭 시 -->
+	<!-- 일정 카테고리 불러오기 -->
 	<select id="getCategory" parameterType="int" resultType="com.spring.daon.schedule.Schedule_setting">		
 		select * from schedule_setting
 		where emp_no = #{emp_no}
@@ -17,4 +17,33 @@
 		   SET c_sch_color = #{c_sch_color}
 		 where c_sch_no = #{c_sch_no}	
 	</update>
+	
+	<!-- 일정 카테고리 이름변경 -->
+	<update id="categoryNameEdit" parameterType="java.util.Map">
+		UPDATE schedule_setting
+		   SET c_sch_title = #{c_sch_title}
+		 where c_sch_no = #{c_sch_no}	
+	</update>
+	<!-- 일정 카테고리 이름변경 -->
+	<update id="addCategory" parameterType="java.util.Map">
+		INSERT INTO schedule_setting(emp_no, c_sch_title, c_sch_type)
+		 VALUES(#{emp_no}, #{c_sch_title},'I')
+	</update>
+	<!-- 일정 카테고리 삭제 -->
+	<update id="deleteCategory" parameterType="int">
+		 DELETE FROM schedule_setting 
+ 		  where c_sch_no = #{c_sch_no}
+  		    and c_default = 'N'
+	</update>
+	
+	<!-- 일정 불러오기 -->
+	<select id="getSchedules" parameterType="int" resultType="com.spring.daon.schedule.Schedule">		
+		select s.*
+			 , ss.c_sch_color
+		from schedule s
+		JOIN schedule_setting ss
+		where s.emp_no = #{emp_no}
+		and s.c_sch_no = ss.c_sch_no
+		
+	</select>
 </mapper>
