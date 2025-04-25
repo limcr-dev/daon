@@ -1,23 +1,16 @@
 import { Tree } from 'rsuite';
-import "../css/salary.css";
 import { useNavigate } from 'react-router-dom';
 
 const data = [
   {
-    label: '수당 및 공제',
+    label: '급여 통계',
     value: '',
     children: [
       { label: '수당 관리', value: 'allowanceList' },
-      { label: '공제 관리', value: 'deductionList' }
-    ]
-  },
-  {
-    label: '급여 관리',
-    value: 'deptDocuments',
-    children: [
+      { label: '공제 관리', value: 'deductionList' },
       { label: '사원별 급여 항목 설정', value: 'EmployeeItemConfig' },
       { label: '급여 요약 목록', value: 'EmployeeSalaryList' },
-      { label: '급여 대장', value: 'docR2eferenced' }
+      { label: '급여 대장', value: 'SalarySchedule' }
     ]
   }
 ];

@@ -1,34 +1,138 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../css/vacationForm.css';
 import { useUser } from '../../common/contexts/UserContext';
+import FormErrorMessage from 'rsuite/esm/FormErrorMessage';
+import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
+import { getCurrentVacationCycle, getExpireDate, getUsedVacation } from '../../attendMgt/components/VacationUtil';
+import { request } from '../../common/components/helpers/axios_helper';
 
-const VacationForm = (props) => {
+const VacationForm = ({ approveLine, onFormDataChange }) => {
   const { user } = useUser();
-  const [line, setLine] = useState(props);
+
   const today = new Date();
   const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
+  const [usedDays, setUsedDays] = useState(0);
+
+  const [employees, setEmployees] = useState({});
+  const [vacation_occurList, setVacation_occurList] = useState([]);
+  const [vacationHistoryList, setVacationHistoryList] = useState([]);
+
+  // 잔여 연차
+  const { remainVacation } = getExpireDate(vacation_occurList);
+
+  // 입사일 기준 이번 주기 시작,끝 날짜 불러오기
+  const { start, end } = getCurrentVacationCycle(employees.hire_date);
+
+  const [line, setLine] = useState(approveLine);
   const [vacationForm, setVacationForm] = useState({
     emp_no: user ? user.emp_no : '',
-    vacationType: '',
-    startDate: '',
-    endDate: '',
-    halfDayType: null,
-    totalDays: 0,
-    usedDays: 0,
-    remainingDays: 0
+    title: '',
+    content: '',
+    vacation_type: '',
+    start_date: '',
+    end_date: '',
+    used_days: 0,
+    remaining_days: 0
   });
 
-  const handleDateChange = (field, value) => {
+  useEffect(() => {
+    // 입사일 가져오기
+    request("GET", "/api/getEmpInfo/" + user.emp_no)
+      .then((res) => {
+        setEmployees(res.data);
+
+        // 휴가정보 불러오기
+        request("GET", "/attend/vacation_log/" + user.emp_no)
+          .then((res) => {
+            setVacation_occurList(res.data);
+          })
+          
+        // 휴가 사용기록 불러오기
+        request("GET", "/attend/vacationHistory/" + user.emp_no)
+          .then((res) => {
+            setVacationHistoryList(res.data);
+          })
+      })
+      .catch((error) => {
+        console.log('로그인정보를 확인해주세요', error);
+      })
+  }, [user.emp_no])
+
+  useEffect(() => {
+    console.log("받은 결재선 데이터:", approveLine);
+    if (approveLine && Array.isArray(approveLine)) {
+      setLine(approveLine);
+    }
+
+  }, [approveLine]);
+
+  // 폼 데이터가 변경될 때마다 부모 컴포넌트에 전달
+  useEffect(() => {
+    // 콜백 함수가 있으면 데이터 전달
+    if (onFormDataChange) {
+      onFormDataChange({
+        ...vacationForm,
+        remaining_days: remainVacation
+      }, line);
+    }
+    console.log(remainVacation);
+  }, [vacationForm, line, usedDays]);
+
+  // 평일 수 계산 함수 - changeValue 함수보다 먼저 정의
+  const countWorkingDays = (startDate, endDate) => {
+    let count = 0;
+    const curDate = new Date(startDate.getTime());
+
+    // 날짜를 하루씩 증가시키며 평일인지 확인
+    while (curDate <= endDate) {
+      const dayOfWeek = curDate.getDay();
+      // 0은 일요일, 6은 토요일
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        count++;
+      }
+      curDate.setDate(curDate.getDate() + 1);
+    }
+
+    return count;
+  };
+
+  const changeValue = (e) => {
+    console.log("end term", end);
+    let value = e.target.value;
+
+    // coop_dept_no는 숫자로 변환, 빈 문자열이면 null로 설정
+    if (e.target.name === 'vacation_type') {
+      value = value === "" ? null : parseInt(value);
+    }
+
+    if (e.target.name === 'start_date' || e.target.name === 'end_date') {
+
+      // 날짜 객체로 변환
+      const start = new Date(e.target.name === 'start_date' ? value : vacationForm.start_date);
+      const end = new Date(e.target.name === 'end_date' ? value : vacationForm.end_date);
+
+      // 두 날짜가 모두 유효한지 확인
+      if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+        // 평일 수 계산 함수 호출
+        const workingDays = countWorkingDays(start, end);
+        console.log("평일 수:", workingDays);
+        vacationForm.used_days = workingDays;
+        setUsedDays(workingDays);
+      } else {
+        setUsedDays(0);
+      }
+    }
+
     setVacationForm({
       ...vacationForm,
-      [field]: value
+      [e.target.name]: value,
     });
   };
 
   return (
     <div className="form-container">
-      <h2 className="form-title">연차신청서</h2>
+      <h2 className="form-title">휴가신청서</h2>
 
       <div className="form-content">
         {/* 상단 정보 테이블 */}
@@ -37,15 +141,15 @@ const VacationForm = (props) => {
             <tbody>
               <tr>
                 <td className="label-cell">기안자</td>
-                <td>김지연</td>
+                <td>{user.emp_name}</td>
               </tr>
               <tr>
                 <td className="label-cell">기안부서</td>
-                <td>영업팀</td>
+                <td>{getDeptName(user.dept_no)}</td>
               </tr>
               <tr>
                 <td className="label-cell">기안일</td>
-                <td>{formattedDate}(화)</td>
+                <td></td>
               </tr>
               <tr>
                 <td className="label-cell">문서번호</td>
@@ -54,17 +158,78 @@ const VacationForm = (props) => {
             </tbody>
           </table>
 
-          {/* 결재라인 테이블 */}
-          <table className="approval-table">
-            <tbody>
-              <tr>
-                <td className="approval-header">부장</td>
-              </tr>
-              <tr>
-                <td className="approval-sign">김지연</td>
-              </tr>
-            </tbody>
-          </table>
+          {/* 신청 정보 (기안자 정보) - 항상 표시 */}
+          <div style={{ display: 'flex' }}>
+            <table className="approval-table">
+              <tbody>
+                <tr>
+                  <td rowSpan="3" className="approval-position">신청</td>
+                  <td className="approval-header">{user ? `${getPositionName(user.position_id)}` : '직급 정보 없음'}</td>
+                </tr>
+                <tr>
+                  <td className="approval-sign">
+                    <div className="approval-name">{user.emp_name || '이름 정보 없음'}</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="approval-date"></td>
+                </tr>
+              </tbody>
+            </table>
+            {/* 승인 정보 (결재선) - 결재선이 있을 때만 표시 */}
+            {line.length > 1 ? (
+              <table className="approval-table">
+                <tbody>
+                  <tr>
+                    <td rowSpan="3" className="approval-position">승인</td>
+                    {line[1] ?
+                      <td className="approval-header">{line[1].appr_position || '직급 정보 없음'}</td>
+                      : null}
+                    {line[2] ?
+                      <td className="approval-header">{line[2].appr_position || '직급 정보 없음'}</td>
+                      : null}
+                    {line[3] ?
+                      <td className="approval-header">{line[3].appr_position || '직급 정보 없음'}</td>
+                      : null}
+                  </tr>
+                  <tr>
+                    {line[1] ?
+                      <td className="approval-sign">
+                        {line[1].appr_status === 3 && document.doc_status !== 4 && <div className="approval-stamp">승인</div>}
+                        <div className="approval-name">{line[1].appr_name || '이름 정보 없음'}</div>
+                      </td>
+                      : null}
+                    {line[2] ?
+                      <td className="approval-sign">
+                        {line[2].appr_status === 3 && document.doc_status !== 4 && <div className="approval-stamp">승인</div>}
+                        <div className="approval-name">{line[2].appr_name || '이름 정보 없음'}</div>
+                      </td>
+                      : null}
+                    {line[3] ?
+                      <td className="approval-sign">
+                        {line[3].appr_status === 3 && document.doc_status !== 4 && <div className="approval-stamp">승인</div>}
+                        <div className="approval-name">{line[3].appr_name || '이름 정보 없음'}</div>
+                      </td>
+                      : null}
+                  </tr>
+                  <tr>
+                    {line[1] ?
+                      <td className="approval-date">
+                      </td>
+                      : null}
+                    {line[2] ?
+                      <td className="approval-date">
+                      </td>
+                      : null}
+                    {line[3] ?
+                      <td className="approval-date">
+                      </td>
+                      : null}
+                  </tr>
+                </tbody>
+              </table>) : <div></div>
+            }
+          </div>
         </div>
 
         {/* 휴가 신청 정보 */}
@@ -73,83 +238,62 @@ const VacationForm = (props) => {
             <tr>
               <td className="label-cell">휴가 종류</td>
               <td>
-                <select value={vacationForm.vacationType} onChange={(e) => handleDateChange('vacationType', e.target.value)}>
-                  <option value="연차">연차</option>
-                  <option value="반차">반차</option>
-                  <option value="병가">병가</option>
-                  <option value="특별휴가">특별휴가</option>
+                <select name='vacation_type' onChange={changeValue}>
+                  <option value="">휴가 종류 선택</option>
+                  <option value="1">연차</option>
+                  <option value="2">병가</option>
+                  <option value="3">경조휴가</option>
+                  <option value="4">특별휴가</option>
                 </select>
               </td>
             </tr>
             <tr>
               <td className="label-cell">기간 및 일시</td>
-              <td className="date-range">
-                <input
-                  type="date"
-                  value={vacationForm.startDate}
-                  onChange={(e) => handleDateChange('startDate', e.target.value)}
-                />
-                <span className="date-separator">~</span>
-                <input
-                  type="date"
-                  value={vacationForm.endDate}
-                  onChange={(e) => handleDateChange('endDate', e.target.value)}
-                />
-                <span className="usage-status">
-                  <span className="usage-label">사용일수 : </span>
-                  <input type="number" className="day-input" value={vacationForm.totalDays} readOnly />
-                  <span className="usage-message">신청가능일을 초과하였습니다.</span>
+              <td>
+                <input type="date" name='start_date' onChange={changeValue} min={formattedDate} max={vacationForm.end_date !== '' ? vacationForm.end_date : null} />
+                <span style={{ marginLeft: '10px', marginRight: '10px' }}>~</span>
+                <input type="date" name='end_date' onChange={changeValue} min={vacationForm.start_date !== '' ? vacationForm.start_date : formattedDate} max={end} />
+                
+                <span style={{ marginLeft: '10px' }}>
+                  <span> 신청일수 : </span>
+                  <input type="number" className="day-input" name='used_days' value={vacationForm.used_days} readOnly />
+                  {usedDays > remainVacation && (<span className="usage-message">신청가능일을 초과하였습니다.</span>)}
                 </span>
               </td>
             </tr>
             <tr>
-              <td className="label-cell">반차 여부</td>
-              <td className="half-day-options">
-                <label>
-                  <input type="checkbox" /> 시작일
-                </label>
-                <label className="radio-label">
-                  <input type="radio" name="startHalf" disabled /> 오전
-                </label>
-                <label className="radio-label">
-                  <input type="radio" name="startHalf" disabled /> 오후
-                </label>
-                <label>
-                  <input type="checkbox" /> 종료일
-                </label>
-                <label className="radio-label">
-                  <input type="radio" name="endHalf" disabled /> 오전
-                </label>
-                <label className="radio-label">
-                  <input type="radio" name="endHalf" disabled /> 오후
-                </label>
+              <td className="label-cell">연차 일수</td>
+              <td>
+                <span>잔여일수 : </span>
+                <input type="number" className="day-input" value={remainVacation} readOnly />
+                <span style={{ marginLeft: '10px' }}>신청일수 : </span>
+                <input type="number" className="day-input" value={vacationForm.vacation_type === 1 ? vacationForm.used_days : 0} readOnly />
+                <span style={{ marginLeft: '10px' }}>신청 후 잔여일수 : </span>
+                <input type="number" className="day-input" value={vacationForm.vacation_type === 1 ? remainVacation - vacationForm.used_days : remainVacation} readOnly />
               </td>
             </tr>
             <tr>
-              <td className="label-cell">연차 일수</td>
-              <td className="leave-days">
-                <div>
-                  <span>전체일수 : </span>
-                  <input type="number" className="day-input" value="0" readOnly />
-                </div>
-                <div>
-                  <span>신청일수 : </span>
-                  <input type="number" className="day-input" value="1" readOnly />
-                </div>
+              <td className="label-cell">제목</td>
+              <td colSpan="3">
+                <input type="text" name='title' className="full-width-input" placeholder="제목을 입력하세요" onChange={changeValue} />
+              </td>
+            </tr>
+            <tr>
+              <td colSpan={4} className="label-cell">휴가사유</td>
+            </tr>
+            <tr>
+              <td colSpan={4} style={{ height: '300px' }}>
+                <textarea
+                  name='content'
+                  placeholder='휴가사유를 입력하세요'
+                  className="full-width-input"
+                  onChange={changeValue}
+                  style={{ width: '100%', height: '100%', border: 'none', resize: 'none', verticalAlign: 'top', padding: '10px', outline: 'none' }}
+                />
               </td>
             </tr>
           </tbody>
         </table>
-
-        <div className="form-notice">
-          <p>※ '휴가 사유' 작성란은 삭제되었습니다.</p>
-          <p>- 경조휴가 등 휴가 사유를 반드시 알아야 하는 경우에는 [결재문서] 항목 후 기안자건에 작어주세요.</p>
-          <ol>
-            <li>연차의 사용은 근로기준법에 따라 전년도에 발생한 개인별 한도에 맞추어 사용함을 원칙으로 한다. 단, 최초 입사자에는 근로 기준법에 따라 발생 예정된 연차를 전용하여 월 1회 사용 할 수 있다.</li>
-            <li>경조사 휴가는 행사일을 증명할 수 있는 가족 관계 증명서 또는 등본, 청첩장 등 제출</li>
-            <li>공가(예비군/민방위)는 사전에 통지서, 사후에 참석증을 반드시 제출</li>
-          </ol>
-        </div>
 
         <div className="form-footer">
           <div className="attachment-section">
@@ -159,11 +303,6 @@ const VacationForm = (props) => {
                 <span>이 곳에 파일을 드래그 하세요. 또는 파일첨부</span>
               </div>
             </div>
-          </div>
-
-          <div className="related-docs">
-            <h3>관련문서</h3>
-            <button className="related-docs-btn">문서 검색</button>
           </div>
         </div>
       </div>

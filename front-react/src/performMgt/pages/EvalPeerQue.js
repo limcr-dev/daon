@@ -1,4 +1,4 @@
-
+import { request } from "../../common/components/helpers/axios_helper"
 import { useUser } from "../../common/contexts/UserContext";
 import React, { useEffect, useState } from "react";
 
@@ -10,61 +10,66 @@ import LeftbarDEvaluation from "../components/LeftbarDEvaluation";
 
 import { Container, Content, Button } from "rsuite";
 import QuesList from "./sub/QuesList";
+import { useNavigate } from "react-router-dom";
 
 
 // 동료 평가 문제 불러오기
 const EvalPeerQue = () => {
 
     const { user } = useUser();
+    const navigate = useNavigate();
     const [testList, setTestList] = useState([]);
     const [quesList, setQuesList] = useState([]);
     const [peerList, setPeerList] = useState([]);
     const [selectedPeer, setSelectedPeer] = useState("");
-
+    const [orderNum, setOrderNum] = useState(null);
     const [answers, setAnswers] = useState({});
-    //console.log("현재 토큰 : ", localStorage.getItem("auth_token"));
 
     // 테스트 리스트 불러오기
     useEffect(() => {
-        fetch("http://localhost:8081/performMgt/testListT", {
-            method: "GET",
-        })
-            .then((res) => res.json())
+        request("GET", "/performMgt/testListT")
             .then((res) => {
-                // '동료평가'만 필터링
-                const filtered = res.filter(test => test.eval_emp_type === '동료평가');
-                console.log("동료평가만 필터링", filtered);
-                setTestList(filtered);
+                // 동료평가 테스트 리스트를 불러온다.. 진행안함만?!
+                request("GET", `/performMgt/peerList/${user.emp_no}`)
+                .then((response)=>{
+                    // peerList에서 eval_order_num 값들만 배열로 추출
+                    const peerEvalNums = response.data.map(item =>item.eval_order_num);
+
+                    // testList에서 peerEvalNums에 해당하는 것만 필터링
+                    const refiltered = res.data.filter(test =>
+                        peerEvalNums.includes(test.eval_order_num)
+                    );
+                    console.log("필터된 자기평가 리스트: " , refiltered);
+                    setTestList(refiltered);
+                })
+               .catch((error)=>{
+                console.error("동료평가 리스트 가져오기 오류 : ", error);
+               }) ;
             })
-            .catch((error) =>
-                console.error("데이터 가져오기 오류 : ", error));
-    }, []);
+            .catch((error) =>{
+                console.error("데이터 가져오기 오류 : ", error);
+    });
+    }, [user]);
 
 
     // 동료 리스트 불러오기!
     useEffect(() => {
         console.log("동료 리스트 불러오기 시작!");
-        fetch('http://localhost:8081/performMgt/peerList/', {
-            method: "GET",
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                // '같은 팀만 필터링
-                if (user) {
-                    const filteredPeers = data.filter(
-                        peer => peer.dept_no === user.dept_no &&  // 같은 부서사람
-                            peer.emp_no !== user.emp_no   // 나는 제외
-                        //&&  !evaluatedPeers.includes(peer.emp_no) //평가한 사람은 제외!
-                    );
-                    setPeerList(filteredPeers);
-                }
-
+        request("GET", `/performMgt/peerList/${user.emp_no}`)
+            .then((response) => {
+                setPeerList(response.data);
+                console.log(response.data);
             })
             .catch((err) => console.error("동료 리스트 불러오기 실패", err));
     }, [user]);
 
     // 문제 불러오기
     const startTest = (orderNum) => {
+        const test = testList.find(t => t.eval_order_num === orderNum);
+        if (new Date() > new Date(test.eval_end_date)) {
+            alert("마감일이 지났습니다");
+            return;
+        }
         //만약에 평가하고자 하는 사람을 선택안했으면 안돼! 
         if (!selectedPeer) {
             alert("평가할 동료를 먼저 선택해 주세요!");
@@ -72,14 +77,11 @@ const EvalPeerQue = () => {
         }
 
         if (window.confirm(`${orderNum}번 테스트를 ${selectedPeer}에게 시작할까요?`)) {
-
-            fetch(`http://localhost:8081/performMgt/queslist/${orderNum}`, {
-                method: "GET",
-            })
-                .then((data) => data.json())
+            setOrderNum(orderNum); // 저장
+            request("GET", `/performMgt/queslist/${orderNum}`)
                 .then((data) => {
                     console.log("응답", data);
-                    setQuesList(data);
+                    setQuesList(data.data);
                 })
                 .catch((error) =>
                     console.error("데이터 가져오기 오류 : ", error));
@@ -128,8 +130,10 @@ const EvalPeerQue = () => {
             eval_type: "동료평가",
             eval_status: "제출완료",
             eval_total_score: answerList.reduce((sum, item) => sum + item.score, 0),
-            // eval_order_num: test.eval_order_num,
+            eval_order_num: orderNum,
         };
+
+
         // comp1~comp5 채워넣기
         for (let i = 0; i < 5; i++) {
             payload[`eval_comp${i + 1}`] = compEntries[i]?.[0] || null;
@@ -137,17 +141,14 @@ const EvalPeerQue = () => {
         }
 
         try {
-            const res = await fetch("http://localhost:8081/performMgt/evalPeerInsert", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload)
-            });
+            const res = await request("POST", "/performMgt/evalPeerInsert", payload);
 
-            if (res.ok) {
+            if (res.status === 200 || res.data > 0) {
                 alert("평가가 성공적으로 저장되었습니다!");
                 // 초기화하거나, 다른 페이지로 이동하는 코드 여기에!
+                console.log("전달하는 값 : ", payload);
+                navigate(0);
+                // peer_target 상태도 DB 트리거로 자동 업데이트됨
             } else {
                 alert("저장에 실패했습니다.");
             }
@@ -182,9 +183,9 @@ const EvalPeerQue = () => {
                                 >
                                     <option value="">동료를 선택하세요</option>
                                     {peerList.map((peer, index) => (
-                                        <option key={index} value={peer.emp_no}>
-                                            {peer.emp_no || `동료 ${index + 1}`}
-                                            {peer.emp_name}
+                                        <option key={index} value={peer.eval_peer_no}>
+                                            {peer.eval_peer_no || `동료 ${index + 1}`}
+                                            &nbsp; : {peer.emp_name}
                                         </option>
                                     ))}
                                 </select>
@@ -194,6 +195,7 @@ const EvalPeerQue = () => {
                                     <tr>
                                         <th className="comp-th">순번</th>
                                         <th className="comp-th"> 등록일 </th>
+                                        <th className="comp-th"> 마감일 </th>
                                         <th className="comp-th"> 평가유형 </th>
                                         <th className="comp-th"> 평가역량 </th>
                                         <th className="comp-th">  </th>
@@ -208,6 +210,7 @@ const EvalPeerQue = () => {
                                                 <tr key={index}>
                                                     <td className="comp-td">{test.eval_order_num || "정보 없음"}</td>
                                                     <td className="comp-td">{test.eval_start_date || "정보 없음"}</td>
+                                                    <td className="comp-td">{test.eval_end_date || "정보 없음"}</td>
                                                     <td className="comp-td">{test.eval_emp_type || "정보 없음"}</td>
                                                     <td className="comp-td">{test.eval_click_emp || "정보 없음"}</td>
 
@@ -222,7 +225,8 @@ const EvalPeerQue = () => {
                                     ) : (
                                         <tr>
                                             <td colSpan={6} align="center">
-                                                테스트 리스트 불러오는 중...
+                                                정보를 불러오는 중...
+                                                
                                             </td>
                                         </tr>
                                     )}
@@ -239,7 +243,7 @@ const EvalPeerQue = () => {
                                             onScoreChange={handleScoreChange}
                                             selectedScore={answers[ques.eval_ques_id]?.score || null} />))
                                     ) : (
-                                        <p> 테스트 리스트 불러오는 중...</p>
+                                        <p> 테스트 하기를 클릭하시면 문제가 보입니다!</p>
 
                                     )
                                     }

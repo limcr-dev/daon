@@ -16,13 +16,14 @@ import lombok.ToString;
 @ToString
 @Builder
 @Entity   
-@Table(name="Schedule_setting")
+@Table(name="schedule_setting")
 public class Schedule_setting {
 	// Schedule_setting table
 	@Id
-	private int emp_no;					// 사원번호
-	private int sch_category_no ;		// 카테고리 코드
-	private String sch_category_title ;	// 카테고리 제목
-	private String sch_category_color;	// 카테고리 색
-	private boolean full_schedule ;	// 전사 일정 카테고리 여부
+	private int c_sch_no ;			// 카테고리 코드
+	private int emp_no;				// 사원번호
+	private String c_sch_title ;	// 카테고리 제목
+	private String c_sch_color;		// 카테고리 색
+	private char c_sch_type ;	// 카테고리 타입 
+	private char c_default ; 	// 기본카테고리 여부
 }

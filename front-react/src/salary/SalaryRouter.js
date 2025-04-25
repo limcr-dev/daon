@@ -5,6 +5,7 @@ import AllowanceList from './pages/Allowance/AllowanceList';
 import DeductionList from './pages/Deduction/DeductionList';
 import EmployeeItemConfig from './pages/EmployeeItem/EmployeeItemConfig';
 import EmployeeSalaryList from './pages/EmployeeSalaryList/EmployeeSalaryList ';
+import SalarySchedule from './pages/SalarySchedule/SalarySchedule';
 
 
 
@@ -19,7 +20,8 @@ const SalaryRouter = () => {
             <Route path="/deductionList" element={<DeductionList/>} />
             <Route path="/employeeItemConfig" element={<EmployeeItemConfig/>} />
             <Route path="/employeeSalaryList" element={<EmployeeSalaryList/>} />
-
+            <Route path="/salarySchedule" element={<SalarySchedule/>} />
+            
             
             {/* <Route path="/organizationChart" element={<OrganizationChart/>}/> */}
         </Routes>

@@ -8,6 +8,9 @@ import {
   Modal,
 } from "rsuite";
 
+// 공통 js
+import { request } from '../../common/components/helpers/axios_helper';
+
 import AttendMgtTree from "../components/AttendMgtTree";
 import Clock from "react-live-clock";
 import React, { useEffect, useState } from "react";
@@ -17,50 +20,47 @@ import {
   faArrowRightFromBracket,
   faPersonWalking,
 } from "@fortawesome/free-solid-svg-icons";
-
 // css
 import "../css/AttendMgtLeftbar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const AttendMgtLeftbar = (props) => {
-  // 근태 정보
+  // 직원코드
   const emp_no = props.user.emp_no;
 
+  // 오늘 근태정보 불러올 변수
   const [todayAttendance, setTodayAttendance] = useState({
-    b_num: "",
     date: "",
     check_in_time: "",
     check_out_time: "",
-    work_hours: "",
-    status: "",
+    vacation: "",
   });
-  // 근무 유형 정보
+  // 근무 유형정보 불러올 변수
   const [work_schedules, setWork_schedules] = useState();
-  // 근무 코드에 따른 정보 가져오기
+
+  // 직원 코드에 따른 근무 유형정보 불러오기
   useEffect(() => {
-    fetch("http://localhost:8081/attend/workType/" + emp_no)
-      .then((res) => res.json())
+    request("GET", "/attend/workType/" + emp_no)
       .then((res) => {
-        setWork_schedules(res);
-        fetch("http://localhost:8081/attend/attendByDate/" + emp_no, {
-          method: "GET",
-        })
-          .then((res) => res.json())
-          .then((res) => {
-            // todayAttendance 값이 변경될때만 set
-            if (JSON.stringify(todayAttendance) !== JSON.stringify(res)) {
-              setTodayAttendance(res);
-            }
-          })
-          .catch((error) => {
-            console.log("로그인정보를 확인해주세요", error);
-          });
+        setWork_schedules(res.data);
       })
       .catch((error) => {
         console.log("로그인정보를 확인해주세요", error);
       });
-  }, [emp_no, todayAttendance]);
+  }, [emp_no]);
 
+  // 오늘 근태정보 불러오기
+  useEffect(() => {
+    request("GET", "/attend/attendByDate/" + emp_no)
+      .then((res) => {
+        setTodayAttendance(res.data);
+      })
+      .catch((error) => {
+        console.log("로그인정보를 확인해주세요", error);
+      });
+  }, [emp_no])
+
+  // 출퇴근 확인 모달창 시작
   const [inOpen, setInOpen] = useState(false);
   const [outOpen, setOutOpen] = useState(false);
 
@@ -68,43 +68,26 @@ const AttendMgtLeftbar = (props) => {
   const check_in_Close = () => setInOpen(false);
   const check_out_open = () => setOutOpen(true);
   const check_out_Close = () => setOutOpen(false);
+  // 출퇴근 확인 모달창 끝
 
-  // 출근 버튼 클릭시
+  // 출근 버튼 클릭 시 (근무유형의 시작시간을 가져가 인서트)
   const check_in = () => {
-    fetch(
-      "http://localhost:8081/attend/checkIn/" +
-        emp_no +
-        "/" +
-        work_schedules.start_time,
-      {
-        method: "POST",
-      }
-    )
-      .then((res) => res.json())
+    request("POST", "/attend/checkIn/" + emp_no + "/" + work_schedules.start_time)
       .then((res) => {
-        setTodayAttendance(res);
-        window.location.reload();
+        setTodayAttendance(res.data);
+        window.location.reload(); // 새로고침
       })
       .catch((error) => {
         console.log("로그인정보를 확인해주세요", error);
       });
   };
 
-  // 퇴근 버튼 클릭시
+  // 퇴근 버튼 클릭시(근무유형의 종료시간을 가져가 업데이트)
   const check_out = () => {
-    fetch(
-      "http://localhost:8081/attend/checkOut/" +
-        emp_no +
-        "/" +
-        work_schedules.end_time,
-      {
-        method: "PUT",
-      }
-    )
-      .then((res) => res.json())
+    request("PUT", "/attend/checkOut/" + emp_no + "/" + work_schedules.end_time)
       .then((res) => {
-        setTodayAttendance(res);
-        window.location.reload();
+        setTodayAttendance(res.data);
+        window.location.reload(); // 새로고침
       })
       .catch((error) => {
         console.log("로그인정보를 확인해주세요", error);
@@ -114,9 +97,8 @@ const AttendMgtLeftbar = (props) => {
   // 오늘 날짜 불러오기
   const today = new Date();
   const dayOfWeek = today.toLocaleDateString("ko-KR", { weekday: "short" });
-  const formattedDate = `${today.getFullYear()}-${
-    today.getMonth() + 1
-  }-${today.getDate()}일(${dayOfWeek})`;
+  const formattedDate = `${today.getFullYear()}-${today.getMonth() + 1
+    }-${today.getDate()}일(${dayOfWeek})`;
 
   return (
     <Sidebar style={{ backgroundColor: "#f0f0f0", width: "150px" }}>
@@ -130,7 +112,7 @@ const AttendMgtLeftbar = (props) => {
         }}
       >
         <Text size={24} style={{ marginTop: "20px" }}>
-          근태관리
+          근태관리  
         </Text>
         <Divider />
         {formattedDate} {/* 오늘 날짜 */}
@@ -146,16 +128,18 @@ const AttendMgtLeftbar = (props) => {
         </div>
         {/* 출퇴근 버튼 시작 */}
         <div style={{ gap: "10px", display: "flex" }}>
+
+          {/* 출근 버튼 */}
           <Button
             style={{ backgroundColor: "#CECEF2" }}
             onClick={check_in_open}
-            disabled={!!todayAttendance.check_in_time}
-          >
-            {" "}
-            {/* 이미 누른 경우 비활성화 */}
-            <FontAwesomeIcon icon={faPersonWalking} />{" "}
+            // 이미 누른 경우 비활성화
+            disabled={!!todayAttendance.check_in_time || !!todayAttendance.vacation}>
+            <FontAwesomeIcon icon={faPersonWalking} />
             <p style={{ margin: "5px" }}>출근</p>
           </Button>
+
+          {/* 출근확인 모달창 시작 */}
           <Modal
             open={inOpen}
             onClose={check_in_Close}
@@ -178,18 +162,19 @@ const AttendMgtLeftbar = (props) => {
               </Button>
             </Modal.Footer>
           </Modal>
+          {/* 출근확인 모달창 끝 */}
+
+          {/* 퇴근 버튼 */}
           <Button
             style={{ backgroundColor: "#CECEF2" }}
             onClick={check_out_open}
-            disabled={
-              !!todayAttendance.check_out_time || !todayAttendance.check_in_time
-            }
-          >
-            {" "}
-            {/* 이미 누른 경우 비활성화 */}
-            <FontAwesomeIcon icon={faArrowRightFromBracket} />{" "}
+            // 이미 누른 경우 비활성화
+            disabled={!!todayAttendance.check_out_time || !todayAttendance.check_in_time}>
+            <FontAwesomeIcon icon={faArrowRightFromBracket} />
             <p style={{ margin: "5px" }}>퇴근</p>
           </Button>
+
+          {/* 퇴근 확인 모달창 시작 */}
           <Modal
             open={outOpen}
             onClose={check_out_Close}
@@ -212,23 +197,16 @@ const AttendMgtLeftbar = (props) => {
               </Button>
             </Modal.Footer>
           </Modal>
+          {/* 퇴근 확인 모달창 끝 */}
         </div>
         {/* 출퇴근 버튼 끝 */}
-        <Dropdown title="근무상태 변경" className="custom-dropdown">
-          <Dropdown.Item>업무</Dropdown.Item>
-          <Dropdown.Item>업무종료</Dropdown.Item>
-          <Dropdown.Item>외근</Dropdown.Item>
-          <Dropdown.Item>출장</Dropdown.Item>
-          <Dropdown.Item>반차</Dropdown.Item>
-        </Dropdown>
       </Sidenav.Header>
       <Divider />
       {/* header 끝 */}
 
       <Sidenav style={{ marginTop: "20px" }}>
-        <Sidenav.Body
-          style={{ backgroundColor: "#f0f0f0", paddingLeft: "20px" }}
-        >
+        <Sidenav.Body style={{ backgroundColor: "#f0f0f0", paddingLeft: "20px" }} >
+          {/* 레프트 바 트리 구조 */}
           <AttendMgtTree user={props.user} />
         </Sidenav.Body>
       </Sidenav>

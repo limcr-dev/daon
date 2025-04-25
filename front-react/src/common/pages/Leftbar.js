@@ -1,97 +1,100 @@
 import React from 'react';
 import {
-  Sidebar,
-  Sidenav,
-  Nav,
-  IconButton,
-  HStack,
-  Stack,
+  Sidebar, Sidenav, Nav, IconButton, HStack, Stack, Button
 } from 'rsuite';
 import { Icon } from '@rsuite/icons';
 import {
-  MdDashboard,
-  MdGroup,
-  MdEmail,
-  MdDescription,
-  MdLibraryBooks,
-  MdEvent,
-  MdBusinessCenter,
-  MdSupervisorAccount,
-  MdKeyboardArrowLeft,
-  MdOutlineKeyboardArrowRight
+  MdDashboard, MdGroup, MdEmail, MdDescription, MdEvent,
+  MdBusinessCenter, MdSupervisorAccount, MdKeyboardArrowLeft,
+  MdOutlineKeyboardArrowRight, MdAccountTree
 } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../common/contexts/UserContext';
 
-const Leftbar = () => {
+const Leftbar = ({ onOpenOrgChart }) => {
   const navigate = useNavigate();
   const [expand, setExpand] = React.useState(true);
+  const { user } = useUser();
 
   return (
-    <Sidebar style={{ display: 'flex', flexDirection: 'column', backgroundColor: '#CCCCFB' }} width={expand ? 180 : 56} collapsible>
-      <Sidenav.Header style={{
+    <Sidebar
+      style={{
         display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100px', // 부모 요소의 높이를 100%로 설정
-        width: '100%' // 부모 요소의 너비를 100%로 설정
-      }}>
-        <Brand expand={expand} />
-      </Sidenav.Header>
-      <Sidenav expanded={expand} appearance="subtle">
-        <Sidenav.Body>
-          <Nav defaultActiveKey="1">
-            <Nav.Item eventKey="1" onClick={() => navigate('/home')} icon={<Icon as={MdDashboard} />}>
-              홈
-            </Nav.Item>
-            <Nav.Item eventKey="2" onClick={() => navigate('/attendMgt')} icon={<Icon as={MdGroup} />}>
-              근태 관리
-            </Nav.Item>
-            <Nav.Item eventKey="3" onClick={() => navigate('/mail')} icon={<Icon as={MdEmail} />}>
-              메일
-            </Nav.Item>
-            <Nav.Item eventKey="7" onClick={() => navigate('/schedule')} icon={<Icon as={MdEvent} />}>
-              일정
-            </Nav.Item>
-            <Nav.Item eventKey="4" onClick={() => navigate('/approve')} icon={<Icon as={MdDescription} />}>
-              전자결재
-            </Nav.Item>
-            <Nav.Item eventKey="6" onClick={() => navigate('/performMgt')} icon={<Icon as={MdBusinessCenter} />}>
-              인사평가
-            </Nav.Item>
-            <Nav.Item eventKey="7" onClick={() => navigate('/employee')} icon={<Icon as={MdGroup} />}>
-              인사
-            </Nav.Item>
-            <Nav.Item eventKey="8" onClick={() => navigate('/board')} icon={<Icon as={MdDescription} />}>
-              게시판
-            </Nav.Item>
-          </Nav>
-        </Sidenav.Body>
-        <Nav>
-          <Nav.Item eventKey="9" onClick={() => navigate('/orgChart')} icon={<Icon as={MdGroup} />}>
-            조직도
-          </Nav.Item>
-          <Nav.Item eventKey="10" onClick={() => navigate('/messenger')} icon={<Icon as={MdSupervisorAccount} />}>
-            메신저
-          </Nav.Item>
-          <Nav.Item eventKey="10" onClick={() => navigate('/salary')} icon={<Icon as={MdSupervisorAccount} />}>
-            급여
-          </Nav.Item>
-        </Nav>
-      </Sidenav>
-      <NavToggle expand={expand} onChange={() => setExpand(!expand)} />
+        flexDirection: 'column',
+        justifyContent: 'space-between', // ✅ 상/하단 분리 핵심
+        backgroundColor: '#cecef2',
+        height: '100vh',
+        borderRight: 'none'
+      }}
+      width={expand ? 200 : 60}
+      collapsible
+    >
+
+      {/* 상단 영역 - 로고 + 메뉴 */}
+      <div>
+        <Sidenav.Header style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+          <Brand expand={expand} />
+        </Sidenav.Header>
+
+        <Sidenav expanded={expand} appearance="subtle">
+          <Sidenav.Body>
+            <Nav>
+              <Nav.Item icon={<Icon as={MdDashboard} />} onClick={() => navigate('/home')}>홈</Nav.Item>
+              <Nav.Item icon={<Icon as={MdGroup} />} onClick={() => navigate('/attendMgt')}>근태 관리</Nav.Item>
+              <Nav.Item icon={<Icon as={MdEmail} />} onClick={() => navigate('/mail')}>메일</Nav.Item>
+              <Nav.Item icon={<Icon as={MdEvent} />} onClick={() => navigate('/schedule')}>일정</Nav.Item>
+              <Nav.Item icon={<Icon as={MdDescription} />} onClick={() => navigate('/approve')}>전자결재</Nav.Item>
+
+              <Nav.Item icon={<Icon as={MdBusinessCenter} />} onClick={() => navigate('/performMgt')}>인사평가</Nav.Item>
+
+              {(user?.admin_type === 2 || user?.admin_type === 3) && (
+                <Nav.Item icon={<Icon as={MdGroup} />} onClick={() => navigate('/employee')}>인사관리</Nav.Item>
+              )}
+              <Nav.Item icon={<Icon as={MdDescription} />} onClick={() => navigate('/board')}>게시판</Nav.Item>
+              <Nav.Item icon={<Icon as={MdSupervisorAccount} />} onClick={() => navigate('/messenger')}>주소록</Nav.Item>
+              {(user?.admin_type === 2 || user?.admin_type === 4) && (
+                <Nav.Item icon={<Icon as={MdSupervisorAccount} />} onClick={() => navigate('/salary')}>급여</Nav.Item>
+              )}
+            </Nav>
+          </Sidenav.Body>
+        </Sidenav>
+      </div>
+
+      {/* 하단 영역 - 조직도 버튼 + 토글 */}
+      <div>
+        <Stack justifyContent="center" style={{ padding: 10 }}>
+          <Button
+            onClick={onOpenOrgChart}
+            appearance="ghost"
+            size="sm"
+            startIcon={<MdAccountTree />}
+            style={{ color: '#000', border: '1px solid #000', width: '100%', }}
+          >
+            {expand && "조직도"}
+          </Button>
+        </Stack>
+
+        <NavToggle expand={expand} onChange={() => setExpand(!expand)} />
+      </div>
     </Sidebar>
   );
 };
 
 const NavToggle = ({ expand, onChange }) => (
-  <Stack className="nav-toggle" justifyContent={expand ? 'flex-end' : 'center'}>
-    <IconButton onClick={onChange} appearance="subtle" size="lg" icon={expand ? <MdKeyboardArrowLeft /> : <MdOutlineKeyboardArrowRight />} />
+  <Stack className="nav-toggle" justifyContent={expand ? 'flex-end' : 'center'} style={{ padding: 10 }}>
+    <IconButton
+      onClick={onChange}
+      appearance="subtle"
+      size="lg"
+      icon={expand ? <MdKeyboardArrowLeft /> : <MdOutlineKeyboardArrowRight />}
+    />
   </Stack>
 );
 
 const Brand = ({ expand }) => (
-  <HStack className="page-brand" spacing={12}>
+  <HStack spacing={12}>
     {expand && <img src="/daon_logo.png" alt="Daon" style={{ width: '100px', height: 'auto' }} />}
   </HStack>
 );
+
 export default Leftbar;

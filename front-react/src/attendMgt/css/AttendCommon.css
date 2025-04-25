@@ -50,3 +50,11 @@
     left: 50%;
     transform: translateX(-50%);
 }
+
+/* 긴텍스트 자르기 */
+.customText-truncate {
+    max-width: 200px;
+    white-space: nowrap;        /* 텍스트를 한 줄로 유지 */
+    overflow: hidden;           /* 텍스트가 넘칠 경우 숨기기 */
+    text-overflow: ellipsis;    /* 넘친 텍스트를 "..."으로 표시 */
+  }

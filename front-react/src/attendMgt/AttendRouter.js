@@ -4,6 +4,9 @@ import { Route, Routes } from 'react-router-dom';
 import AttendMgt from './pages/AttendMgt';
 import DeptStatus from './pages/DeptStatus';
 import DeptStats from './pages/DeptStats';
+import AllVacationCreate from './pages/AllVacationCreate';
+import AllVacationUsed from './pages/AllVacationUsed';
+import AttendSetting from './pages/AttendSetting';
 
 const AttendRouter = () => {
     return (
@@ -17,6 +20,10 @@ const AttendRouter = () => {
 
                 <Route path="/deptStatus/:pickDept_no" element={<DeptStatus />} />               {/* 부서근태현황 */}
                 <Route path="/deptStats/:pickDept_no" element={<DeptStats />} />               {/* 부서근태통계 */}
+
+                <Route path="/AllVacationCreate" element={<AllVacationCreate />} />               {/* 전사 연차 생성내역 */}
+                <Route path="/allVacationUsed" element={<AllVacationUsed />} />               {/* 전사 연차 사용내역 */}
+                <Route path="/attendSetting" element={<AttendSetting />} />               {/* 전사 연차 사용내역 */}
             </Routes>
         </div>
     );

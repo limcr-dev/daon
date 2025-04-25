@@ -61,16 +61,6 @@
   .subutt1:hover{
     background-color: #d2d2fc;
   }
-  
-  .subutt2{
-    width: 180px;
-    border: 2px solid #CCCCFB;
-    text-align: right;
-  }
-
-  .subutt2:hover{
-    background-color: #d2d2fc;
-  }
 
 
   .subno{
@@ -82,6 +72,7 @@
 
   .line{
     line-height: 2.1;
+    margin: 10px 0px 10px;
   }
   
   .linenomal{

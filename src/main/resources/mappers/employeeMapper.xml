@@ -17,7 +17,7 @@
     <insert id="insertEmployee" parameterType="com.spring.daon.hrMgt.Employees">
         INSERT INTO employees 
         (emp_name, emp_eng_name, emp_email, emp_ext_email, emp_pwd, emp_gender, emp_birthday, emp_mobile, emp_ext_tel, 
-         position_id, role_id, dept_no, emp_status, emp_type, emp_img, hire_date, leave_date, admin_type, work_type_no, token)
+         position_id, role_id, dept_no, emp_status, emp_type, emp_img, hire_date, leave_date, admin_type, work_type_no, token, contract_end_date)
         VALUES 
         (
             #{emp_name}, 
@@ -39,7 +39,8 @@
             #{leave_date}, 
             #{admin_type},
             1,	
-            null
+            null,
+            #{contract_end_date}
         )
     </insert>
 
@@ -51,30 +52,42 @@
      WHERE emp_no = #{emp_no}
    </select>
    
+	<update id="updateEmployee" parameterType="com.spring.daon.hrMgt.Employees">
+  UPDATE employees
+  <set>
+    emp_name = #{emp_name},
+    emp_eng_name = #{emp_eng_name},
+    emp_email = #{emp_email},
+    emp_ext_email = #{emp_ext_email},
+
+    <!-- 비밀번호가 null 또는 빈 문자열이 아닌 경우만 업데이트 -->
+    <if test="emp_pwd != null and emp_pwd != ''">
+      emp_pwd = #{emp_pwd},
+    </if>
+
+    emp_gender = #{emp_gender},
+    emp_birthday = #{emp_birthday},
+    emp_mobile = #{emp_mobile},
+    emp_ext_tel = #{emp_ext_tel},
+    position_id = #{position_id},
+    role_id = #{role_id},
+    dept_no = #{dept_no},
+    emp_status = #{emp_status},
+    emp_type = #{emp_type},
+    emp_img = #{emp_img},
+    hire_date = #{hire_date},
+    leave_date = #{leave_date},
+    admin_type = #{admin_type},
+    work_type_no = #{work_type_no},
+    contract_end_date = #{contract_end_date}
+  </set>
+  WHERE emp_no = #{emp_no}
+	</update>
+
    
-   <update id="updateEmployee" parameterType="com.spring.daon.hrMgt.Employees">
-   UPDATE employees 
-      SET emp_name = #{emp_name},
-            emp_eng_name = #{emp_eng_name},
-            emp_email = #{emp_email},
-            emp_ext_email = #{emp_ext_email},
-            emp_pwd = #{emp_pwd},
-            emp_gender = #{emp_gender},
-            emp_birthday = #{emp_birthday},
-            emp_mobile = #{emp_mobile},
-            emp_ext_tel = #{emp_ext_tel},
-            position_id = #{position_id},
-            role_id = #{role_id},
-            dept_no = #{dept_no},
-            emp_status = #{emp_status},
-            emp_type = #{emp_type},
-            emp_img = #{emp_img},
-            hire_date = #{hire_date},
-            leave_date = #{leave_date},
-            admin_type = #{admin_type},
-            work_type_no = #{work_type_no}
-    WHERE emp_no = #{emp_no}   
-   </update>
+   
+
+   
    
    
    <delete id="deleteEmployee" parameterType="int">
@@ -88,5 +101,90 @@
     JOIN positions p ON e.position_id = p.position_id
     WHERE e.emp_no = #{empNo}
    </select>
+   
+	<select id="findActiveEmpNos" resultType="int">
+    SELECT emp_no FROM employees WHERE emp_status = 1
+	</select>
+	
+	<update id="updateAdminType">
+	  UPDATE employees
+	  SET admin_type = #{adminType}
+	  WHERE emp_no = #{empNo}
+	</update>
+	
+	<!-- 퇴사 처리: emp_status → 3, leave_date → NOW() -->
+	<update id="resignEmployee">
+	  UPDATE employees
+	  SET emp_status = 3,
+	      leave_date = NOW()
+	  WHERE emp_no = #{empNo}
+	</update>
+   
+   <!-- 총 사원 수 -->
+	<select id="countAllEmployees" resultType="int">
+	  SELECT COUNT(*) FROM employees
+	</select>
+	
+	<!-- 이번달 입사자 수 -->
+	<select id="countNewHiresThisMonth" resultType="int">
+	  SELECT COUNT(*) 
+	  FROM employees 
+	  WHERE MONTH(hire_date) = MONTH(NOW()) AND YEAR(hire_date) = YEAR(NOW())
+	</select>
+	
+	<!-- 이번달 퇴사자 수 -->
+	<select id="countResignedThisMonth" resultType="int">
+	  SELECT COUNT(*) 
+	  FROM employees 
+	  WHERE emp_status = 3 AND MONTH(leave_date) = MONTH(NOW()) AND YEAR(leave_date) = YEAR(NOW())
+	</select>
+	
+	<!-- 계약 만료 예정자 수 (예: emp_type = 2가 계약직이라고 가정) -->
+	<select id="countContractExpiringThisMonth" resultType="int">
+	SELECT COUNT(*) 
+	  FROM employees 
+	 WHERE emp_type IN (2, 3) -- 계약직 또는 인턴
+	   AND contract_end_date IS NOT NULL 
+	   AND MONTH(contract_end_date) = MONTH(NOW()) 
+	   AND YEAR(contract_end_date) = YEAR(NOW())
+	</select>
+	
+	<!-- 이번달 생일자 수 -->
+	<select id="countBirthdaysThisMonth" resultType="int">
+	  SELECT COUNT(*) 
+	  FROM employees 
+	  WHERE MONTH(emp_birthday) = MONTH(NOW())
+	</select>
+	
+	<!-- 부서 별 사원 수 -->
+	<select id="getEmployeeCountByDepartment" resultType="map">
+	  SELECT d.dept_no, d.dept_name, d.dept_parent, COUNT(e.emp_no) AS count
+		FROM departments d
+		LEFT JOIN employees e 
+		  ON d.dept_no = e.dept_no AND e.emp_status = 1 -- ✅ 필터를 JOIN 안으로 이동
+		GROUP BY d.dept_no, d.dept_name, d.dept_parent
+		ORDER BY d.dept_no
+	</select>
+	
+	<!-- 계약직/인턴 사원 목록 -->
+	<select id="findContractEmployees" resultType="com.spring.daon.hrMgt.Employees">
+	  SELECT * FROM employees
+	  WHERE emp_type IN (2, 3)
+	  ORDER BY contract_end_date
+	</select>
+	
+	<!-- 계약 만료일 연장 (계약직/인턴 대상) -->
+	<update id="extendContract">
+	  UPDATE employees
+	  SET contract_end_date = #{newEndDate}
+	  WHERE emp_no = #{empNo}
+	</update>
+	
+	<update id="convertToRegular">
+	  UPDATE employees
+	  SET emp_type = 1,
+	      contract_end_date = NULL
+	  WHERE emp_no = #{empNo} AND (emp_type = 2 OR emp_type = 3)
+	</update>
    
 </mapper>

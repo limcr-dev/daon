@@ -35,9 +35,8 @@ public class Test {
 	private String eval_click_emp;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" , timezone = "Asia/Seoul")
 	private Date eval_start_date;
-//	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" , timezone = "Asia/Seoul")
-//	private Date eval_end_date;
-//	private int eval_emp_no;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" , timezone = "Asia/Seoul")
+	private Date eval_end_date;
 	private String registration;
 	private int eval_num1;
 	private int eval_num2;

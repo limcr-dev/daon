@@ -27,10 +27,13 @@ public class Approval_lines {
 	@Id
 	private int line_id;
 	private int doc_no;
-    private int approver_no;
-    private int approval_order;
-    private int approval_status;
+    private int appr_no;
+    private String appr_name;
+    private String appr_position;
+    private int appr_dept_no;
+    private int appr_order;
+    private int appr_status;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date approval_date;
-    private String approval_comment;
+    private Date appr_date;
+    private String appr_comment;
 }

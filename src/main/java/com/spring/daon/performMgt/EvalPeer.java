@@ -1,8 +1,12 @@
 package com.spring.daon.performMgt;
 
+import java.sql.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,10 +25,8 @@ import lombok.ToString;
 
 public class EvalPeer {
 	
-	
-	// EvalQuesComp => eval_quescomp
 	@Id
-	 private int eval_id;
+	private int eval_id;
     private int eval_peer_no;     // 피평가자
     private int eval_no;          // 평가자
     private String eval_type;
@@ -40,8 +42,8 @@ public class EvalPeer {
     private int eval_comp5_score;
     private String eval_status;
     private int eval_total_score;
-    private String eval_start_date;  // DB에서 default CURRENT_TIMESTAMP지만 클라이언트에서 전달할 수도 있음
-    private String eval_end_date;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" , timezone = "Asia/Seoul")
+    private Date eval_test_date;
+    private String eval_order_num;
 		
 }

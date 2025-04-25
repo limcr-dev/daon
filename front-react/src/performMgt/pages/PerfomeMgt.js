@@ -6,7 +6,7 @@ import {
 
 import { Button, Card, Row, Col } from "react-bootstrap";
 import "../css/MainContent.css"; // CSS 파일 import
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import main from './../image/main.jpg';
 import icon1 from './../image/icon1.png';
@@ -24,7 +24,7 @@ const PerfomeMgt = () => {
     const navigate = useNavigate();
 
     const goToEval = () =>{
-      navigate('/performMgt/evalque');
+      navigate('/performMgt/evalQues');
     };
   
   return (
@@ -93,16 +93,9 @@ const PerfomeMgt = () => {
                       </Card.Body>
                     </Card>
                   </Col>
-                  <Col md={12}>
-                    <Card className="text-center">
-                      <Card.Body>
-                        <Card.Title>📝 테스트 하기</Card.Title>
-                        <img className="image-list" src={list3} />
-                        {/* <Image src="../image/list3.jpg" className="image-list" alt="" rounded /> */}
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                </Row>
+                  </Row>
+                  
+                
               </Col>
             </Row>
 
