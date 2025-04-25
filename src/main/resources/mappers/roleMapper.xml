@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.daon.hrMgt.Role.RoleMapper">
+  
+  <!-- 부서별 직책 조회 -->
+  <select id="findByDeptNo" resultType="com.spring.daon.hrMgt.Role.Role">
+    SELECT * FROM roles WHERE dept_no = #{deptNo} ORDER BY role_id
+  </select>
+
+  <!-- 직책 등록 -->
+  <insert id="insertRole">
+    INSERT INTO roles (role_name, dept_no, is_active)
+    VALUES (#{role_name}, #{dept_no}, #{is_active})
+  </insert>
+
+  <!-- 직책 수정 -->
+  <update id="updateRole">
+    UPDATE roles
+    SET role_name = #{role_name}, is_active = #{is_active}
+    WHERE role_id = #{role_id}
+  </update>
+
+  <!-- 직책 삭제 -->
+  <delete id="deleteRole">
+    DELETE FROM roles WHERE role_id = #{role_id}
+  </delete>
+
+</mapper>

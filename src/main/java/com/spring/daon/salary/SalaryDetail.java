@@ -14,6 +14,8 @@ public class SalaryDetail {
     private BigDecimal base_pay;
     private BigDecimal total_allowance;
     private BigDecimal total_deduction;
+    private BigDecimal income_tax;
+    private BigDecimal local_tax;
     private BigDecimal actual_pay;
 
     private List<SalaryItem> allowances;  // 수당 리스트

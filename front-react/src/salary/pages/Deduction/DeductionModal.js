@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button } from "rsuite";
+import { request } from "../../../common/components/helpers/axios_helper"; // ✅ 경로 실제 axios.js 위치로 조정
 
 const DeductionModal = ({ open, onClose, item, onSuccess }) => {
   const [form, setForm] = useState({
@@ -36,7 +37,6 @@ const DeductionModal = ({ open, onClose, item, onSuccess }) => {
     const { name, value, type, checked } = e.target;
 
     if (name === "is_tax") {
-      // 소득세 체크 시 rate, fixed_amount 초기화 및 비활성화
       setForm({
         ...form,
         is_tax: checked,
@@ -53,23 +53,20 @@ const DeductionModal = ({ open, onClose, item, onSuccess }) => {
 
   // ✅ 저장 처리
   const handleSubmit = () => {
-    const method = item ? "PUT" : "POST";
+    const method = item ? "put" : "post";
     const url = item
-      ? `http://localhost:8081/api/deduction/${item.id}`
-      : `http://localhost:8081/api/deduction`;
+      ? `/api/deduction/${item.id}`
+      : `/api/deduction`;
 
-    fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form)
-    }).then(res => {
-      if (res.ok) {
-        onSuccess();
-        onClose();
-      } else {
-        alert("저장 실패");
-      }
-    });
+    request(method, url, form)
+      .then(() => {
+        onSuccess(); // 목록 새로고침
+        onClose();   // 모달 닫기
+      })
+      .catch((err) => {
+        console.error("공제 항목 저장 실패:", err);
+        alert("저장에 실패했습니다.");
+      });
   };
 
   return (
@@ -95,7 +92,7 @@ const DeductionModal = ({ open, onClose, item, onSuccess }) => {
           name="rate"
           value={form.rate}
           onChange={handleChange}
-          disabled={form.is_tax} // ✅ 소득세 체크 시 비활성화
+          disabled={form.is_tax}
         />
 
         <label>고정 금액</label>
@@ -105,7 +102,7 @@ const DeductionModal = ({ open, onClose, item, onSuccess }) => {
           name="fixed_amount"
           value={form.fixed_amount}
           onChange={handleChange}
-          disabled={form.is_tax} // ✅ 소득세 체크 시 비활성화
+          disabled={form.is_tax}
         />
 
         <label>

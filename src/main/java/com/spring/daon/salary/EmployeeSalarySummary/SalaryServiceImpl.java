@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.spring.daon.hrMgt.HRMgtMapper;
 import com.spring.daon.salary.EmployeeSalaryItem.EmployeeSalaryItem;
 import com.spring.daon.salary.EmployeeSalaryItem.EmployeeSalaryItemMapper;
+import com.spring.daon.salary.SalarySchedule.SalaryScheduleServiceImpl;
 
 @Service
 public class SalaryServiceImpl {
@@ -66,5 +67,20 @@ public class SalaryServiceImpl {
         // 7. 저장 (upsert)
         summaryMapper.upsert(summary);
     }
+	
+	// 전체 급여 계산 완료 후 is_calculated = true 업데이트 포함
+	@Autowired
+	private SalaryScheduleServiceImpl scheduleService;
+
+	public void calculateAllEmployees(String salaryMonth) {
+	    List<Integer> empNos = employeesMapper.findActiveEmpNos();  // 재직 중인 사원 목록 조회
+
+	    for (int empNo : empNos) {
+	        calculateAndSave(empNo, salaryMonth);  // 기존 계산 로직 재사용
+	    }
+
+	    // 전체 계산 후 급여 대장에 계산 완료 상태로 업데이트
+	    scheduleService.markAsCalculated(salaryMonth);
+	}
 }
 

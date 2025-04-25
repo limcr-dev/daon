@@ -1,114 +1,158 @@
-import React, { useEffect, useState } from 'react';
-
-import { useNavigate, useParams } from 'react-router-dom';
-import { getPositionName, getRoleName, getDeptName, getEmpType, getEmpStatus, getGender } from "../components/getEmployeeInfo.js"; 
-import { Container, Content } from 'rsuite';
-import EmployeeUpdate from './EmployeeUpdate';
-
-import "../css/EmployeeDetail.css";
+import React, { useEffect, useState, useCallback } from "react";
+import { useParams } from "react-router-dom";
+import { Container, Content, Divider, Card, Button, Input, SelectPicker, DatePicker } from "rsuite";
+import Leftbar from "../../common/pages/Leftbar";
+import EmployeeLeftbar from "./EmployeeLeftbar";
+import { getPositionName, getDeptName, getRoleName, getEmpType } from "../components/getEmployeeInfo";
+import { request } from "../../common/components/helpers/axios_helper"; // ✅ axios 헬퍼 import
 
 const EmployeeDetail = () => {
-  const propsParam = useParams();
-  const emp_no = propsParam.emp_no;
-  const navigate = useNavigate();
-  const [updateModal, setUpdateModal] = useState(false);
+  const { emp_no } = useParams();
+  const [employee, setEmployee] = useState(null);
+  const [isEdit, setIsEdit] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
 
-  const [employee, setEmployee] = useState({
-    emp_no: '',
-    emp_name: '',
-    emp_eng_name: '',
-    emp_email: '',
-    emp_ext_email: '',
-    emp_pwd: '',
-    emp_gender: '',
-    emp_birthday: '',
-    emp_mobile: '',
-    emp_ext_tel: '',
-    position_id: '',
-    role_id: '',
-    dept_no: '',
-    emp_status: '',
-    emp_type: '',
-    emp_img: '',
-    hire_date: '',
-    leave_date: '',
-    admin_type: '',
-    work_type_no: ''
-  });
-
-  const openUpdateModal = () => setUpdateModal(true);
-  const closeUpdateModal = () => setUpdateModal(false);
-
-
-  // 1건조회
-  useEffect(() => {
-    fetch("http://localhost:8081/api/employee/" + emp_no)
-      .then((res) => res.json())
-      .then((res) => {
-        setEmployee(res);
+  // ✅ 사원 조회 API 호출
+  const fetchEmployee = useCallback(() => {
+    request("get", `/api/employee/${emp_no}`)
+      .then((res) => setEmployee(res.data))
+      .catch((err) => {
+        console.error("사원 정보 조회 실패:", err);
+        alert("사원 정보를 불러올 수 없습니다.");
       });
   }, [emp_no]);
 
-  // 삭제
-  const deleteEmployee = () => {
-    fetch("http://localhost:8081/api/deleteEmployee/" + emp_no, {
-      method: 'DELETE',
-    })
-    .then((res) => res.text())
-    .then((res) => {
-      if(res === "ok") {
-        navigate('/employee');
-      }else {
-        alert('삭제실패')
-      }
-    });
-  }
+  useEffect(() => {
+    fetchEmployee();
+  }, [fetchEmployee]);
+
+  const handleChange = (name, value) => {
+    setEmployee(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e) => {
+    setImageFile(e.target.files[0]);
+  };
+
+  // ✅ 사원 수정 API 호출
+  const handleUpdate = () => {
+    const formData = new FormData();
+    formData.append("employee", new Blob([JSON.stringify(employee)], { type: "application/json" }));
+    if (imageFile) formData.append("image", imageFile);
+
+    request("put", `/api/updateEmployee/${emp_no}`, formData, true) // ✅ multipart 처리
+      .then(() => {
+        setIsEdit(false);
+        fetchEmployee();
+      })
+      .catch(err => {
+        console.error("업데이트 실패:", err);
+        alert("사원 정보 수정에 실패했습니다.");
+      });
+  };
+
+  if (!employee) return <div>로딩 중...</div>;
 
   return (
-    <Container>
-    <div className="profile-container">
-      <div className="profile-header">
-        <img src={employee.emp_img} alt="Profile" className="profile-image" />
-        <div className="profile-info">
-          <h2>{employee.emp_name}</h2>
-          <h4>{employee.emp_eng_name}</h4>
-          <p></p>
-        </div>
-      </div>
-      <Content>
-      <div className="profile-section">
-        <h3>기본 정보</h3>
-        <p><strong>사내 이메일:</strong> {employee.emp_email}</p>
-        <p><strong>외부 이메일:</strong> {employee.emp_ext_email}</p>
-        <p><strong>비밀번호:</strong> {employee.emp_pwd}</p> {/* 비밀번호는 보통 안 보이게 처리하지만, 예시로 넣었습니다 */}
-        <p><strong>성별:</strong> {getGender(employee.emp_gender)}</p>
-        <p><strong>생년월일:</strong> {employee.emp_birthday}</p>
-      </div>
+    <Container style={{ display: "flex", minHeight: "100vh" }}>
+      <Leftbar />
+      <Container>
+        <EmployeeLeftbar />
+        <Content style={{ padding: 20 }}>
+          <Divider />
+          <div style={{ display: "flex", gap: "30px", justifyContent: "center", alignItems: "flex-start" }}>
+            {/* 왼쪽: 상세 보기 */}
+            <Card style={{ width: "45%", minHeight: "720px", padding: "30px" }}>
+              <h4>👤 사원 정보</h4>
+              <Divider />
+              {employee.emp_img && (
+                <img
+                  src={`http://localhost:8081/api/images/${employee.emp_img.split("/").pop()}`}
+                  alt="프로필"
+                  style={{ width: 150, height: 150, objectFit: "cover", borderRadius: "50%", marginBottom: 20 }}
+                />
+              )}
+              <p><b>사번:</b> {employee.emp_no}</p>
+              <p><b>이름:</b> {employee.emp_name}</p>
+              <p><b>성별:</b> {employee.emp_gender === 'M' ? '남자' : '여자'}</p>
+              <p><b>생년월일:</b> {employee.emp_birthday}</p>
+              <p><b>사내 이메일:</b> {employee.emp_email}</p>
+              <p><b>외부 이메일:</b> {employee.emp_ext_email}</p>
+              <p><b>휴대폰:</b> {employee.emp_mobile}</p>
+              <p><b>내선번호:</b> {employee.emp_ext_tel}</p>
+              <p><b>부서:</b> {getDeptName(employee.dept_no)}</p>
+              <p><b>직급:</b> {getPositionName(employee.position_id)}</p>
+              <p><b>직책:</b> {getRoleName(employee.role_id)}</p>
+              <p><b>직원구분:</b> {getEmpType(employee.emp_type)}</p>
+              <p><b>입사일:</b> {employee.hire_date}</p>
+              <p><b>퇴사일:</b> {employee.leave_date || '-'}</p>
+              <p><b>재직상태:</b> {employee.emp_status === 1 ? '재직' : '퇴사'}</p>
+              <Divider />
+              <Button appearance="primary" onClick={() => setIsEdit(true)}>수정</Button>
+            </Card>
 
-      <div className="profile-section">
-        <h3>연락처</h3>
-        <p><strong>전화번호:</strong> {employee.emp_ext_tel}</p>
-        <p><strong>내선번호:</strong> {employee.emp_mobile}</p>
-      </div>
-
-      <div className="profile-section">
-        <h3>직무 정보</h3>
-        <p><strong>직급:</strong> {getPositionName(employee.position_id)}</p>  
-        <p><strong>직책:</strong> {getRoleName(employee.role_id)}</p>  
-        <p><strong>부서:</strong> {getDeptName(employee.dept_no)}</p>  
-        <p><strong>재직 상태:</strong> {getEmpStatus(employee.emp_status)}</p> 
-        <p><strong>고용 형태:</strong> {getEmpType(employee.emp_type)}</p>  
-        <p><strong>근무 유형:</strong> {employee.work_type_no}</p>
-        <p><strong>입사일:</strong> {employee.hire_date}</p>
-      </div>
-      </Content>
-      <button onClick={openUpdateModal}>수정</button>
-      
-      <button onClick={deleteEmployee}>삭제</button>
-    </div>
-    <EmployeeUpdate open={updateModal} onClose={closeUpdateModal} emp_no={emp_no}/>
+            {/* 오른쪽: 수정 폼 */}
+            {isEdit && (
+              <Card style={{ width: "45%", minHeight: "720px", padding: "30px" }}>
+                <h4>✏️ 사원 정보 수정</h4>
+                <Divider />
+                <input type="file" accept="image/*" onChange={handleImageChange} style={{ marginBottom: 20 }} />
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                  <div>
+                    <p style={{ marginBottom: 4 }}>이름</p>
+                    <Input value={employee.emp_name} onChange={(val) => handleChange("emp_name", val)} />
+                  </div>
+                  <div>
+                    <p style={{ marginBottom: 4 }}>영문 이름</p>
+                    <Input value={employee.emp_eng_name} onChange={(val) => handleChange("emp_eng_name", val)} />
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "16px" }}>
+                    <div>
+                      <p style={{ marginBottom: 4 }}>성별</p>
+                      <SelectPicker
+                        data={[{ label: "남자", value: "M" }, { label: "여자", value: "F" }]}
+                        value={employee.emp_gender}
+                        onChange={(val) => handleChange("emp_gender", val)}
+                        style={{ width: 120 }}
+                      />
+                    </div>
+                    <div>
+                      <p style={{ marginBottom: 4 }}>생년월일</p>
+                      <DatePicker
+                        value={new Date(employee.emp_birthday)}
+                        onChange={(val) => handleChange("emp_birthday", val.toISOString().split("T")[0])}
+                        style={{ width: 200 }}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <p style={{ marginBottom: 4 }}>사내 이메일</p>
+                    <Input value={employee.emp_email} onChange={(val) => handleChange("emp_email", val)} />
+                  </div>
+                  <div>
+                    <p style={{ marginBottom: 4 }}>외부 이메일</p>
+                    <Input value={employee.emp_ext_email} onChange={(val) => handleChange("emp_ext_email", val)} />
+                  </div>
+                  <div>
+                    <p style={{ marginBottom: 4 }}>휴대폰</p>
+                    <Input value={employee.emp_mobile} onChange={(val) => handleChange("emp_mobile", val)} />
+                  </div>
+                  <div>
+                    <p style={{ marginBottom: 4 }}>내선번호</p>
+                    <Input value={employee.emp_ext_tel} onChange={(val) => handleChange("emp_ext_tel", val)} />
+                  </div>
+                </div>
+                <Divider />
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <Button appearance="primary" onClick={handleUpdate} style={{ flex: 1 }}>저장</Button>
+                  <Button appearance="subtle" onClick={() => setIsEdit(false)} style={{ flex: 1 }}>취소</Button>
+                </div>
+              </Card>
+            )}
+          </div>
+        </Content>
+      </Container>
     </Container>
-    
   );
 };
 
