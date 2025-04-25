@@ -25,7 +25,6 @@ public class Library {
 	private int library_no;			// 자료 번호
 	private int emp_no;				// 사원 번호(작성자)
 	private String library_title;	// 자료 제목
-	private String library_filename; // 파일 이름
 	private String library_content;	// 자료 내용
 	private Date library_reg_date;	// 자료 등록일
 	private int library_views;		// 자료 조회수
