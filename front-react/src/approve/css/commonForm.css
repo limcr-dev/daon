@@ -63,13 +63,19 @@
 .approval-header {
   background-color: #f0f0f0;
   font-weight: bold;
-  height: 24px;
+  height: 32px;
 }
 
 .approval-sign {
   vertical-align: bottom;
   width: 90px;
-  height: 60px;
+  height: 80px;
+}
+
+.approval-date {
+  vertical-align: middle;
+  width: 90px;
+  height: 32px;
 }
 
 /* 문서 정보 테이블 */
@@ -173,4 +179,18 @@ select {
   border: 1px solid #ddd;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.approval-stamp {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #e74c3c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e74c3c;
+  font-weight: bold;
+  font-size: 16px;
+  margin: 0 auto 5px auto;
 }

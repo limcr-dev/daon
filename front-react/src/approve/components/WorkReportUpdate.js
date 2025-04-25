@@ -1,36 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import '../css/workReportForm.css';
-import { useUser } from '../../common/contexts/UserContext';
-import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
+import { getDeptName } from '../../hrMgt/components/getEmployeeInfo';
 
-const WorkReportForm = ({ approveLine, onFormDataChange }) => {
-  const { user } = useUser();
-
+const WorkReportUpdate = ({ approveLine, onFormDataChange, formData, docData }) => {
+  
   // 오늘 날짜
   const today = new Date();
+  const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
   // 내일 날짜
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
   const tomorrowDate = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
 
-
-  const [line, setLine] = useState(approveLine);
-  const [report, setReport] = useState({
-    emp_no: user.emp_no,
-    title: '',
-    content: '',
-    execution_date: '',
-    report_file: '',
-    coop_dept_no: ''
-  });
+  const [line, setLine] = useState(approveLine || []);
+  const [report, setReport] = useState(formData || {});
+  const [document, setDocument] = useState(docData || {});
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
 
   useEffect(() => {
-    console.log("받은 결재선 데이터:", approveLine);
+
     if (approveLine && Array.isArray(approveLine)) {
       setLine(approveLine);
     }
-  }, [approveLine]);
+
+    if (formData) {
+      setReport(formData);
+    }
+
+    if (docData) {
+      setDocument(docData);
+    }
+
+    // 모든 필요한 데이터가 있으면 로딩 완료
+    if (line && report && document) {
+      setIsLoading(false);
+    }
+
+  }, [approveLine, formData, docData]);
 
   // 폼 데이터가 변경될 때마다 부모 컴포넌트에 전달
   useEffect(() => {
@@ -39,7 +46,6 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
       onFormDataChange(report, line);
     }
   }, [report, line]);
-
 
   const changeValue = (e) => {
 
@@ -53,10 +59,13 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
     setReport({
       ...report,
       [e.target.name]: value,
-
     });
-    console.log(line);
   };
+
+  // 로딩 중이면 로딩 표시
+  if (isLoading || !line.length) {
+    return <div>데이터를 불러오는 중입니다...</div>;
+  }
 
   return (
     <div className="form-container">
@@ -70,19 +79,19 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
               <tbody>
                 <tr>
                   <td className="label-cell">기안자</td>
-                  <td>{user.emp_name}</td>
+                  <td>{document.emp_name}</td>
                 </tr>
                 <tr>
                   <td className="label-cell">소속</td>
-                  <td>{getDeptName(user.dept_no)}</td>
+                  <td>{getDeptName(document.dept_no)}</td>
                 </tr>
                 <tr>
                   <td className="label-cell">기안일</td>
-                  <td></td>
+                  <td>{document.doc_status !== 4 && (document.doc_reg_date)}</td>
                 </tr>
                 <tr>
                   <td className="label-cell">문서번호</td>
-                  <td></td>
+                  <td>{document.doc_no}</td>
                 </tr>
               </tbody>
             </table>
@@ -94,20 +103,23 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
               <tbody>
                 <tr>
                   <td rowSpan="3" className="approval-position">신청</td>
-                  <td className="approval-header">{user ? `${getPositionName(user.position_id)}` : '직급 정보 없음'}</td>
+                  <td className="approval-header">{line[0].appr_position}</td>
                 </tr>
                 <tr>
                   <td className="approval-sign">
-                    <div className="approval-name">{user.emp_name || '이름 정보 없음'}</div>
+                    {line[0].appr_status === 0 && document.doc_status !== 1 && <div className="approval-stamp">승인</div>}
+                    <div className="approval-name">{line[0].appr_name || '이름 정보 없음'}</div>
                   </td>
                 </tr>
                 <tr>
-                  <td className="approval-date"></td>
+                  <td className="approval-date">
+                    {document.doc_status !== 1 && <div>{line[0].appr_date}</div>}
+                  </td>
                 </tr>
               </tbody>
             </table>
             {/* 승인 정보 (결재선) - 결재선이 있을 때만 표시 */}
-            {line.length > 0 ? (
+            {line.length > 1 ? (
               <table className="approval-table">
                 <tbody>
                   <tr>
@@ -145,14 +157,17 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
                   <tr>
                     {line[1] ?
                       <td className="approval-date">
+                        {line[1].appr_status === 3 && <div>{line[1].appr_date}</div>}
                       </td>
                       : null}
                     {line[2] ?
                       <td className="approval-date">
+                        {line[2].appr_status === 3 && <div>{line[2].appr_date}</div>}
                       </td>
                       : null}
                     {line[3] ?
                       <td className="approval-date">
+                        {line[3].appr_status === 3 && <div>{line[3].appr_date}</div>}
                       </td>
                       : null}
                   </tr>
@@ -169,13 +184,13 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
               <td className="label-cell">시행일자</td>
               <td>
                 <div className="date-input">
-                  <input type="date" name='execution_date' format='yyyy/MM/dd' onChange={changeValue} min={tomorrowDate} />
+                  <input type="date" name='execution_date' value={report.execution_date} format='yyyy/MM/dd' onChange={changeValue} min={tomorrowDate} />
                 </div>
               </td>
               <td className="label-cell">협조부서</td>
               <td>
                 <div>
-                  <select name="coop_dept_no" onChange={changeValue}>
+                  <select name="coop_dept_no" value={report.coop_dept_no} onChange={changeValue} required>
                     <option value="">부서 선택</option>
                     <option value="1">다온</option>
                     <option value="10">경영부</option>
@@ -201,6 +216,7 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
                 <input
                   type="text"
                   name='title'
+                  value={report.title}
                   className="full-width-input"
                   placeholder="제목을 입력하세요"
                   onChange={changeValue}
@@ -211,11 +227,12 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
               <td colSpan={4} className="label-cell">내용</td>
             </tr>
             <tr>
-              <td colSpan={4} style={{ height: '500px' }}>
+              <td colSpan={4} style={{ height: '500px', verticalAlign: 'top' }}>
                 <textarea
                   name='content'
                   placeholder='내용을 입력하세요'
                   className="full-width-input"
+                  value={report.content}
                   onChange={changeValue}
                   style={{
                     width: '100%',
@@ -232,7 +249,7 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
           </tbody>
         </table>
 
-        {/* 첨부파일 및 관련 문서 */}
+        {/* 첨부파일 */}
         <div className="form-footer">
           <div className="attachment-section">
             <h3>파일첨부</h3>
@@ -249,4 +266,4 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
   );
 };
 
-export default WorkReportForm;
+export default WorkReportUpdate;

@@ -1,17 +1,25 @@
-import React, { Children, useEffect, useState } from 'react';
-import { Button, Radio, Tree } from 'rsuite';
-import { IconButton } from 'rsuite';
-import { FaTrash, FaArrowRight } from 'react-icons/fa';  // 아이콘
-import ApprOrgChart from '../components/ApprOrgChart';
-import { getPositionName } from '../../hrMgt/components/getEmployeeInfo';
+import React, { useEffect, useState } from 'react';
+import { Button, Tree } from 'rsuite';
+import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
 import { useUser } from '../../common/contexts/UserContext';
 import '../css/approve.css'
+import { getApprStatusText } from '../components/ApprCodeToText';
 
-const ApproveLine = ({ closeModal, onSave, approveLine = []}) => {
+const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
 
     const { user } = useUser(); // 결재 요청자 정보
     const [line, setLine] = useState(approveLine);   // 결재 라인 정보
     const [approver, setApprover] = useState(null); // 선택된 직원 정보
+    const applicant = {
+        appr_no: user.emp_no,
+        appr_name: user.emp_name,
+        appr_position: getPositionName(user.position_id),
+        appr_dept_name: getDeptName(user.dept_no),
+        appr_dept_no: user.dept_no,
+        appr_status: 0,
+        appr_type: '기안자'
+    };
+
     const [deptTree, setDeptTree] = useState([]); // 조직도 정보
     const [searchTerm, setSearchTerm] = useState('');   // 실시간 검색을 위한 변수
     const handleInputChange = (e) => {
@@ -25,6 +33,25 @@ const ApproveLine = ({ closeModal, onSave, approveLine = []}) => {
             .then((res) => res.json())
             .then((data) => setDeptTree(transformToTree(data)))
             .catch((error) => console.error("조직도 불러오기 에러:", error));
+    }, []);
+
+    // 신청자 결재선 제일 첫번째에 넣기
+    useEffect(() => {
+        console.log("컴포넌트 마운트 - 초기 line 상태:", line);
+        console.log("컴포넌트 마운트 - 초기 user 상태:", user);
+
+        // 이미 approveLine이 있으면 그대로 사용
+        if (approveLine && approveLine.length > 0) {
+            console.log("props로 받은 결재선 사용");
+            return;
+        }
+
+        // line이 비어있을 때만 초기화
+        if (line.length === 0 && user && user.emp_no) {
+            // line 상태 업데이트
+            console.log("신청자 정보 추가:", applicant);
+            setLine([applicant]);
+        }
     }, []);
 
     const transformToTree = (departments) => {
@@ -72,12 +99,13 @@ const ApproveLine = ({ closeModal, onSave, approveLine = []}) => {
     const handleSelect = (selectedLabel) => {
         if (selectedLabel && selectedLabel.emp_data) {
             setApprover({
-                approver_no: selectedLabel.value,
-                emp_name: selectedLabel.emp_data.emp_name,
-                position: getPositionName(selectedLabel.emp_data.position_id),
-                dept_name: selectedLabel.dept_data.dept_name,
-                dept_no: selectedLabel.dept_data.dept_no,
-                approval_status: 1
+                appr_no: selectedLabel.value,
+                appr_name: selectedLabel.emp_data.emp_name,
+                appr_position: getPositionName(selectedLabel.emp_data.position_id),
+                appr_dept_name: selectedLabel.dept_data.dept_name,
+                appr_dept_no: selectedLabel.dept_data.dept_no,
+                appr_status: line.length === 1 ? 2 : 1,
+                appr_type:'결재자'
             })
             console.log(approver);
         } else {
@@ -86,52 +114,61 @@ const ApproveLine = ({ closeModal, onSave, approveLine = []}) => {
     }
 
     const addToLine = () => {
-        if (approver) {
-            // 결재 라인이 비어있으면 바로 추가
-            if (line.length === 0) {
-                const newApprover = {
-                    ...approver
-                };
-                setLine([newApprover]);
-
-                // 결재라인은 최대 3명까지 지정 가능
-            } else if (line.length < 3) {
-                // some() : array에서 주어진 조건을 만족하는 요소가 있으면 true를 반환하는 함수
-                // line이 비어있으면 오류 발생
-                const alreadyAdded = line.some(emp => emp.approver_no === approver.approver_no);
-                if (!alreadyAdded) {
-                    const newApprover = {
-                        ...approver
-                    };
-
-                    setLine([...line, newApprover]);
-
-                } else {
-                    alert("이미 결재 라인에 추가된 직원입니다.");
-                }
-            } else {
-                alert("결재 라인에는 3명까지만 추가할 수 있습니다.");
-            }
-        } else {
-            alert("결재 라인에 추가할 직원을 선택해주세요.")
+        // 선택된 직원이 없는 경우
+        if (!approver) {
+            alert("결재 라인에 추가할 직원을 선택해주세요.");
+            return;
         }
-    }
+
+        // 첫 번째 인덱스는 항상 신청자(기안자)
+        if (line.length > 0) {
+            // 신청자와 동일한 사람인지 확인 (첫 번째 항목이 신청자)
+            if (line[0] && line[0].appr_no === approver.appr_no) {
+                alert("결재 라인에 작성자는 추가할 수 없습니다.");
+                return;
+            }
+
+            // 이미 승인자로 추가된 직원인지 확인
+            const alreadyAdded = line.some(emp => emp.appr_no === approver.appr_no);
+            if (alreadyAdded) {
+                alert("이미 결재 라인에 추가된 직원입니다.");
+                return;
+            }
+
+            // 최대 4명까지 가능 (신청자 1명 + 승인자 3명)
+            if (line.length >= 4) {
+                alert("결재 라인에는 승인자를 3명까지만 추가할 수 있습니다.");
+                return;
+            }
+
+            // 모든 검증을 통과하면 결재선에 추가
+            const newApprover = {
+                ...approver,
+                appr_type: '결재자'  // 타입 명시적으로 설정
+            };
+
+            setLine([...line, newApprover]);
+        } else {
+            // line이 비어있는 경우는 처리하지 않음 (첫 번째 항목은 항상 신청자여야 함)
+            alert("결재 라인 초기화에 문제가 있습니다. 새로고침 후 다시 시도해주세요.");
+        }
+    };
 
     // 결재선 직원 삭제
-    const removeFromLine = (approver_no) => {
-        setLine(line.filter(emp => emp.approver_no !== approver_no));
+    const removeFromLine = (appr_no) => {
+        setLine(line.filter(emp => emp.appr_no !== appr_no));
     }
-    
+
     const handleSave = () => {
-        if(onSave){
+        if (onSave) {
             onSave(line);
         }
         closeModal();
     }
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', fontFamily: 'Arial, sans-serif', height: '500px' }}>
-            <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height:'100%'}}>
+            <div style={{ display: 'flex', flex: 1}}>
                 {/* 왼쪽 패널 - 조직도/나의 결재선 */}
                 <div style={{ width: '30%', display: 'flex', flexDirection: 'column', borderRight: '1px solid #e0e0e0', overflow: 'hidden' }}>
                     <div style={{ padding: '10px' }}>
@@ -143,7 +180,7 @@ const ApproveLine = ({ closeModal, onSave, approveLine = []}) => {
                             style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
                         />
                     </div>
-                    <div style={{ flex: 1, overflow: 'hidden' }}> {/* 여기서 'auto'를 'hidden'으로 변경 */}
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
                         <Tree
                             data={deptTree}
                             showIndentLine
@@ -167,54 +204,57 @@ const ApproveLine = ({ closeModal, onSave, approveLine = []}) => {
                 {/* 오른쪽 패널 - 선택된 결재자 */}
                 <div style={{ width: '70%', display: 'flex', flexDirection: 'column' }}>
                     <table className='approve-table'>
-                        <tr>
-                            <th style={{ width: '10%' }}></th>
-                            <th>타입</th>
-                            <th>이름</th>
-                            <th>부서</th>
-                            <th>상태</th>
-                        </tr>
-                        <tr>
-                            <th colSpan={5}>신청</th>
-                        </tr>
-                        <tr>
-                            <th style={{ width: '10%' }}></th>
-                            <td>기안</td>
-                            <td>{user.emp_name}</td>
-                            <td>{user.dept_no}</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <th colSpan={5}>승인</th>
-                        </tr>
-                        {line.length > 0 ? (
-                            line.map((approver, index) => (
-                                <tr key={index}>
-                                    <th>
-                                        <Button
-                                            appearance="subtle"
-                                            size="xs"
-                                            color="red"
-                                            onClick={() => removeFromLine(approver.approver_no)}
-                                        >
-                                            X
-                                        </Button>
-                                    </th>
-                                    <td>{approver.type}</td>
-                                    <td>{approver.emp_name}</td>
-                                    <td>{approver.dept_name}</td>
-                                    <td>{approver.approval_status}</td>
-                                </tr>
-                            ))
-                        ) : (
+                        <thead>
                             <tr>
-                                <td colSpan={5} style={{ textAlign: 'center', padding: '10px' }}>
-                                    선택된 결재자가 없습니다.
-                                </td>
+                                <th style={{ width: '10%' }}></th>
+                                <th style={{ width: '15%' }}>타입</th>
+                                <th style={{ width: '25%' }}>이름</th>
+                                <th style={{ width: '30%' }}>부서</th>
+                                <th style={{ width: '20%' }}>결재 상태</th>
                             </tr>
-                        )
-                        }
-
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th colSpan={5}>신청</th>
+                            </tr>
+                            <tr>
+                                <th style={{ width: '10%' }}></th>
+                                <td>{applicant.appr_type}</td>
+                                <td>{applicant.appr_name}</td>
+                                <td>{getDeptName(applicant.appr_dept_no)}</td>
+                                <td>{getApprStatusText(applicant.appr_status)}</td>
+                            </tr>
+                            <tr>
+                                <th colSpan={5}>승인</th>
+                            </tr>
+                            {line.length > 1 ? (
+                                line.slice(1).map((approver, index) => (
+                                    <tr key={index}>
+                                        <th>
+                                            <Button
+                                                appearance="subtle"
+                                                size="xs"
+                                                color="red"
+                                                onClick={() => removeFromLine(approver.appr_no)}
+                                            >
+                                                X
+                                            </Button>
+                                        </th>
+                                        <td>결재자</td>
+                                        <td>{approver.appr_name}</td>
+                                        <td>{getDeptName(approver.appr_dept_no)}</td>
+                                        <td>{getApprStatusText(approver.appr_status)}</td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={5} style={{ textAlign: 'center', padding: '10px' }}>
+                                        선택된 결재자가 없습니다.
+                                    </td>
+                                </tr>
+                            )
+                            }
+                        </tbody>
                     </table>
                 </div>
             </div>
