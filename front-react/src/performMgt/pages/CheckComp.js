@@ -1,10 +1,9 @@
+import { request } from "../../common/components/helpers/axios_helper"
+
 import { useEffect, useState } from "react";
-
 import { Card } from "react-bootstrap";
-
 import Leftbar from "../../common/pages/Leftbar";
 import LeftbarDEvaluation from "../components/LeftbarDEvaluation";
-
 import { Button, Container, Content, Radio, RadioGroup } from "rsuite";
 import CompList from './sub/CompList';
 import { useNavigate } from "react-router-dom";
@@ -22,7 +21,7 @@ const CheckComp = () => {
         eval_emp_type: '',
         eval_click_emp: '',
         eval_order_num: '',
-        registration:'',
+        registration: '',
     });
 
 
@@ -62,12 +61,10 @@ const CheckComp = () => {
     // 컴포넌트 처음 랜더링 될때 역량 리스트 가져와서 배열
     useEffect(() => {
         // alert("test");
-        fetch("http://localhost:8081/performMgt/compList", {
-            method: "GET"
-        }).then(res => res.json())
+        request("get", "/performMgt/compList")
             .then(comp => {
                 // console.log("Fetched Data : ", comp);
-                setCompList(comp);
+                setCompList(comp.data);
             })
             .catch(error => console.error("Error fetching data :", error))
     }, [])
@@ -75,16 +72,29 @@ const CheckComp = () => {
 
     // 마지막 번호를 받아서 +1세팅, 3자리 숫자로 생성
     useEffect(() => {
-        fetch("http://localhost:8081/performMgt/lastOrderNum")
-            .then(res => res.text())
-            .then(text => {
-                console.log("서버응답 lastOrderNum:", text);
-                const last = parseInt(text || '0', 10);
-                const next = (last + 1).toString().padStart(3, '0');
+        request("get", "/performMgt/lastOrderNum")
+            .then(res => {
+                const text = res?.data ?? "000";  // null이거나 undefined 이면 "000"
+                console.log("서버응답:", text);
+
+                const last = parseInt(text, 10);
+
+                // 숫자가 아닌 경우 → 0으로 간주
+                const safeLast = isNaN(last) ? 0 : last;
+
+                // if(isNaN(last)){
+                //     console.error("숫자가 아닙니다.", text);
+                //     alert("서버에서 유효한 번호를 받지 못했습니다!");
+                //     return; // 저장x
+                // }
+                const next = (safeLast + 1).toString().padStart(3, '0');
                 setOrderNum(next);
                 setTest(prev => ({ ...prev, eval_order_num: next }));
             })
-            .catch(err => console.error("lastOrderNum API 호출 실패:", err));
+            .catch(err => {
+                console.error("lastOrderNum API 호출 실패:", err);
+                alert("서버에서 평가 번호를 받아오지 못했습니다!");
+            });
     }, []);
 
     //  서버로 데이터 보내기 
@@ -106,100 +116,78 @@ const CheckComp = () => {
             alert("역량을 5개 꼭!! 선택해야 합니다!");
             return; // 함수 종료
         }
-
-        // 전송할 데이터 준비
-        // const newTest = {
-        //     ...test,
-        //     eval_click_emp: clicked.join(", "),
-        // };
-
-        fetch("http://localhost:8081/performMgt/insertComp", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json;charset=utf-8"
-            },
-            body: JSON.stringify(test)  // javascript 오브젝트를 json으로 변경해서 넘긴다.
-        })   // 데이터를 스프링 부트에서 insert하고 201을 리턴
+        
+        request("post", "/performMgt/insertComp" , test)
             .then((res) => {
-                console.log("서버 응답 상태", res.status);
                 if (res.status === 201) {
-                    return res.json();
-                } else {
-                    throw new Error("서버 응답 에러");
-                }
-            })
-            .then((data) => {
-                console.log('서버 응답 데이터', data);
-                if (data !== null) {
-                    alert("성공적으로 저장되었습니다.");
-                    // react-router-dom v6에서 현재 위치 새로고침
+                    alert("성공적으로 저장되었습니다");
                     navigate(0);
-                    // 전체 새로고침 window.location.reload();은 react를 쓰는 의미가 없어짐
                 } else {
-                    alert("역량 선택을 저장하는데 실패했습니다.");
+                    alert("저장 실패");
                 }
             })
-            .catch((error) => {
-                console.log('실패', error);
-            })
-    }
+            .catch((err) => {
+                console.error("서버 오류 :", err);
+            });
+        }
+       
 
-    return (
-        <Container style={{ minHeight: '100vh', width: '100%' }}>
-            <Leftbar />
-            <Container>
-                <LeftbarDEvaluation />
-                <Content>
-                    <div className="main-content p-4">
+        return (
+            <Container style={{ minHeight: '100vh', width: '100%' }}>
+                <Leftbar />
+                <Container>
+                    <LeftbarDEvaluation />
+                    <Content>
+                        <div className="main-content p-4">
 
-                        <h2 className="mb-4"> 역량 선택(5가지)</h2>
+                            <h2 className="mb-4"> 역량 선택(5가지)</h2>
 
-                        <TestList />
+                            <TestList />
 
-                        <Card>
-                            <Card.Body>
-                                {/* clicked.join(", ") */}
+                            <Card>
+                                <Card.Body>
+                                    {/* clicked.join(", ") */}
 
-                                <form onSubmit={insertComp}>
-                                    <Button className="subutt" type="submit">평가 유형 및 역량 선택 </Button>
-                                    <div className="linenomal">&nbsp;</div>
-                                    <Card>
-                                        <RadioGroup label="평가 유형" name="eval_emp_type" onChange={(value) => changeValue({ name: "eval_emp_type", value })}>
-                                            <Radio value="자기평가" > 자기 평가 </Radio>
-                                            <Radio value="동료평가" > 동료 평가 </Radio>
-                                        </RadioGroup>
-                                    </Card>
-                                </form>
+                                    <form onSubmit={insertComp}>
+                                        <Button className="subutt" type="submit">평가 유형 및 역량 선택 </Button>
+                                        <div className="linenomal">&nbsp;</div>
+                                        <Card>
+                                            <RadioGroup label="평가 유형" name="eval_emp_type" onChange={(value) => changeValue({ name: "eval_emp_type", value })}>
+                                                <Radio value="자기평가" > 자기 평가 </Radio>
+                                                <Radio value="동료평가" > 동료 평가 </Radio>
+                                            </RadioGroup>
+                                        </Card>
+                                    </form>
 
-                                <h4 className="line">선택된 역량 개수 :{clicked.length} /5 </h4>
-                                <h5 className="line">현재 선택된 역량 : {clicked.join(", ")}</h5>
+                                    <h4 className="line">선택된 역량 개수 :{clicked.length} /5 </h4>
+                                    <h5 className="line">현재 선택된 역량 : {clicked.join(", ")}</h5>
 
-                                {compList.length > 0 ? (compList.map(comp => (
+                                    {compList.length > 0 ? (compList.map(comp => (
 
-                                    <CompList
-                                        key={comp.eval_comp_id}
-                                        comp={comp}
-                                        clicked={clicked}
-                                        onClick={handleClick}
+                                        <CompList
+                                            key={comp.eval_comp_id}
+                                            comp={comp}
+                                            clicked={clicked}
+                                            onClick={handleClick}
 
-                                    />
-                                ))
-                                ) : (
-                                    <p> 역량 불러오는 중...</p>
+                                        />
+                                    ))
+                                    ) : (
+                                        <p> 역량 불러오는 중...</p>
 
-                                )
-                                }
+                                    )
+                                    }
 
-                            </Card.Body>
+                                </Card.Body>
 
-                        </Card>
+                            </Card>
 
-                    </div>
-                </Content>
-            </Container>
-        </Container >
-    );
+                        </div>
+                    </Content>
+                </Container>
+            </Container >
+        );
 
 
-};
-export default CheckComp;
+    };
+    export default CheckComp;

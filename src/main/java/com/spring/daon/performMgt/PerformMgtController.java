@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.spring.daon.hrMgt.Employees;
+
 @RestController
 @RequestMapping("/performMgt")
 @CrossOrigin
@@ -55,8 +57,7 @@ public class PerformMgtController {
 	@PostMapping("/insertComp")
 	public ResponseEntity<?> insertTest(@RequestBody Test test){
 		System.out.println("<<< test 세팅 >>>");
-		System.out.println("🔥 insertComp 요청 도착!");
-	    System.out.println("📦 받은 데이터: " + test);
+	    System.out.println("받은 데이터: " + test);
 		
 	return new ResponseEntity<>(service.insertTest(test), HttpStatus.CREATED); 
 	}
@@ -89,7 +90,6 @@ public class PerformMgtController {
 	@DeleteMapping("/testList/{eval_order_num}")
 	public ResponseEntity<?> deleteTest(@PathVariable String eval_order_num){
 		System.out.println("<<< 삭제 테스트 >>>");
-		System.out.println(eval_order_num);
 		return new ResponseEntity<>(service.deleteTest(eval_order_num), HttpStatus.OK);	// 200
 	}
 	
@@ -107,7 +107,7 @@ public class PerformMgtController {
 	
 	// update 역량별 테스리스트를 update
 	@PutMapping("/testList/{eval_order_num}")
-	public ResponseEntity<?> updateTest(@PathVariable String eval_order_num){
+	public ResponseEntity<?> updateTest(@PathVariable String eval_order_num,@RequestBody Test test){
 		System.out.println("<<< update 테스트 >>>");
 		
 		return new ResponseEntity<>(service.updateTest(eval_order_num), HttpStatus.OK);	// 200
@@ -122,20 +122,84 @@ public class PerformMgtController {
 	}
 	
 	
-	// 동료 불러오기 
-	@GetMapping("/peerList")
-	public ResponseEntity<?> peerList(){
+	// 동료 평가리스트 불러오기 
+	@GetMapping("/peerList/{emp_no}")
+	public ResponseEntity<?> peerList(@PathVariable int emp_no){
 		System.out.println("<< 동료 불러오기 >>");
 		
-		return new ResponseEntity<>(service.peerList(), HttpStatus.OK);	// 200
+		return new ResponseEntity<>(service.peerList(emp_no), HttpStatus.OK);	// 200
 	}
 	
-	// 평가 결과 저장하기
+	// 동료평가 평가자 피평가자 insert
+	@PostMapping("/peerTargetInsert")
+	public ResponseEntity<?> insertPeerTarget(@RequestBody PeerTarget peerTarget) {
+		System.out.println("<< 평가 타겟 insert 저장하기 => 동료평가 >>");
+	    return new ResponseEntity<>(service.insertPeerTarget(peerTarget), HttpStatus.CREATED);
+	}
+	
+	// 평가 결과 저장하기  => 동료평가
 	@PostMapping("/evalPeerInsert")
 	public ResponseEntity<?> insertPeerEval(@RequestBody EvalPeer evalPeer) {
-		System.out.println("<< 평가 결과 저장하기 >>");
+		System.out.println("<< 평가 결과 저장하기 => 동료평가 >>");
 	    return new ResponseEntity<>(service.insertPeerEval(evalPeer), HttpStatus.CREATED);
 	}
+	
+	// 자기평가 리스트 불러오기
+	@GetMapping("/selfList/{emp_no}")
+	public ResponseEntity<?> selfList(@PathVariable int emp_no){
+		System.out.println("<< 자기평가리스트 불러오기 >>");
+		
+		return new ResponseEntity<>(service.selfList(emp_no), HttpStatus.OK);	// 200
+	}
+	
+	// insert 하기  => 자기평가
+	@PostMapping("/selfTargetInsert")
+	public ResponseEntity<?> selfTargetInsert(@RequestBody SelfTarget selfTarget) {
+		System.out.println("<< 자기평가 insert하기 => 자기평가 >>");
+	    return new ResponseEntity<>(service.selfTargetInsert(selfTarget), HttpStatus.CREATED);
+	}
+	
+
+	// 평가 결과 저장하기 => 자기 평가
+	@PostMapping("/evalSelfInsert")
+	public ResponseEntity<?> insertSelfEval(@RequestBody EvalSelf evalSelf) {
+		System.out.println("<< 평가 결과 저장하기 => 자기평가 >>");
+	    return new ResponseEntity<>(service.insertSelfEval(evalSelf), HttpStatus.OK);
+	}
+	
+	// 전체 직원 평가 현황 
+	@GetMapping("/evalStatus")
+	public ResponseEntity<?> evalStatus(){
+		System.out.println("<< 전체 직원 평가 리스트  >>");
+		
+		return new ResponseEntity<>(service.evalStatus(), HttpStatus.OK);	// 200
+	}
+	
+	//전체 직원 리스트
+	@GetMapping("/employees")
+	public ResponseEntity<?> employees(){
+		System.out.println("<< 전체 직원 평가 리스트  >>");
+		
+		return new ResponseEntity<>(service.employees(), HttpStatus.OK);	// 200
+	}
+	
+	//동료평가리스트
+	@GetMapping("/evalPeer")
+	public ResponseEntity<?> evalPeer(){
+		System.out.println("<< 전체 직원 평가 리스트  >>");
+		
+		return new ResponseEntity<>(service.evalPeer(), HttpStatus.OK);	// 200
+	}
+	
+	//자기평가 리스트
+	@GetMapping("/evalSelf")
+	public ResponseEntity<?> evalSelf(){
+		System.out.println("<< 전체 직원 평가 리스트  >>");
+		
+		return new ResponseEntity<>(service.evalSelf(), HttpStatus.OK);	// 200
+	}
+	
+	
 	
 	
 	// 평가 관리 리스트

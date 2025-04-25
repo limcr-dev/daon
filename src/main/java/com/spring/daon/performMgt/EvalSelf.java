@@ -20,15 +20,13 @@ import lombok.ToString;
 @ToString
 @Builder
 @Entity   
-@Table(name="eval_peer")
+@Table(name="eval_self")
 
 
-public class EvalPeer {
+public class EvalSelf {
 	
 	@Id
-	private int eval_id;
-    private int eval_peer_no;     // 피평가자
-    private int eval_no;          // 평가자
+    private int eval_emp_no;          // 평가자
     private String eval_type;
     private String eval_comp1;
     private int eval_comp1_score;
@@ -43,7 +41,7 @@ public class EvalPeer {
     private String eval_status;
     private int eval_total_score;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" , timezone = "Asia/Seoul")
-    private Date eval_test_date;
+    private Date eval_test_date;  
     private String eval_order_num;
 		
 }

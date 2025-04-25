@@ -44,10 +44,12 @@ const Leftbar = ({ onOpenOrgChart }) => {
               <Nav.Item icon={<Icon as={MdEmail} />} onClick={() => navigate('/mail')}>메일</Nav.Item>
               <Nav.Item icon={<Icon as={MdEvent} />} onClick={() => navigate('/schedule')}>일정</Nav.Item>
               <Nav.Item icon={<Icon as={MdDescription} />} onClick={() => navigate('/approve')}>전자결재</Nav.Item>
+
+              <Nav.Item icon={<Icon as={MdBusinessCenter} />} onClick={() => navigate('/performMgt')}>인사평가</Nav.Item>
+
               {(user?.admin_type === 2 || user?.admin_type === 3) && (
-                <Nav.Item icon={<Icon as={MdBusinessCenter} />} onClick={() => navigate('/performMgt')}>인사평가</Nav.Item>
+                <Nav.Item icon={<Icon as={MdGroup} />} onClick={() => navigate('/employee')}>인사관리</Nav.Item>
               )}
-              <Nav.Item icon={<Icon as={MdGroup} />} onClick={() => navigate('/employee')}>인사관리</Nav.Item>
               <Nav.Item icon={<Icon as={MdDescription} />} onClick={() => navigate('/board')}>게시판</Nav.Item>
               <Nav.Item icon={<Icon as={MdSupervisorAccount} />} onClick={() => navigate('/messenger')}>주소록</Nav.Item>
               {(user?.admin_type === 2 || user?.admin_type === 4) && (
@@ -66,7 +68,7 @@ const Leftbar = ({ onOpenOrgChart }) => {
             appearance="ghost"
             size="sm"
             startIcon={<MdAccountTree />}
-            style={{color: '#000', border: '1px solid #000', width: '100%',}}
+            style={{ color: '#000', border: '1px solid #000', width: '100%', }}
           >
             {expand && "조직도"}
           </Button>
