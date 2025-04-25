@@ -1,5 +1,7 @@
 package com.spring.daon.login.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -8,6 +10,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +26,14 @@ public class SecurityConfig {
 	private final UserAuthenticationEntryPoint userAuthenticationEntryPoint;
 	private final UserAuthProvider userAuthProvider;
 
+	// JwtAuthFilter 빈 정의
+	// new로 저장해서 웹소켓 반응x -> 추가
+	@Bean
+    public JwtAuthFilter jwtAuthFilter() {
+        System.out.println(">>> JwtAuthFilter Bean 등록됨");
+        return new JwtAuthFilter(userAuthProvider);
+    }
+	
 	// SecurityFilterChain 빈 정의
 	// 정의하면 나머지 작업은 SpringBoot와 SpringSecurity에서 자동으로 처리해줌
 	@Bean
@@ -35,14 +48,30 @@ public class SecurityConfig {
 			.csrf(csrf -> csrf.disable())  // csrf 설정 비활성화
 			.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests((requests) -> requests	// 접근 권한 설정
-					.antMatchers(HttpMethod.POST, "/login" ,"/home", "/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**").permitAll() // 인증이 필요하지 않은 유일한 엔드포인트(모두에게 회원 가입, 로그인은 시도할 수 있도록 허용)
-					.antMatchers(HttpMethod.GET,"/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**").permitAll()
-					.antMatchers(HttpMethod.PUT,"/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**").permitAll()
-					.antMatchers(HttpMethod.DELETE,"/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**").permitAll()
+					.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+					.antMatchers("/uploads/**").permitAll()
+					.antMatchers(HttpMethod.POST, "/login" ,"/home", "/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**", "/ws-chat/**").permitAll() // 인증이 필요하지 않은 유일한 엔드포인트(모두에게 회원 가입, 로그인은 시도할 수 있도록 허용)
+					.antMatchers(HttpMethod.GET,"/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**", "/ws-chat/**").permitAll()
+					.antMatchers(HttpMethod.PUT,"/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**", "/ws-chat/**").permitAll()
+					.antMatchers(HttpMethod.DELETE,"/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**", "/ws-chat/**").permitAll()
 					.anyRequest().authenticated()
 		);			
 		
 		return http.build();
+	}
+	
+	// 웹소켓 때문에 추가
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+	    CorsConfiguration config = new CorsConfiguration();
+	    config.setAllowedOriginPatterns(List.of("*")); // 모든 Origin 허용
+	    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+	    config.setAllowedHeaders(List.of("*"));
+	    config.setAllowCredentials(true); // 쿠키 전송 허용
+
+	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	    source.registerCorsConfiguration("/**", config);
+	    return source;
 	}
 
 }
