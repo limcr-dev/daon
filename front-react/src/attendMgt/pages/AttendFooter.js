@@ -31,6 +31,7 @@ const AttendFooter = (props) => {
             {changeLog.map(log => (
               <tr key={log.attendance_no}>
                 {/* <td>{log.emp_img}</td> */}
+                
                 <td style={{ width: "100px" }}>daon_logo.png</td>
                 <td>{log.emp_name}
                   {/* 수정 날짜 회색,작은글씨 */}

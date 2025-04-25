@@ -62,9 +62,9 @@ const KibanaDashboard = (props) => {
     );
   };
   // const kibanaUrl = `http://localhost:5601/goto/${dashboardId}?embed=true`;
-
+{/* <iframe src="http://localhost:5601/goto/fdd7611c4814c8c847aee25fd7951f05" height="600" width="800"></iframe> */}
   // 임시 url
-  const kibanaUrl = `http://localhost:5601/goto/6ac55ec96f9017bdda5122c186309b35?embed=true`;
+  const kibanaUrl = `http://localhost:5601/goto/fdd7611c4814c8c847aee25fd7951f05?embed=true`;
   return (
     <Card className="attendCard" style={{height:"600px"}}>
       <Card.Header className="" >

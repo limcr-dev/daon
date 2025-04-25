@@ -25,4 +25,5 @@ public class Schedule_setting {
 	private String c_sch_title ;	// 카테고리 제목
 	private String c_sch_color;		// 카테고리 색
 	private char c_sch_type ;	// 카테고리 타입 
+	private char c_default ; 	// 기본카테고리 여부
 }

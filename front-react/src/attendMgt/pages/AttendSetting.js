@@ -24,6 +24,26 @@ import ColorLegend from "../components/ColorLegend";
 const AttendSetting = () => {
     // 직원 정보
     const { user } = useUser();
+
+    // // 부서별근태현황 초기값
+    //   const [deptStatusList, setDeptStatusList] = useState([]);
+    //   // 필터링된 부서별근태현황
+    //   const [filteredList, setFilteredList] = useState([]);
+    //   // 페이징처리된 부서별근태현황
+    //   const [pageDeptStatusList, setPageDeptStatusList] = useState([]);
+    
+    const [employeesList, setEmployeesList] = useState([])
+    //   // 선택한 부서에 따른 근태데이터 가져오기
+      useEffect(() => {
+        request("GET", "/attend/getEmployeesList/")
+          .then((res) => {
+            setEmployeesList(res.data);
+          })
+          .catch((error) => {
+            console.log("로그인정보를 확인해주세요", error);
+          });
+      }, []);
+
     return (
         <div>
             <Container style={{ minHeight: "100vh", width: "100%" }}>
@@ -51,7 +71,7 @@ const AttendSetting = () => {
                                 <p style={{ fontSize: "16px" }}>근무 타입 설정
                                 </p>
                                 <div style={{ display: "flex" }}>
-                                
+
                                 </div>
                                 <br /><br />
                                 <Card className="attendCard">
@@ -88,7 +108,7 @@ const AttendSetting = () => {
                                                         <td style={{ color: deptStatus.early_leave ? '#FFA500' : '#49A902' }} align="center">
                                                             <b>{deptStatus.check_out_time || '-'}</b>
                                                         </td>
-                                                        <td style={{ color: deptStatus.vacation ? '#3B82F6' : 'black' }} align="center">
+                                                        <td style={{ color: deptStatus.vacation ? '#3B82F6' : deptStatus.absent ? '#D32F2F' : 'black' }} align="center">
                                                             {getStatusText(deptStatus)}
                                                         </td>
                                                         <td className="customText-truncate" align="center">
@@ -103,6 +123,7 @@ const AttendSetting = () => {
                                         <ColorLegend />
                                     </div>
                                     <div style={{ margin: 'auto' }}>
+                                        {/* <AttendPaging deptStatusList={filteredList} onPageChange={handlePageChange} /> */}
                                     </div>
                                 </Card>
                             </Col>
