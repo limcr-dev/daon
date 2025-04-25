@@ -28,4 +28,21 @@ public class EmployeeSalarySummaryController {
             return ResponseEntity.status(500).body("급여 계산 실패");
         }
     }
+    
+    // ✅ 전체 사원 급여 계산 API
+    @PostMapping("/salary/calculate-all")
+    public ResponseEntity<String> calculateAllSalaries(
+        @RequestParam("salary_month") String salaryMonth
+    ) {
+        try {
+            salaryService.calculateAllEmployees(salaryMonth); // 서비스에서 전체 사원 계산 호출
+            return ResponseEntity.ok("전체 급여 계산 완료");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("전체 급여 계산 실패");
+        }
+    }
+
+    
+    
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.spring.daon.salary.DepartmentSalaryStats.SalaryDashboardMapper">
+
+    <select id="getDepartmentSalaryStats" resultType="com.spring.daon.salary.DepartmentSalaryStats.DepartmentSalaryStats">
+        SELECT 
+            d.dept_no,
+            d.dept_name,
+            COUNT(e.emp_no) AS employee_count,
+            SUM(s.actual_pay) AS total_actual_pay
+        FROM employee_salary_summary s
+        JOIN employees e ON s.emp_no = e.emp_no
+        JOIN departments d ON e.dept_no = d.dept_no
+        WHERE s.salary_month = #{salaryMonth}
+        GROUP BY d.dept_no, d.dept_name
+        ORDER BY total_actual_pay DESC
+    </select>
+    
+    <select id="getMonthlySalaryStats" resultType="com.spring.daon.salary.DepartmentSalaryStats.MonthlySalaryStat">
+    SELECT 
+        salary_month,
+        SUM(actual_pay) AS total_actual_pay
+    FROM employee_salary_summary
+    GROUP BY salary_month
+    ORDER BY salary_month
+	</select>
+
+</mapper>

@@ -33,6 +33,9 @@ public class Documents {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private Date doc_reg_date;
     private int doc_status;
-    private String doc_reject_reason;
     private char doc_urgent;
+    
+    private String emp_name;
+    private int position_id;
+    
 }

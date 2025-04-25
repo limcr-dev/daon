@@ -5,6 +5,7 @@ import Leftbar from '../../common/pages/Leftbar';
 import BoardLeftbar from './BoardLeftbar';
 import Header from '../../common/pages/Header';
 import '../css/board.css'
+import { request } from '../../common/components/helpers/axios_helper';
 
 const UpdateNotice = (props) => {
 
@@ -22,12 +23,16 @@ const UpdateNotice = (props) => {
     })
 
     useEffect(() => {
-        fetch("http://localhost:8081/board/notice/" + notice_no, { // DB에 들림
-            method: "GET"   // @GetMapping 사용
-          }).then((res) => res.json())
-            .then((res) => {
-                setNotice(res)
-            });
+        const fetchNoticeDetail = async () => {
+            try {
+                const res = await request("get", "/board/notice/" + notice_no);
+                setNotice(res.data);
+            } catch (error) {
+                console.error("공지사항 조회 실패:", error);
+            }
+        };
+
+        fetchNoticeDetail();
     }, []);
 
     const changeValue = (e) => {
@@ -37,7 +42,7 @@ const UpdateNotice = (props) => {
         });
     }
 
-    const submitNotice = (e) => {
+    const submitNotice = async (e) => {
         e.preventDefault(); // submit이 action을 안 타고 자기 할 일을 그만함
 
         // 필수 입력값 체크
@@ -51,33 +56,19 @@ const UpdateNotice = (props) => {
             return;
         }
 
-        fetch("http://localhost:8081/board/notice/" + notice_no, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json;charset=utf-8"
-            },
-            body: JSON.stringify(notice)
-            // javascript object를 json으로 변경해서 넘김. 데이터를 스프링부트에서 insert하고 201을 리턴한다.
-        })
-            .then((res) => {
-                console.log(1, res);
-                if (res.status === 200) {
-                    return res.json();
-                } else {
-                    return null;
-                }
-            })
-            .then((res) => {    // catch는 여기에서 오류가 발생해야 실행됨.
-                console.log('정상', res);
-                if (res !== null) {
-                    navigate('/board/noticeDetail/' + notice_no); // old  버전 : props.history.push()
-                } else {
-                    alert("게시글 수정에 실패하였습니다.");
-                }
-            })
-            .catch((error) => {
-                console.log('실패', error);
-            });
+        try {
+            const res = await request("put", "/board/notice/" + notice_no, notice);
+            console.log('정상', res.data);
+
+            if (res.status === 200) {
+                navigate('/board/noticeDetail/' + notice_no);
+            } else {
+                alert("게시글 수정에 실패하였습니다.");
+            }
+        } catch (error) {
+            console.log('실패', error);
+            alert("게시글 수정에 실패하였습니다.");
+        }
     }
 
     return (
@@ -129,9 +120,9 @@ const UpdateNotice = (props) => {
                                         </td>
                                     </tr>
                                 </table>
-                                <Card.Footer>
-                                    <div style={{ marginTop:'10px'}}>
-                                        <Button onClick={submitNotice}>수정</Button>
+                                <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', padding: '15px' }}>
+                                    <div style={{ marginTop: '10px' }}>
+                                        <Button appearance="primary" color="blue" onClick={submitNotice}>수정</Button>
                                     </div>
                                 </Card.Footer>
                             </Card>
