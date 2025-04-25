@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Card, Col, Container, Content, Divider, Row } from "rsuite";
 
 import Leftbar from "../../common/pages/Leftbar";

@@ -5,11 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 
 @Service
 public class ScheduleServiceImpl {
@@ -58,9 +54,32 @@ public class ScheduleServiceImpl {
     	return scheduleMapper.addSchedule(schedule);
     }
     
-	// 일정 불러오기
+	// 일정 한개 불러오기
+	public Schedule getEvent(int sch_no) {
+	
+		return scheduleMapper.getEvent(sch_no);
+	}	
+	
+	// 일정 목록 불러오기
     public List<Schedule> getSchedules(int emp_no) {
     	
     	return scheduleMapper.getSchedules(emp_no);
+    }
+	// 전사일정 불러오기
+    public List<Schedule> getAllSchedules(int emp_no) {
+    	
+    	return scheduleMapper.getAllSchedules(emp_no);
+    }
+    
+	// 일정 수정
+    public int editSchedule(Schedule schedule) {
+    	
+    	return scheduleMapper.editSchedule(schedule);
+    }
+    
+    // 일정 삭제
+    public int deleteSchedule(int sch_no) {
+    	
+    	return scheduleMapper.deleteSchedule(sch_no);
     }
 }

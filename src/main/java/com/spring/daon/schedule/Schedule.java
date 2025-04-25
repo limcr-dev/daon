@@ -35,10 +35,16 @@ public class Schedule {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private Timestamp  sch_end_time ;	// 종료 시간
 	
-	private String sch_all_day ;   		// 종일 여부
+	private boolean sch_all_day ;   		// 종일 여부
 	private int c_sch_no ;				// 카테고리코드
+	private char sch_type ;	// 카테고리 타입 
 	
 	private String c_sch_color;		// 카테고리 색
 	
 	private char c_sch_type ;	// 카테고리 타입 
+	
+	private char sch_repeat; 
+	private int sch_repeat_count;
+	
+	private String emp_name;
 }

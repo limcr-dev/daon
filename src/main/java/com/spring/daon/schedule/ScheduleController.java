@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.spring.daon.attendMgt.Attendance;
-
 
 
 @RestController
@@ -76,11 +74,41 @@ public class ScheduleController {
 	 
 		return new ResponseEntity<>(service.addSchedule(schedule), HttpStatus.OK);
 	}	
-	// 일정 불러오기
+	// 일정 한개 불러오기
+	@GetMapping("/getEvent/{sch_no}")
+	public ResponseEntity<?> getEvent(@PathVariable int sch_no) {
+		System.out.println("<<< getEvent >>>" +service.getEvent(sch_no));
+	
+		return new ResponseEntity<>(service.getEvent(sch_no), HttpStatus.OK);
+	}	
+	// 일정 목록 불러오기
 	@GetMapping("/getSchedules/{emp_no}")
 	public ResponseEntity<?> getSchedules(@PathVariable int emp_no) {
 		System.out.println("<<< getSchedules >>>" +service.getSchedules(emp_no));
 	
 		return new ResponseEntity<>(service.getSchedules(emp_no), HttpStatus.OK);
 	}	
+	// 전사일정 불러오기
+	@GetMapping("/getAllSchedules/{emp_no}")
+	public ResponseEntity<?> getAllSchedules(@PathVariable int emp_no) {
+		System.out.println("<<< getAllSchedules >>>" +service.getAllSchedules(emp_no));
+	
+		return new ResponseEntity<>(service.getAllSchedules(emp_no), HttpStatus.OK);
+	}	
+	
+	// 일정 수정
+	@PutMapping("/editSchedule/")
+	public ResponseEntity<?> editSchedule(@RequestBody Schedule schedule) {
+		System.out.println("<<< editSchedule >>>" + schedule);
+	
+		return new ResponseEntity<>(service.editSchedule(schedule), HttpStatus.OK);
+	}	
+	// 일정 삭제
+	@DeleteMapping("/deleteSchedule/{sch_no}")
+	public ResponseEntity<?> deleteSchedule(@PathVariable int sch_no) {
+		System.out.println("<<< deleteSchedule >>>" + sch_no);
+	
+		return new ResponseEntity<>(service.deleteSchedule(sch_no), HttpStatus.OK);
+	}
+	
 }

@@ -1,7 +1,7 @@
 import { Button, Divider, Modal, Sidebar, Sidenav, Text } from "rsuite";
 
 import ScheduleTree from "../components/ScheduleTree";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 // icon
 import { faCalendarPlus } from "@fortawesome/free-solid-svg-icons";
@@ -9,7 +9,6 @@ import { faCalendarPlus } from "@fortawesome/free-solid-svg-icons";
 // css
 import "../css/ScheduleLeftbar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useUser } from "../../common/contexts/UserContext";
 import ScheduleAdd from "./ScheduleAdd";
 
 const ScheduleLeftbar = (user) => {

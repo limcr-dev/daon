@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Checkbox, Input } from "rsuite";
+import { Button, Checkbox, Input, Modal } from "rsuite";
 import { request } from "../../common/components/helpers/axios_helper";
 import { useCategory } from "./CategoryContext";
+import CategoryDeleteModal from "./CategoryDeleteModal";
 
 const CategoryFilter = ({ schedule_setting, type, edit }) => {
   // 수정할 색/카테고리번호 변수
@@ -71,30 +72,32 @@ const CategoryFilter = ({ schedule_setting, type, edit }) => {
       });
   };
 
-  // 카테고리 삭제
-  const deleteCategory = (c_sch_no) => {
-    request("DELETE", `/schedule/deleteCategory/${c_sch_no}`)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data !== "") {
-            alert(res.data); // 기본일정 삭제불가 메시지
-          } else {
-            window.location.reload(); // 새로고침
-          }
-        } else {
-          alert("삭제 실패하였습니다");
-        }
-      })
-      .catch((error) => {
-        console.log("실패", error);
-      });
-  };
+  // 삭제 할 카테고리 저장 함수
+  const [pickCategory, setPickCategory] = useState();
+  // 삭제 확인 모달창
+  const [deleteMadalOpen, setDeleteMadalOpen] = useState(false);
+
+  const modal_open = (c_sch_no) => {
+    setPickCategory(c_sch_no);
+    setDeleteMadalOpen(true);
+  }
+  const modal_Close = () => setDeleteMadalOpen(false);
 
   // 카테고리 필터
-  const { selectedCategoryNos, handleCategoryChange } = useCategory([]); // Context에서 값 불러오기
+  // 카테고리 체크 초기값 설정
+  // const [category, setCategory] = useState(schedule_setting)
+  const { selectedCategoryNos, handleCategoryChange } = useCategory();
 
+  // `schedule_setting`을 `useCategory`로 초기화
+  useEffect(() => {
+    if (schedule_setting.length > 0) {
+      const initialCategoryNos = schedule_setting.map((category) => category.c_sch_no);
+      handleCategoryChange(initialCategoryNos); // `useCategory` 내 상태 변경
+    }
+  }, [schedule_setting]);
+
+  // 체크 박스 변경 시
   const handleCheckboxChange = (categoryNo, isChecked) => {
-    alert("dd" + categoryNo);
     console.log("체크박스 상태:", isChecked);
     if (isChecked) {
       if (!selectedCategoryNos.includes(categoryNo)) {
@@ -107,11 +110,19 @@ const CategoryFilter = ({ schedule_setting, type, edit }) => {
     }
   };
 
-  useEffect(() => {
-    console.log("selectedCategoryNos:", selectedCategoryNos); // 상태 출력
-  }, [selectedCategoryNos]);
   return (
     <>
+      <Modal
+        open={deleteMadalOpen}
+        onClose={modal_Close}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+      <CategoryDeleteModal pickCategory={pickCategory} modal_Close={modal_Close}/>
+      </Modal>
       {!edit && (
         <>
           {schedule_setting
@@ -120,7 +131,7 @@ const CategoryFilter = ({ schedule_setting, type, edit }) => {
               <tr key={category.c_sch_no}>
                 <td style={{ width: "10%", paddingLeft: "10px" }}>
                   <Checkbox
-                  // defaultChecked
+                    // defaultChecked
                     checked={selectedCategoryNos.includes(category.c_sch_no)}
                     onChange={(_, checked) =>
                       handleCheckboxChange(category.c_sch_no, checked)
@@ -160,7 +171,7 @@ const CategoryFilter = ({ schedule_setting, type, edit }) => {
                   >
                     수정
                   </Button>
-                  <Button onClick={() => deleteCategory(category.c_sch_no)}>
+                  <Button onClick={() => modal_open(category.c_sch_no)}>
                     삭제
                   </Button>
                 </td>

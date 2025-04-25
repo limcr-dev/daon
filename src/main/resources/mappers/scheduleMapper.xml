@@ -24,11 +24,13 @@
 		   SET c_sch_title = #{c_sch_title}
 		 where c_sch_no = #{c_sch_no}	
 	</update>
-	<!-- 일정 카테고리 이름변경 -->
+	
+	<!-- 일정 카테고리 추가 -->
 	<update id="addCategory" parameterType="java.util.Map">
 		INSERT INTO schedule_setting(emp_no, c_sch_title, c_sch_type)
 		 VALUES(#{emp_no}, #{c_sch_title},'I')
 	</update>
+	
 	<!-- 일정 카테고리 삭제 -->
 	<update id="deleteCategory" parameterType="int">
 		 DELETE FROM schedule_setting 
@@ -38,16 +40,30 @@
 	
 	<!-- 일정 저장 -->
 	<insert id="addSchedule" parameterType="com.spring.daon.schedule.Schedule">
-		  INSERT INTO schedule (emp_no, sch_title, sch_content, sch_start_time, sch_end_time, c_sch_no)
+		  INSERT INTO schedule (emp_no, sch_title, sch_content, sch_start_time, sch_end_time, c_sch_no, sch_type, sch_all_day, `sch_repeat`, sch_repeat_count)
   			VALUES (
     		#{emp_no}, #{sch_title}, #{sch_content}, #{sch_start_time}, #{sch_end_time}
-    		<if test="c_sch_type != 'A'"> , #{c_sch_no}</if>
+    		<if test="c_sch_type != 'A'"> ,#{c_sch_no} , 'I'</if>
     		<if test="c_sch_type != null and c_sch_type == 'A'">
       		,(SELECT c_sch_no FROM schedule_setting WHERE emp_no = #{emp_no} AND c_sch_type = 'A' LIMIT 1)
+      		,'A'
     		</if>
-  )
+    		,#{sch_all_day}
+    		,#{sch_repeat}
+    		,#{sch_repeat_count}
+  			)
 	</insert>	
-	<!-- 일정 불러오기 -->
+
+	<!-- 일정 한개 불러오기 -->
+	<select id="getEvent" parameterType="int" resultType="com.spring.daon.schedule.Schedule">		
+		select s.*
+			 , e.emp_name
+		from schedule s
+		JOIN employees e
+		where sch_no = #{sch_no}
+		  AND e.emp_no = s.emp_no
+	</select>
+		<!-- 일정 목록 불러오기 -->
 	<select id="getSchedules" parameterType="int" resultType="com.spring.daon.schedule.Schedule">		
 		select s.*
 			 , ss.c_sch_color
@@ -55,6 +71,50 @@
 		JOIN schedule_setting ss
 		where s.emp_no = #{emp_no}
 		and s.c_sch_no = ss.c_sch_no
-		
+		and s.sch_type != 'A'
 	</select>
+	
+	<!-- 전사 일정 불러오기 -->
+	<select id="getAllSchedules" parameterType="int" resultType="com.spring.daon.schedule.Schedule">		
+		SELECT 
+	   	 	s.sch_no,
+	    	s.emp_no,
+	    	s.sch_title,
+	    	s.sch_content,
+	    	s.sch_start_time,
+	    	s.sch_end_time,
+	    	s.sch_all_day,
+	    	s.sch_repeat,
+	    	s.sch_repeat_count,
+	    	ss.c_sch_title,
+	    	ss.c_sch_color,
+	    	ss.c_sch_no
+		FROM schedule s
+		JOIN schedule_setting ss
+	 	 ON ss.emp_no = #{emp_no}
+	 	AND ss.c_sch_type = 'A'
+		WHERE s.sch_type = 'A'
+	</select>
+	
+	<!-- 일정 수정 -->
+	<update id="editSchedule" parameterType="com.spring.daon.schedule.Schedule">
+		UPDATE schedule 
+		   SET sch_title = #{sch_title},
+		       sch_content = #{sch_content},
+		       sch_start_time = #{sch_start_time},
+		       sch_end_time = #{sch_end_time},
+		       sch_all_day = #{sch_all_day},
+		       c_sch_no = #{c_sch_no},
+		       sch_type = #{sch_type},
+		       sch_repeat = #{sch_repeat},
+		       sch_repeat_count = #{sch_repeat_count}
+		WHERE sch_no = #{sch_no}
+	</update>
+	
+		<!-- 일정 삭제 -->
+	<delete id="deleteSchedule" parameterType="int">
+		DELETE FROM schedule 
+		WHERE sch_no = #{sch_no}
+	</delete>
+	
 </mapper>

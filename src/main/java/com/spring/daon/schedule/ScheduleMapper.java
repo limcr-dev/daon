@@ -27,8 +27,19 @@ public interface ScheduleMapper {
 	
 	// 일정 저장
 	public int addSchedule(Schedule schedule); 	 
-		
-	// 일정 불러오기
+	
+	// 일정 한개 불러오기
+	public Schedule getEvent(int sch_no); 	 
+	
+	// 일정 목록 불러오기
 	public List<Schedule> getSchedules(int emp_no); 	 
 	
+	// 전사 일정 불러오기
+	public List<Schedule> getAllSchedules(int emp_no); 	 
+	
+	// 일정 수정
+    public int editSchedule(Schedule schedule);
+    
+	// 일정 삭제
+    public int deleteSchedule(int c_sch_no);
 }
