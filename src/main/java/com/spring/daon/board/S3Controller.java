@@ -1,6 +1,16 @@
 package com.spring.daon.board;
 
 import lombok.RequiredArgsConstructor;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Object;
+
+import java.io.IOException;
+
+import javax.annotation.Resource;
+
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +22,7 @@ public class S3Controller {
 
     private final S3Service s3Service;
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
@@ -23,18 +34,6 @@ public class S3Controller {
         }
     }
 
-    @GetMapping("/download/{fileName}")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable String fileName) {
-        try {
-            byte[] fileBytes = s3Service.downloadFile(fileName);
-            return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
-                .body(fileBytes);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(null);
-        }
-    }
 
     // ⭐ 추가: 삭제
     @DeleteMapping("/delete/{fileName}")
@@ -46,6 +45,11 @@ public class S3Controller {
             e.printStackTrace();
             return ResponseEntity.status(500).body("파일 삭제 실패: " + e.getMessage());
         }
+    }
+    
+    @GetMapping("/library/download/{filename}")
+    public ResponseEntity<InputStreamResource> downloadFile(@PathVariable String filename) throws IOException {
+        return s3Service.downloadFile(filename);
     }
 }
 

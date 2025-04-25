@@ -56,8 +56,8 @@
  
 	<!-- 자료 작성 -->
 	<insert id="insertLibrary" parameterType="com.spring.daon.board.Library">
-		INSERT INTO library (library_no, emp_no, library_title, library_content)
-		SELECT IFNULL(MAX(library_no), 0) + 1, #{emp_no}, #{library_title}, #{library_content}
+		INSERT INTO library (library_no, emp_no, library_title, library_filename, library_content)
+		SELECT IFNULL(MAX(library_no), 0) + 1, #{emp_no}, #{library_title}, #{library_filename}, #{library_content}
 		  FROM library
 	</insert>   
    
@@ -79,6 +79,8 @@
 		UPDATE library
 		   SET library_title = #{library_title}
 		   	 , library_content = #{library_content}
+		   	 , library_filename = #{library_filename}
+		   	 , library_content = #{library_content}
 		 WHERE library_no = #{library_no}
 	</update>
    
@@ -88,6 +90,6 @@
    		   SET library_delete = 'Y'
    		 WHERE library_no = #{library_no}
 	</update>
-	
+			
 </mapper>   
 

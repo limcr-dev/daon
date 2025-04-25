@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,6 +46,14 @@ public class SecurityConfig {
 		
 		return http.build();
 	}
+	
+	// % 등의 기호 허용
+	@Bean
+    public HttpFirewall allowUrlEncodedPercentHttpFirewall() {
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowUrlEncodedPercent(true);  // 핵심 설정!
+        return firewall;
+    }
 
 }
 

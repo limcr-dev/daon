@@ -6,6 +6,14 @@ import BoardLeftbar from './BoardLeftbar';
 import Header from '../../common/pages/Header';
 import '../css/board.css'
 
+const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 const LibraryDetail = () => {
 
     const propsParam = useParams();
@@ -49,7 +57,7 @@ const LibraryDetail = () => {
                 if (res == 'ok') {
                     navigate('/board/libraryList');  // 삭제 성공 시, 공지사항 목록 페이지로 이동
                 } else {
-                    alert('게시글 삭제에 실패하였습니다.'); // 삭제 실패 시, alert창 띄움
+                    alert('자료 삭제에 실패하였습니다.'); // 삭제 실패 시, alert창 띄움
                 }
             });
     }
@@ -75,32 +83,59 @@ const LibraryDetail = () => {
                                     <Button appearance="link" onClick={libraryList}>목록</Button>
                                 </Card.Header>
                                 <table className='board-table'>
-                                    <tr>
-                                        <th style={{ width: '20%' }}>제목</th>
-                                        <td colSpan={3}>{library.library_title}</td>
-                                    </tr>
-                                    <tr>
-                                        <th style={{ width: '20%' }}>작성자</th>
-                                        <td colSpan={3}>{library.emp_no}</td>
-                                    </tr>
-                                    <tr>
-                                        <th style={{ width: '20%' }}>작성일</th>
-                                        <td>{library.library_reg_date}</td>
-                                        <th style={{ width: '20%' }} >조회수</th>
-                                        <td>{library.library_views}</td>
-                                    </tr>
-                                    <tr>
-                                        <th colSpan={4}>내용</th>
-                                    </tr>
-                                    <tr style={{ height: '500px', verticalAlign: 'top' }}>
-                                        <td colSpan={4}>{library.library_content}</td>
-                                    </tr>
+                                    <tbody>
+                                        <tr>
+                                            <th style={{ width: '20%' }}>제목</th>
+                                            <td colSpan={3}>{library.library_title}</td>
+                                        </tr>
+                                        <tr>
+                                            <th style={{ width: '20%' }}>작성자</th>
+                                            <td>{library.emp_no}</td>
+                                            <th style={{ width: '20%' }}>첨부 파일 : { /* 파일명에서 UUID 제거한 원래 파일명만 표시 */ }
+                                            </th>
+                                            <td>
+                                                {library.library_filename ? (
+                                                    <>
+                                                        <Button
+                                                            appearance="ghost"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                const encodedFilename = encodeURIComponent(library.library_filename);
+                                                                const downloadUrl = `http://localhost:8081/api/s3/library/download/${encodedFilename}`;
+                                                                window.open(downloadUrl, '_blank');
+                                                            }}
+                                                        >
+                                                            파일 다운로드
+                                                        </Button>
+                                                        &nbsp;&nbsp;&nbsp; 파일명 &nbsp;:&nbsp;&nbsp;
+                                                        {library.library_filename && library.library_filename.includes('_')
+                                                            ? decodeURIComponent(library.library_filename.substring(library.library_filename.indexOf('_') + 1))
+                                                            : '첨부 없음'}                                                        
+                                                    </>
+                                                ) : (
+                                                    <span>첨부 없음</span>
+                                                )}
+                                            </td>                                            
+                                        </tr>
+                                        <tr>
+                                            <th style={{ width: '20%' }}>작성일</th>
+                                            <td>{formatDate(library.library_reg_date)}</td>
+                                            <th style={{ width: '20%' }} >조회수</th>
+                                            <td>{library.library_views}</td>
+                                        </tr>
+                                        <tr>
+                                            <th colSpan={4}>내용</th>
+                                        </tr>
+                                        <tr style={{ height: '500px', verticalAlign: 'top' }}>
+                                            <td colSpan={4}>{library.library_content}</td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                                 <Card.Footer>
                                     <div style={{ marginTop:'10px' }}>
                                         {/* 버튼 클릭 시 onClick에 지정되어있는 함수 실행됨 */}
-                                        {/* <Button onClick={updateLibrary}>수정</Button>
-                                        <Button onClick={deleteLibrary}>삭제</Button> */}
+                                        <Button onClick={updateLibrary}>수정</Button>
+                                        <Button onClick={deleteLibrary}>삭제</Button>
                                     </div>
                                 </Card.Footer>
                             </Card>

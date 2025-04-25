@@ -14,6 +14,14 @@ import "../css/board.css";
 import BoardLeftbar from './BoardLeftbar';
 import { Link } from 'react-router-dom';
 
+const formatDate = (timestamp) => {
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const LibraryList = () => {
 
   const [libraryList, setLibraryList] = useState([]);
@@ -60,8 +68,12 @@ const LibraryList = () => {
                         {/* 제목 클릭 시, 공지사항 상세 페이지로 이동 */}
                         <td><Link to={"/board/libraryDetail/" + library.library_no}>{library.library_title}</Link></td>
                         <td>{library.emp_no}</td>
-                        <td>{library.library_reg_date}</td>
-                        <td>{library.library_filename}</td>
+                        <td>{formatDate(library.library_reg_date)}</td>
+                        <td>
+                          {library.library_filename && library.library_filename.includes('_')
+                             ? decodeURIComponent(library.library_filename.substring(library.library_filename.indexOf('_') + 1))
+                             : '첨부 없음'}
+                        </td>
                       </tr>
 
                     ))}
