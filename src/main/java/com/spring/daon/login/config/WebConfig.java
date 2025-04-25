@@ -1,7 +1,10 @@
 package com.spring.daon.login.config;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,11 +13,15 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource; // 주의 (.reactive(x))
 import org.springframework.web.filter.CorsFilter;  // 주의
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebMvc
-public class WebConfig {
+public class WebConfig implements WebMvcConfigurer {
 	
 	@Bean
 	public FilterRegistrationBean corsFilter() {
@@ -63,5 +70,13 @@ public class WebConfig {
 		 * 따라서 프런트엔드의 요청을 수락하도록 백엔드를 구성해야 한다.(Cors Policy에 의한 Not Access 해결)
 		 */
 	}
+	
+	@Value("${file.upload-dir}")
+	private String uploadDir;
 
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	    registry.addResourceHandler("/uploads/**")
+	    .addResourceLocations("file:C:/daon/uploads/");
+    }
 }
