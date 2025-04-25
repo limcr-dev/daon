@@ -1,9 +1,12 @@
-import { Button, Container, Content, Divider, Header, Card, Input } from "rsuite";
+import { Button, Container, Content, Card, Input } from "rsuite";
 import Leftbar from "../../../common/pages/Leftbar";
-import EmployeeItemLeftbar from "./EmployeeItemLeftbar";
-import { useEffect, useState } from "react";
-import SalaryItemFormModal  from "./SalaryItemFormModal";
-import { getPositionName, getDeptName } from "../../../hrMgt/components/getEmployeeInfo.js";
+import SalaryLeftbar from "../SalaryLeftbar";
+import { useEffect, useState, useCallback } from "react";
+import SalaryItemFormModal from "./SalaryItemFormModal";
+import { getPositionName, getDeptName } from "../../../hrMgt/components/getEmployeeInfo";
+import { request } from "../../../common/components/helpers/axios_helper";
+import Header from '../../../common/pages/Header';
+import "../../css/EmployeeItemConfig.css"; // ✅ 스타일 파일 import
 
 const EmployeeItemConfig = () => {
   const [employees, setEmployees] = useState([]);
@@ -19,56 +22,58 @@ const EmployeeItemConfig = () => {
   const [modalType, setModalType] = useState();
   const [editItem, setEditItem] = useState(null);
 
-  // 사원 목록
-  const fetchEmployees = () => {
-    fetch("http://localhost:8081/api/employeeList")
-      .then((res) => res.json())
-      .then((data) => setEmployees(data));
-  };
+  const fetchEmployees = useCallback(() => {
+    request("get", "/api/employeeList")
+      .then((res) => setEmployees(res.data))
+      .catch((err) => {
+        console.error("사원 목록 조회 실패:", err);
+        alert("사원 목록을 불러오지 못했습니다.");
+      });
+  }, []);
 
-  // 사원 급여 항목
-  const fetchSalaryItems = () => {
+  const fetchSalaryItems = useCallback(() => {
     if (!selectedEmp) return;
-    fetch(
-      `http://localhost:8081/api/salaryItem?emp_no=${selectedEmp.emp_no}&salary_month=${salaryMonth}`
-    )
-      .then((res) => res.json())
-      .then((data) => setSalaryItems(data));
-  };
 
-  // 사원 급여 삭제
+    request("get", `/api/salaryItem?emp_no=${selectedEmp.emp_no}&salary_month=${salaryMonth}`)
+      .then((res) => setSalaryItems(res.data))
+      .catch((err) => {
+        console.error("급여 항목 조회 실패:", err);
+        alert("급여 항목을 불러오지 못했습니다.");
+      });
+  }, [selectedEmp, salaryMonth]);
+
   const handleDelete = (id) => {
     if (window.confirm("삭제 하시겠습니까?")) {
-      fetch(`http://localhost:8081/api/salaryItem/${id}`, {
-        method: "DELETE",
-      }).then((res) => {
-        if (res.ok) fetchSalaryItems();
-        else alert("삭제 실패");
-      });
+      request("delete", `/api/salaryItem/${id}`)
+        .then(() => fetchSalaryItems())
+        .catch((err) => {
+          console.error("삭제 실패:", err);
+          alert("삭제에 실패했습니다.");
+        });
     }
+  };
+
+  const handleCalculateSalary = () => {
+    if (!selectedEmp) return;
+
+    request("post", `/api/salary/calculate?emp_no=${selectedEmp.emp_no}&salary_month=${salaryMonth}`)
+      .then(() => {
+        alert("급여 계산 완료");
+        fetchSalaryItems();
+      })
+      .catch((err) => {
+        console.error("급여 계산 실패:", err);
+        alert("급여 계산에 실패했습니다.");
+      });
   };
 
   useEffect(() => {
     fetchEmployees();
-  }, []);
-
-  const handleCalculateSalary = () => {
-    fetch(`http://localhost:8081/api/salary/calculate?emp_no=${selectedEmp.emp_no}&salary_month=${salaryMonth}`, {
-      method: "POST",
-    })
-      .then((res) => {
-        if (res.ok) {
-          alert("급여 계산 완료");
-          fetchSalaryItems();
-        } else {
-          alert("계산 실패");
-        }
-      });
-  };
+  }, [fetchEmployees]);
 
   useEffect(() => {
     fetchSalaryItems();
-  }, [selectedEmp, salaryMonth]);
+  }, [fetchSalaryItems]);
 
   const handleAdd = (type) => {
     setModalType(type);
@@ -86,18 +91,13 @@ const EmployeeItemConfig = () => {
     emp.emp_name.toLowerCase().includes(searchKeyword.toLowerCase())
   );
 
-  
-
-  
-
   return (
     <Container style={{ minHeight: "100vh", width: "100%" }}>
       <Leftbar />
       <Container>
-        <EmployeeItemLeftbar />
+        <SalaryLeftbar />
         <Content>
           <Header />
-          <Divider />
           <Card
             style={{
               borderRadius: "15px",
@@ -106,50 +106,35 @@ const EmployeeItemConfig = () => {
             }}
           >
             <h3 style={{ marginBottom: 20 }}>사원별 수당/공제 설정</h3>
-            
-            {/* 검색 & 월 선택 */}
+
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: 20 }}>
-            <Input
+              <Input
                 placeholder="사원 이름 검색"
                 value={searchKeyword}
                 onChange={setSearchKeyword}
-                style={{ width: 200, marginRight: 320}}
-            />
-            <label style={{ marginRight: 10 }}>급여 월:</label>
-            <input
+                style={{ width: 200, marginRight: 320 }}
+              />
+              <label style={{ marginRight: 10 }}>급여 월:</label>
+              <input
                 type="month"
                 value={salaryMonth}
                 onChange={(e) => setSalaryMonth(e.target.value)}
-                style={{ height: 34, marginRight: 20 }} // input 높이 Input에 맞추기 (선택)
-            />
-            <Button
-                appearance="primary"
-                onClick={() => handleAdd("ALLOWANCE")}
-                style={{ marginRight: 10 }}
-                >
+                style={{ height: 34, marginRight: 20 }}
+              />
+              <Button appearance="primary" onClick={() => handleAdd("ALLOWANCE")} style={{ marginRight: 10 }}>
                 수당 추가
-            </Button>
-            <Button
-                appearance="primary"
-                onClick={() => handleAdd("DEDUCTION")}
-                >
+              </Button>
+              <Button appearance="primary" onClick={() => handleAdd("DEDUCTION")}>
                 공제 추가
-            </Button>
-            <Button
-                appearance="primary"
-                color="green"
-                onClick={handleCalculateSalary}
-                style={{ marginLeft: 10 }}
-                >
+              </Button>
+              <Button appearance="primary" color="green" onClick={handleCalculateSalary} style={{ marginLeft: 10 }}>
                 급여 계산
-            </Button>
+              </Button>
             </div>
-        
+
             <div style={{ display: "flex", gap: 20 }}>
-              {/* 사원 목록 */}
               <Card style={{ flex: 1, padding: 15 }}>
-                <h5>사원 목록</h5>
-                <table className="board-table" style={{ width: "100%" }}>
+                <table className="employee-item-config-table">
                   <thead>
                     <tr>
                       <th>사원명</th>
@@ -161,11 +146,7 @@ const EmployeeItemConfig = () => {
                     {filteredEmployees.map((emp) => (
                       <tr
                         key={emp.emp_no}
-                        style={{
-                          cursor: "pointer",
-                          backgroundColor:
-                            selectedEmp?.emp_no === emp.emp_no ? "#f0f8ff" : "",
-                        }}
+                        className={selectedEmp?.emp_no === emp.emp_no ? "selected-row" : ""}
                         onClick={() => setSelectedEmp(emp)}
                       >
                         <td>{emp.emp_name}</td>
@@ -176,18 +157,15 @@ const EmployeeItemConfig = () => {
                   </tbody>
                 </table>
               </Card>
-                    
-                    
-              {/* 수당/공제 항목 */}
+
               <Card style={{ flex: 2, padding: 15 }}>
                 {selectedEmp ? (
                   <>
                     <h5>
                       선택된 사원: {selectedEmp.emp_name} ({salaryMonth})
                     </h5>
-                    
 
-                    <table className="board-table" style={{ width: "100%" }}>
+                    <table className="employee-item-config-table">
                       <thead>
                         <tr>
                           <th>구분</th>
@@ -203,21 +181,12 @@ const EmployeeItemConfig = () => {
                             <td>{row.item_name}</td>
                             <td>{row.amount.toLocaleString()} 원</td>
                             <td>
-                              <Button
-                                size="xs"
-                                onClick={() => handleEdit(row)}
-                                style={{ marginRight: 6 }}
-                              >
-                                수정
-                              </Button>
-                              <Button
-                                size="xs"
-                                color="red"
-                                appearance="ghost"
-                                onClick={() => handleDelete(row.id)}
-                              >
-                                삭제
-                              </Button>
+                              <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
+                                <Button size="xs" onClick={() => handleEdit(row)}>수정</Button>
+                                <Button size="xs" color="red" appearance="ghost" onClick={() => handleDelete(row.id)}>
+                                  삭제
+                                </Button>
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -230,7 +199,6 @@ const EmployeeItemConfig = () => {
               </Card>
             </div>
 
-            {/* 등록/수정 모달 */}
             {showModal && selectedEmp && (
               <SalaryItemFormModal
                 open={showModal}

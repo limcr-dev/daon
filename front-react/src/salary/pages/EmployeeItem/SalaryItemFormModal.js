@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button } from "rsuite";
+import { request } from "../../../common/components/helpers/axios_helper"; // ✅ 실제 경로에 맞게 수정
 
 const SalaryItemFormModal = ({ open, onClose, empNo, salaryMonth, type, item, onSuccess }) => {
   const [itemList, setItemList] = useState([]);
@@ -8,15 +9,18 @@ const SalaryItemFormModal = ({ open, onClose, empNo, salaryMonth, type, item, on
     amount: "",
   });
 
-  // ✅ 수당 또는 공제 항목 불러오기
+  // ✅ 수당 or 공제 항목 목록 불러오기
   useEffect(() => {
     const endpoint = type === "ALLOWANCE" ? "allowances" : "deductions";
-    fetch(`http://localhost:8081/api/${endpoint}`)
-      .then(res => res.json())
-      .then(data => setItemList(data));
+    request("get", `/api/${endpoint}`)
+      .then((res) => setItemList(res.data))
+      .catch((err) => {
+        console.error("항목 불러오기 실패:", err);
+        alert("항목을 불러오지 못했습니다.");
+      });
   }, [type]);
 
-  // ✅ 수정 모드일 경우 기존 항목 세팅
+  // ✅ 수정 모드 시 초기값 세팅
   useEffect(() => {
     if (item) {
       setFormValue({
@@ -31,33 +35,36 @@ const SalaryItemFormModal = ({ open, onClose, empNo, salaryMonth, type, item, on
     }
   }, [item]);
 
-  // ✅ 공제 항목 자동 계산 (기본급 × rate / 100)
+  // ✅ 공제 자동 계산: 기본급 × 비율
   useEffect(() => {
     if (type === "DEDUCTION" && formValue.item_id && !item) {
       const selected = itemList.find(i => i.id === parseInt(formValue.item_id));
       if (selected?.rate) {
-        fetch(`http://localhost:8081/api/employee/${empNo}/baseSalary`)
-          .then(res => res.json())
-          .then(base => {
-            const rate = parseFloat(selected.rate) / 100;  // 퍼센트 → 소수
-            const amount = Math.round(base * rate);        // 계산
-            setFormValue(prev => ({ ...prev, amount }));
+        request("get", `/api/employee/${empNo}/baseSalary`)
+          .then((res) => {
+            const rate = parseFloat(selected.rate) / 100;
+            const amount = Math.round(res.data * rate);
+            setFormValue((prev) => ({ ...prev, amount }));
+          })
+          .catch((err) => {
+            console.error("기본급 불러오기 실패:", err);
+            alert("기본급 정보를 불러오지 못했습니다.");
           });
       }
     }
   }, [formValue.item_id, itemList, type, empNo, item]);
 
-  // ✅ 수당 항목 고정 금액 자동 입력
+  // ✅ 고정 수당 자동 입력
   useEffect(() => {
     if (type === "ALLOWANCE" && formValue.item_id && !item) {
       const selected = itemList.find(i => i.id === parseInt(formValue.item_id));
       if (selected?.is_fixed && selected.fixed_amount) {
-        setFormValue(prev => ({ ...prev, amount: selected.fixed_amount }));
+        setFormValue((prev) => ({ ...prev, amount: selected.fixed_amount }));
       }
     }
   }, [formValue.item_id, itemList, type, item]);
 
-  // ✅ 입력값 변경 핸들러
+  // ✅ 입력값 변경
   const changeValue = (e) => {
     const { name, value } = e.target;
     setFormValue({
@@ -66,12 +73,10 @@ const SalaryItemFormModal = ({ open, onClose, empNo, salaryMonth, type, item, on
     });
   };
 
-  // ✅ 저장 처리
+  // ✅ 저장 요청
   const handleSubmit = () => {
-    const method = item ? "PUT" : "POST";
-    const url = item
-      ? `http://localhost:8081/api/salaryItem/${item.id}`
-      : `http://localhost:8081/api/salaryItem`;
+    const method = item ? "put" : "post";
+    const url = item ? `/api/salaryItem/${item.id}` : `/api/salaryItem`;
 
     const payload = {
       emp_no: empNo,
@@ -80,18 +85,15 @@ const SalaryItemFormModal = ({ open, onClose, empNo, salaryMonth, type, item, on
       ...formValue
     };
 
-    fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    }).then(res => {
-      if (res.ok) {
+    request(method, url, payload)
+      .then(() => {
         onSuccess();
         onClose();
-      } else {
+      })
+      .catch((err) => {
+        console.error("급여 항목 저장 실패:", err);
         alert("저장 실패");
-      }
-    });
+      });
   };
 
   return (
@@ -105,7 +107,7 @@ const SalaryItemFormModal = ({ open, onClose, empNo, salaryMonth, type, item, on
           name="item_id"
           value={formValue.item_id}
           onChange={changeValue}
-          disabled={!!item} // 수정 시 항목 고정
+          disabled={!!item} // 수정 시 항목 변경 불가
         >
           <option value="">항목 선택</option>
           {itemList.map(i => (

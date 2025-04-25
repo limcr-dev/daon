@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button } from "rsuite";
- 
+import { request } from "../../../common/components/helpers/axios_helper"; // ✅ request 함수 경로 확인 필요
 
 const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
-  // ✅ 초기 상태 정의
   const [form, setForm] = useState({
     name: "",
     fixed_amount: "",
@@ -14,7 +13,7 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
     is_active: true
   });
 
-  // ✅ 수정 모드인 경우 기존 데이터를 form에 세팅
+  // ✅ 수정 모드인 경우 기존 데이터를 세팅
   useEffect(() => {
     if (item) {
       setForm({
@@ -27,7 +26,6 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
         is_active: item.is_active ?? true
       });
     } else {
-      // 등록 모드 초기화
       setForm({
         name: "",
         fixed_amount: "",
@@ -40,7 +38,7 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
     }
   }, [item]);
 
-  // ✅ 입력값 핸들링
+  // ✅ 입력 핸들러
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm({
@@ -49,26 +47,19 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
     });
   };
 
-  // ✅ 저장 처리 (등록 or 수정)
-  const handleSubmit = () => {
-    const method = item ? "PUT" : "POST";
-    const url = item
-      ? `http://localhost:8081/api/allowance/${item.id}`
-      : `http://localhost:8081/api/allowance`;
+  // ✅ 저장 처리
+  const handleSubmit = async () => {
+    const method = item ? "put" : "post";
+    const url = item ? `/api/allowance/${item.id}` : `/api/allowance`;
 
-    fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form)
-    })
-      .then((res) => {
-        if (res.ok) {
-          onSuccess(); // 목록 새로고침
-          onClose();   // 모달 닫기
-        } else {
-          alert("저장 실패");
-        }
-      });
+    try {
+      await request(method, url, form);
+      onSuccess();  // 목록 새로고침
+      onClose();    // 모달 닫기
+    } catch (err) {
+      console.error("저장 실패:", err);
+      alert("저장에 실패했습니다.");
+    }
   };
 
   return (
