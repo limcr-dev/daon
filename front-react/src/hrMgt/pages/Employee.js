@@ -8,16 +8,11 @@ const Employee = () => {
     return(
         <Container style={{ minHeight: "100vh", width: "100%" }}>
       <Leftbar />
-      
       <Container>
-        
         <EmployeeLeftbar />
         <Content>
           <Header />
-          
           <EmployeeDashboard/>
-           
-
         </Content>
       </Container>
     </Container>

@@ -48,5 +48,8 @@ public class Employees {
 	private int admin_type;			// 관리자 유형
 	private int work_type_no;		// 근무 유형 코드
 	private String token;			// 토큰
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+	private Date contract_end_date; // 계약 종료일 (계약직, 인턴에게만 해당)
+
 }
 
