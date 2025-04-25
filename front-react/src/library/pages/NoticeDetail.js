@@ -5,6 +5,7 @@ import Leftbar from '../../common/pages/Leftbar';
 import BoardLeftbar from './BoardLeftbar';
 import Header from '../../common/pages/Header';
 import '../css/board.css'
+import { request } from '../../common/components/helpers/axios_helper';
 
 const NoticeDetail = (props) => {
 
@@ -23,12 +24,13 @@ const NoticeDetail = (props) => {
     })
 
     // 공지사항 상세 페이지가 로딩될 때, 처음으로 실행되는 부분
-    // dependency가 빈 배열이라 처음 화면 로딩 시, 한번만 실행됨
     useEffect(() => {
-        fetch("http://localhost:8081/board/notice/" + notice_no)  // DB에 들림
-            .then((res) => res.json())
+        request("get", "/board/notice/" + notice_no)
             .then((res) => {
-                setNotice(res) // DB에서 꺼내온 값을 setNotice 함수를 통해서 notice 변수에 저장함
+                setNotice(res.data) // axios는 응답을 res.data에 담아 반환합니다
+            })
+            .catch((error) => {
+                console.error("공지사항 조회 실패:", error);
             });
     }, []);
 
@@ -39,16 +41,18 @@ const NoticeDetail = (props) => {
 
     // 삭제 버튼 누르면 실행되는 함수(arrow function 활용)
     const deleteNotice = () => {
-        fetch("http://localhost:8081/board/notice/" + notice_no, {
-            method: "DELETE"
-        })
-            .then((res) => res.text())  // 응답 값을 text형식으로 받음
+        request("delete", "/board/notice/" + notice_no)
             .then((res) => {
-                if (res == 'ok') {
+                // axios는 응답을 자동으로 JSON으로 파싱하므로, res.data로 접근
+                if (res.data === 'ok') {
                     navigate('/board/noticeList');  // 삭제 성공 시, 공지사항 목록 페이지로 이동
                 } else {
                     alert('게시글 삭제에 실패하였습니다.'); // 삭제 실패 시, alert창 띄움
                 }
+            })
+            .catch((error) => {
+                console.error("공지사항 삭제 실패:", error);
+                alert('게시글 삭제에 실패하였습니다.');
             });
     }
 
@@ -94,11 +98,11 @@ const NoticeDetail = (props) => {
                                         <td colSpan={4}>{notice.notice_content}</td>
                                     </tr>
                                 </table>
-                                <Card.Footer>
-                                    <div style={{ marginTop:'10px' }}>
+                                <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', padding: '15px' }}>
+                                    <div style={{ marginTop: '10px' }}>
                                         {/* 버튼 클릭 시 onClick에 지정되어있는 함수 실행됨 */}
-                                        <Button onClick={updateNotice}>수정</Button>
-                                        <Button onClick={deleteNotice}>삭제</Button>
+                                        <Button appearance="primary" color="blue" onClick={updateNotice}>수정</Button>
+                                        <Button appearance="ghost" color="cyan" onClick={deleteNotice} style={{ marginLeft: '10px' }}>삭제</Button>
                                     </div>
                                 </Card.Footer>
                             </Card>

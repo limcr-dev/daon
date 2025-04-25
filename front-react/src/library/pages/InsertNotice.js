@@ -5,6 +5,7 @@ import Leftbar from '../../common/pages/Leftbar';
 import BoardLeftbar from './BoardLeftbar';
 import Header from '../../common/pages/Header';
 import { useUser } from '../../common/contexts/UserContext';
+import { request } from '../../common/components/helpers/axios_helper';
 
 const InsertNotice = () => {
 
@@ -33,7 +34,7 @@ const InsertNotice = () => {
     };
 
     // '작성'버튼 눌러 공지 작성
-    const submitNotice = (e) => {
+    const submitNotice = async (e) => {
         e.preventDefault(); // submit이 action을 안 타고 자기 할 일을 그만함
 
         // 필수 입력값 체크
@@ -52,38 +53,21 @@ const InsertNotice = () => {
             return;
         }
 
-        console.log("보내는 데이터:", JSON.stringify(notice)); // 디버깅 로그 추가
+        try {
+            // insertNotice 링크로 DB에 접속
+            const res = await request("post", "/board/notice", notice);
+            console.log(1, res);
 
-        // insertNotice 링크로 DB에 접속
-        fetch("http://localhost:8081/board/notice", {
-            method: "POST", // @PostMapping 사용
-            headers: {
-                "Content-Type": "application/json;charset=utf-8",
-                "Authorization": `Bearer ${localStorage.getItem("auth_token")}` // JWT 토큰 포함
-            },
-            body: JSON.stringify(notice)
-
-        })
-            .then((res) => {
-                console.log(1, res);
-                if (res.status === 201) {
-                    return res.json();  // 응답 값을 json 형식으로 변환
-                } else {
-                    return null;
-                }
-            })
-            .then((res) => {
-                console.log('정상', res);
-                if (res !== null) {
-                    navigate('/board/noticeList');  // 작성 성공 시, 공지 목록 페이지로 이동
-                } else {
-                    alert("공지 작성에 실패하였습니다.");   // 작성 실패 시, alert 창 띄움
-                }
-            })
-            .catch((error) => {
-                console.log('실패', error);
-            })
-
+            if (res.status === 201) {
+                console.log('정상', res.data);
+                navigate('/board/noticeList');  // 작성 성공 시, 공지 목록 페이지로 이동
+            } else {
+                alert("공지 작성에 실패하였습니다.");   // 작성 실패 시, alert 창 띄움
+            }
+        } catch (error) {
+            console.log('실패', error);
+            alert("공지 작성에 실패하였습니다.");
+        }
     }
 
     const noticeList = () => {
@@ -141,9 +125,8 @@ const InsertNotice = () => {
                                     </tr>
                                 </table>
                                 <Card.Footer>
-                                    {/* 버튼 클릭 시 submitNotice 함수 실행 */}
-                                    <div style={{ marginTop: '10px' }}>
-                                        <Button onClick={submitNotice}>작성</Button>
+                                    <div style={{ marginTop: '10px', width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+                                        <Button appearance="primary" color="blue" onClick={submitNotice}>작성</Button>
                                     </div>
                                 </Card.Footer>
                             </Card>

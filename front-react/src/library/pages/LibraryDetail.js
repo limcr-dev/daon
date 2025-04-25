@@ -5,6 +5,7 @@ import Leftbar from '../../common/pages/Leftbar';
 import BoardLeftbar from './BoardLeftbar';
 import Header from '../../common/pages/Header';
 import '../css/board.css'
+import { request } from '../../common/components/helpers/axios_helper';
 
 const LibraryDetail = () => {
 
@@ -25,13 +26,16 @@ const LibraryDetail = () => {
     // 공지사항 상세 페이지가 로딩될 때, 처음으로 실행되는 부분
     // dependency가 빈 배열이라 처음 화면 로딩 시, 한번만 실행됨
     useEffect(() => {
-        fetch("http://localhost:8081/board/library/" + library_no, {
-            method: "GET"
-        })  // DB에 들림
-            .then((res) => res.json())
-            .then((res) => {
-                setLibrary(res) // DB에서 꺼내온 값을 setlibrary 함수를 통해서 library 변수에 저장함
-            });
+        const fetchLibraryDetail = async () => {
+            try {
+                const res = await request("get", "/board/library/" + library_no);
+                setLibrary(res.data); // DB에서 꺼내온 값을 setlibrary 함수를 통해서 library 변수에 저장함
+            } catch (error) {
+                console.error("자료실 게시글 조회 실패:", error);
+            }
+        };
+
+        fetchLibraryDetail();
     }, []);
 
     // 수정 버튼 누르면 실행되는 함수(arrow function 활용)
@@ -40,20 +44,20 @@ const LibraryDetail = () => {
     }
 
     // 삭제 버튼 누르면 실행되는 함수(arrow function 활용)
-    const deleteLibrary = () => {
-        fetch("http://localhost:8081/board/library/" + library_no, {
-            method: "DELETE"
-        })
-            .then((res) => res.text())  // 응답 값을 text형식으로 받음
-            .then((res) => {
-                if (res == 'ok') {
-                    navigate('/board/libraryList');  // 삭제 성공 시, 공지사항 목록 페이지로 이동
-                } else {
-                    alert('게시글 삭제에 실패하였습니다.'); // 삭제 실패 시, alert창 띄움
-                }
-            });
-    }
+    const deleteLibrary = async () => {
+        try {
+            const res = await request("delete", "/board/library/" + library_no);
 
+            if (res.data === 'ok') {
+                navigate('/board/libraryList');  // 삭제 성공 시, 자료실 목록 페이지로 이동
+            } else {
+                alert('게시글 삭제에 실패하였습니다.'); // 삭제 실패 시, alert창 띄움
+            }
+        } catch (error) {
+            console.error("자료실 게시글 삭제 실패:", error);
+            alert('게시글 삭제에 실패하였습니다.');
+        }
+    }
     const libraryList = () => {
         navigate('/board/libraryList');
     }
@@ -96,11 +100,12 @@ const LibraryDetail = () => {
                                         <td colSpan={4}>{library.library_content}</td>
                                     </tr>
                                 </table>
-                                <Card.Footer>
-                                    <div style={{ marginTop:'10px' }}>
+                                <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', padding: '15px' }}>
+
+                                    <div style={{ marginTop: '10px' }}>
                                         {/* 버튼 클릭 시 onClick에 지정되어있는 함수 실행됨 */}
-                                        {/* <Button onClick={updateLibrary}>수정</Button>
-                                        <Button onClick={deleteLibrary}>삭제</Button> */}
+                                        {/* <Button appearance="primary" color="blue" onClick={updateLibrary}>수정</Button>
+                                        <Button appearance="ghost" color="cyan"  onClick={deleteLibrary}>삭제</Button> */}
                                     </div>
                                 </Card.Footer>
                             </Card>

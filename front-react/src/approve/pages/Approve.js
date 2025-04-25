@@ -1,33 +1,43 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Button,
-  Card,
-  Col,
-  Container,
-  Content,
-  Divider,
-  FlexboxGrid,
-  Row
-} from 'rsuite';
+import { Button, Card, Col, Container, Content, Divider, FlexboxGrid, Row } from 'rsuite';
 import Leftbar from '../../common/pages/Leftbar';
 import ApproveLeftbar from './ApproveLeftbar';
 import Header from '../../common/pages/Header';
 import "../css/approve.css";
 import { request } from '../../common/components/helpers/axios_helper';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../common/contexts/UserContext';
-import { getStatusText } from '../components/ApprCodeToText';
+import { StatusBadge, UrgentBadge } from '../components/ApprCodeToText';
+import { getPositionName } from '../../hrMgt/components/getEmployeeInfo';
 
 const Approve = () => {
   const { user } = useUser();
+  const navigate = useNavigate();
+  const [approverList, setApproverList] = useState([]);
   const [proceedList, setProceedList] = useState([]);
-
   const [completeList, setCompleteList] = useState([]);
 
   useEffect(() => {
     try {
       const fetchData = async () => {
-        const response = await request("GET", "/approve/documents/1/" + parseInt(user.emp_no));
+        const response = await request("GET", `/approve/approverInfo/${user.emp_no}`);
+        if (response && response.data) {
+          // 배열인지 확인하고 설정
+          const data = Array.isArray(response.data) ? response.data : [];
+          setApproverList(data);
+
+        }
+      };
+      fetchData();
+    } catch (error) {
+      console.log("error :", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      const fetchData = async () => {
+        const response = await request("GET", "/approve/documents/2/" + parseInt(user.emp_no));
         if (response && response.data) {
           // 배열인지 확인하고 설정
           const data = Array.isArray(response.data) ? response.data : [];
@@ -43,7 +53,7 @@ const Approve = () => {
   useEffect(() => {
     try {
       const fetchData = async () => {
-        const response = await request("GET", "/approve/documents/2/" + parseInt(user.emp_no));
+        const response = await request("GET", "/approve/documents/3/" + parseInt(user.emp_no));
         if (response && response.data) {
           // 배열인지 확인하고 설정
           const data = Array.isArray(response.data) ? response.data : [];
@@ -68,61 +78,52 @@ const Approve = () => {
 
             <Col style={{ marginBottom: '20px' }}>
               <FlexboxGrid justify="start" style={{ gap: '20px' }}>
-                <Card style={{ borderRadius: '15px', width: '300px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-                  {/* 상단 상태 표시 */}
-                  <Card.Header style={{ justifyContent: 'right' }}>
-                    <span>
-                      진행중
-                    </span>
-                  </Card.Header>
+                {approverList.length > 0 ? (
+                  approverList.slice(0, 5).map((doc, index) => (
+                    <Card key={index} style={{ borderRadius: '15px', width: '300px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+                      {/* 상단 상태 표시 */}
+                      <Card.Header style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <UrgentBadge isUrgent={doc.doc_urgent} />
+                        <span style={{ marginLeft: '5px' }}>
+                          <StatusBadge status={doc.doc_status} />
+                        </span>
+                      </Card.Header>
 
-                  {/* 본문 */}
-                  <Card.Body className="p-4 space-y-2">
-                    <p style={{ fontWeight: '600', fontSize: '16px' }}>
-                      (신규)휴가신청-연차관리
-                    </p>
-                    <p style={{ color: 'gray' }}>기안자 : 김지연 부장</p>
-                    <p style={{ color: 'gray' }}> 기안일 : 2025-03-17</p>
-                    <p style={{ color: 'gray' }}>
-                      결재양식 : (신규)휴가신청-연차관리연동
-                    </p>
-                  </Card.Body>
+                      {/* 본문 */}
+                      <Card.Body className="p-4 space-y-2">
+                        <p style={{ fontWeight: '600', fontSize: '20px' }}>
+                          {doc.doc_title || '제목 없음'}
+                        </p>
+                        <p style={{ color: 'gray' }}>기안자 : {doc.emp_name || '이름 없음'} ({getPositionName(doc.position_id) || ''})</p>
+                        <p style={{ color: 'gray' }}>기안일 : {doc.doc_reg_date || '-'}</p>
+                        <p style={{ color: 'gray' }}>
+                          결재양식 : {doc.doc_form_name || doc.doc_form || '-'}
+                        </p>
+                      </Card.Body>
 
-                  {/* 하단 버튼 */}
-                  <Card.Footer>
-                    <Button>
-                      결재하기
-                    </Button>
-                  </Card.Footer>
-                </Card>
-
-                <Card style={{ borderRadius: '15px', width: '300px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-                  {/* 상단 상태 표시 */}
-                  <Card.Header style={{ display: 'flex', justify: 'end' }}>
-                    <span>
-                      진행중
-                    </span>
-                  </Card.Header>
-
-                  {/* 본문 */}
-                  <Card.Body className="p-4 space-y-2">
-                    <p style={{ fontWeight: '600', fontSize: '16px' }}>
-                      (신규)휴가신청-연차관리
-                    </p>
-                    <p style={{ color: 'gray' }}>기안자 : 김지연 부장</p>
-                    <p style={{ color: 'gray' }}> 기안일 : 2025-03-17</p>
-                    <p style={{ color: 'gray' }}>
-                      결재양식 : (신규)휴가신청-연차관리연동
-                    </p>
-                  </Card.Body>
-
-                  {/* 하단 버튼 */}
-                  <Card.Footer>
-                    <Button>
-                      결재하기
-                    </Button>
-                  </Card.Footer>
-                </Card>
+                      {/* 하단 버튼 */}
+                      <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <Button
+                          appearance="primary"
+                          onClick={() => navigate("/approve/documentDetail/" + doc.doc_form + "/" + doc.doc_no)}
+                        >
+                          결재하기
+                        </Button>
+                      </Card.Footer>
+                    </Card>
+                  ))
+                ) : (
+                  <Card style={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+                    <Card.Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', backgroundColor: '#f5f5f5', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
+                      <span style={{ fontWeight: '600', fontSize: '16px' }}>결재 대기 문서</span>
+                    </Card.Header>
+                    <Card.Body className="p-4" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '150px' }}>
+                      <p style={{ textAlign: 'center', color: '#666' }}>
+                        대기 중인 결재 문서가 없습니다.
+                      </p>
+                    </Card.Body>
+                  </Card>
+                )}
               </FlexboxGrid>
             </Col>
 
@@ -132,9 +133,10 @@ const Approve = () => {
                   <span style={{ fontWeight: '600', fontSize: '16px' }}>결재 진행 문서</span>
                   <Button appearance="link">더보기</Button>
                 </Card.Header>
-                <table class='approve-table'>
+                <table className='approve-table'>
                   <thead>
                     <tr>
+                      <th>번호</th>
                       <th>기안일</th>
                       <th>결재양식</th>
                       <th>제목</th>
@@ -146,17 +148,18 @@ const Approve = () => {
                   <tbody>
                     {proceedList.length === 0 ? (
                       <tr>
-                        <td colSpan={6} align='center'>진행 중인 결재 문서가 존재하지 않습니다.</td>
+                        <td colSpan={7} align='center'>진행 중인 결재 문서가 존재하지 않습니다.</td>
                       </tr>
                     ) : (
                       proceedList.slice(0, 5).map(doc => (
-                        <tr key={doc.notice_no}>
+                        <tr key={doc.doc_no}>
+                          <td>{doc.doc_no}</td>
                           <td>{doc.doc_reg_date}</td>
                           <td>{doc.doc_form}</td>
-                          <td><Link to={"/approve/documentDetail/" + doc.doc_no}>{doc.doc_title}</Link></td>
-                          <td>첨부</td>
-                          <td>{doc.doc_urgent}</td>
-                          <td>{getStatusText(doc.doc_status)}</td>
+                          <td><Link to={"/approve/documentDetail/" + doc.doc_form + "/" + doc.doc_no}>{doc.doc_title}</Link></td>
+                          <td>{doc.doc_attachment ? '📎' : ''}</td>
+                          <td><UrgentBadge isUrgent={doc.doc_urgent} /></td>
+                          <td><StatusBadge status={doc.doc_status} /></td>
                         </tr>
 
                       )))}
@@ -174,9 +177,10 @@ const Approve = () => {
                   <Button appearance="link">더보기</Button>
                 </Card.Header>
 
-                <table class='approve-table'>
+                <table className='approve-table'>
                   <thead>
                     <tr>
+                      <th>번호</th>
                       <th>기안일</th>
                       <th>결재양식</th>
                       <th>제목</th>
@@ -186,19 +190,20 @@ const Approve = () => {
                     </tr>
                   </thead>
                   <tbody>
-                  {completeList.length === 0 ? (
+                    {completeList.length === 0 ? (
                       <tr>
-                        <td colSpan={6} align='center'>완료된 결재 문서가 존재하지 않습니다.</td>
+                        <td colSpan={7} align='center'>완료된 결재 문서가 존재하지 않습니다.</td>
                       </tr>
                     ) : (
                       completeList.slice(0, 5).map(doc => (
-                        <tr key={doc.notice_no}>
+                        <tr key={doc.doc_no}>
+                          <td>{doc.doc_no}</td>
                           <td>{doc.doc_reg_date}</td>
                           <td>{doc.doc_form}</td>
-                          <td><Link to={"/approve/documentDetail/" + doc.doc_no}>{doc.doc_title}</Link></td>
-                          <td>첨부</td>
-                          <td>{doc.doc_urgent}</td>
-                          <td>{getStatusText(doc.doc_status)}</td>
+                          <td><Link to={"/approve/documentDetail/" + doc.doc_form + "/" + doc.doc_no}>{doc.doc_title}</Link></td>
+                          <td>{doc.doc_attachment ? '📎' : ''}</td>
+                          <td><UrgentBadge isUrgent={doc.doc_urgent} /></td>
+                          <td><StatusBadge status={doc.doc_status} /></td>
                         </tr>
 
                       )))}

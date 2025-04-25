@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import VacationForm from '../components/VacationForm';
 import ReportForm from '../components/ReportForm';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Content, Divider, Header as RsuiteHeader, Row, FlexboxGrid, IconButton, Dropdown, ButtonGroup, Button, Panel, Nav, Form, Radio, Checkbox, Input, Modal } from 'rsuite';
+import { Container, Content, Divider, Button, Modal, ButtonGroup } from 'rsuite';
 import Leftbar from '../../common/pages/Leftbar';
 import ApproveLeftbar from './ApproveLeftbar';
 import ApproveInfo from './ApproveInfo';
@@ -12,33 +12,48 @@ import WorkReportForm from '../components/WorkReportForm';
 import ApproveLine from './ApproveLine';
 import { useUser } from '../../common/contexts/UserContext';
 import { request } from '../../common/components/helpers/axios_helper';
-import { setSeconds } from 'date-fns';
+import { getFormName } from '../components/ApprCodeToText';
+import { add } from 'date-fns';
+import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
 
-
-const ApproveForm = () => {
+const DocumentForm = () => {
     const { user } = useUser();     // 로그인 유저 정보
     const params = useParams(); // form_no를 가져오기 위한 변수
     const form_no = parseInt(params.form_no);
-
     const navigate = useNavigate(); // 화면 이동을 위한 변수
-
     const today = new Date();       // 기안일 지정
     const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-
     const [line, setLine] = useState([]);   // 결재 라인 정보 저장
-
     const [formData, setFormData] = useState(null); // 각 양식별 데이터 저장
-
     const [isUrgent, setIsUrgent] = useState(false);
-
     const [document, setDocument] = useState({
         doc_form: form_no,
         emp_no: user.emp_no,
         dept_no: user.dept_no,
         doc_title: '',
         doc_reg_date: formattedDate,
-        doc_urgent: 'N'
+        doc_urgent: 'N',
+        doc_status: 2   // (기본)진행중
     })
+
+    // 초기 결재선에 기안자(로그인 유저) 추가
+    useEffect(() => {
+        // 결재선이 비어있을 때만 기안자 정보 추가
+        if (line.length === 0 && user && user.emp_no) {
+            const applicant = {
+                appr_no: user.emp_no,
+                appr_name: user.emp_name,
+                appr_position: getPositionName(user.position_id),
+                appr_dept_name: getDeptName(user.dept_no),
+                appr_dept_no: user.dept_no,
+                appr_status: 0,
+                appr_type: '기안자',
+                appr_date: formattedDate
+            };
+            setLine([applicant]);
+        }
+    }, [user]); // user 정보가 바뀌면 다시 실행
+
 
     // 데이터 변화를 감지하는 이벤트 핸들러
     const handleFormDataChange = (data) => {
@@ -48,7 +63,7 @@ const ApproveForm = () => {
             ...document,
             doc_title: title
         })
-        console.log("양식 데이터 업데이트됨:", data);
+        console.log(formData);
     };
 
     // 모달창 오픈 함수
@@ -56,8 +71,6 @@ const ApproveForm = () => {
 
     // 모달창에서 저장된 결재선을 부모창에서 저장하는 함수
     const handleSaveLine = (lineData) => {
-        console.log('결재선 저장 함수 호출됨, 데이터:', lineData);
-
         // 검증: 데이터가 배열이고 비어있지 않은지 확인
         if (lineData.length > 0) {
             setLine(lineData);
@@ -67,54 +80,74 @@ const ApproveForm = () => {
         }
     }
 
-    const handleUrgentChange = (event) => {
-        const checked = event.target.checked;
-        console.log("event.target.checked 값:", checked);
+    // 각 양식 별 유효성 체크
+    const checkValid = (formData) => {
 
-        // isUrgent 상태 업데이트
-        setIsUrgent(checked);
+        if (!formData.title) {
+            alert("제목을 입력하세요.");
+            return false;
+        }
+        if (!formData.content) {
+            alert("내용을 작성해주세요.");
+            return false;
+        }
 
-        // document 상태도 업데이트 - 이 부분이 빠져있었습니다!
-        setDocument({
-            ...document,
-            doc_urgent: checked ? 'Y' : 'N'
-        });
-
-        console.log("업데이트될 문서:", {
-            ...document,
-            doc_urgent: checked ? 'Y' : 'N'
-        });
+        switch (form_no) {
+            case 1:
+                if (!formData.vacation_type) {
+                    alert("휴가 유형을 지정해주세요.");
+                    return false;
+                }
+                if (!formData.start_date) {
+                    alert("휴가 시작일 지정해주세요.");
+                    return false;
+                }
+                if (!formData.end_date) {
+                    alert("휴가 종료일 지정해주세요.");
+                    return false;
+                }
+                if (formData.vacation_type === 1 && formData.remaining_days - formData.used_days < 0) {
+                    alert("연차 신청 가능일을 초과하였습니다.");
+                    return false;
+                }
+                return true;
+            case 2:
+                return true;
+            case 3:
+                return true;
+            case 5:
+                if (!formData.execution_date) {
+                    alert("업무 시행일을 지정해주세요.");
+                    return false;
+                }
+                return true;
+            default:
+                return false;
+        }
     };
 
-    const createRequestData = () => {
-        // 결재 요청 데이터 구성
-        let requestData = {
-            document: document,
-            lineList: line
-        };
+    const addFormData = (formData) => {
+
+        let requestData = {};
 
         switch (form_no) {
             case 1:
                 requestData = {
-                    ...requestData,
                     vacation_req: formData
                 };
                 break;
             case 2:
                 requestData = {
-                    ...requestData,
                     vacation_req: formData
                 };
                 break;
             case 3:
                 requestData = {
-                    ...requestData,
                     vacation_req: formData
                 };
                 return requestData;
             case 5:
                 requestData = {
-                    ...requestData,
                     work_report: formData
                 };
                 return requestData;
@@ -130,28 +163,28 @@ const ApproveForm = () => {
     const handleSubmitRequest = async (e) => {
         e.preventDefault();
 
-        // 필수 입력 체크
-        if (!formData.title) {
-            alert("제목을 작성해주세요.");
+        if (!checkValid(formData)) return;
+
+        if (line.length <= 1) {
+            alert("결재자를 지정해주세요.");
             return;
         }
 
-        if (!formData.content) {
-            alert("내용을 작성해주세요.");
-            return;
-        }
+        let requestData = addFormData(formData);
 
-        if (!formData.execution_date) {
-            alert("업무 시행일을 지정해주세요.");
-            return;
-        }
+        // document 객체에 임시저장 상태값(1) 추가
+        const tempDocument = {
+            ...document,
+            doc_status: 2  // 진행중 상태코드
+        };
 
-        if (line.length === 0) {
-            alert("결재 라인을 지정해주세요.");
-            return;
-        }
+        // 결재 요청 데이터 구성
+        requestData = {
+            ...requestData,
+            document: tempDocument,
+            lineList: line
+        };
 
-        const requestData = createRequestData();
         console.log("결재 요청 데이터:", requestData);
 
         try {
@@ -173,67 +206,25 @@ const ApproveForm = () => {
     };
 
     // 임시저장 처리 함수
-    const handleSaveRequest = async (e) => {
+    const handleSaveRequest = (e) => {
         e.preventDefault();
 
-        // 필수 입력 체크
-        if (!formData.title) {
-            alert("제목을 작성해주세요.");
-            return;
-        }
+        if (!checkValid(formData)) return;
 
-        if (!formData.content) {
-            alert("내용을 작성해주세요.");
-            return;
-        }
+        let requestData = addFormData(formData);
 
-        if (!formData.execution_date) {
-            alert("업무 시행일을 지정해주세요.");
-            return;
-        }
-
-        // document 객체에 임시저장 상태값(4) 추가
+        // document 객체에 임시저장 상태값(1) 추가
         const tempDocument = {
             ...document,
-            doc_status: 4  // 임시저장 상태코드
+            doc_status: 1  // 임시저장 상태코드
         };
 
         // 결재 요청 데이터 구성 (원래 함수 대신 직접 구성)
-        let requestData = {
+        requestData = {
+            ...requestData,
             document: tempDocument,
-            lineList: line.length > 0 ? line : []  // 결재선이 없어도 임시저장 가능하게 함
+            lineList: line
         };
-
-        // 양식별 데이터 추가
-        switch (form_no) {
-            case 1:
-                requestData = {
-                    ...requestData,
-                    vacation_req: formData
-                };
-                break;
-            case 2:
-                requestData = {
-                    ...requestData,
-                    vacation_req: formData
-                };
-                break;
-            case 3:
-                requestData = {
-                    ...requestData,
-                    vacation_req: formData
-                };
-                break;
-            case 5:
-                requestData = {
-                    ...requestData,
-                    work_report: formData
-                };
-                break;
-            default:
-                alert("유효한 양식이 아닙니다.");
-                return;
-        }
 
         console.log("임시저장 데이터:", requestData);
 
@@ -280,35 +271,38 @@ const ApproveForm = () => {
                     {/* 상단 헤더 */}
                     <div className="document-header">
                         <div className="document-title">
-                            <h3>결재 문서 작성</h3>
+                            <h3>{getFormName(form_no)}</h3>
                         </div>
                     </div>
                     <br />
                     {/* 문서 액션 버튼 */}
                     <div className="document-actions" style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
-                        <Button onClick={handleSubmitRequest} className='buttonStyle'>결재요청</Button>
-                        <Button onClick={handleSaveRequest} className='buttonStyle'>임시저장</Button>
-                        <Button className='buttonStyle'>취소</Button>
-                        <Button className='buttonStyle' onClick={() => setInfoOpen(true)}>결재선 지정</Button>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <input
-                                type="checkbox"
-                                id="urgentCheckbox"
-                                checked={isUrgent}
-                                onChange={handleUrgentChange}
-                                style={{ cursor: 'pointer' }}
-                            />
-                            <label
-                                htmlFor="urgentCheckbox"
-                                style={{
-                                    marginLeft: '5px',
-                                    color: isUrgent ? '#f44336' : 'inherit',
-                                    cursor: 'pointer'
+                        <Button appearance='primary' color='blue' onClick={handleSubmitRequest}>결재 요청</Button>
+                        <Button appearance='ghost' color='blue' onClick={handleSaveRequest}>임시저장</Button>
+                        <Button appearance='ghost' color='blue' onClick={() => navigate('/approve')}>목록</Button>
+                        <Button appearance='primary' color='green' onClick={() => setInfoOpen(true)}>결재선 지정</Button>
+                        <ButtonGroup>
+                            <Button
+                                appearance={isUrgent ? 'primary' : 'ghost'}
+                                color="red"
+                                onClick={() => {
+                                    setIsUrgent(true);
+                                    setDocument({ ...document, doc_urgent: 'Y' });
                                 }}
                             >
                                 긴급
-                            </label>
-                        </div>
+                            </Button>
+                            <Button
+                                appearance={!isUrgent ? 'primary' : 'ghost'}
+                                color="green"
+                                onClick={() => {
+                                    setIsUrgent(false);
+                                    setDocument({ ...document, doc_urgent: 'N' });
+                                }}
+                            >
+                                일반
+                            </Button>
+                        </ButtonGroup>
                     </div>
 
                     <Modal open={InfoOpen} onClose={() => setInfoOpen(false)} style={{
@@ -341,4 +335,4 @@ const ApproveForm = () => {
     );
 };
 
-export default ApproveForm;
+export default DocumentForm;
