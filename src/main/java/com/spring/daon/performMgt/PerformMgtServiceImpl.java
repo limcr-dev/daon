@@ -1,5 +1,6 @@
 package com.spring.daon.performMgt;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,16 +92,73 @@ public class PerformMgtServiceImpl {
 	}
 	
 	// 동료 불러오기 
-	public List<Employees> peerList(){
-		System.out.println("<< 동료 불러오기 >>"+perMapper.peerList());
+	public List<PeerTarget> peerList(int emp_no){
+		System.out.println("<< 동료 불러오기 >>");
 		
-		return perMapper.peerList();
+		return perMapper.peerList(emp_no);
 	}
 	
-	// 평가 결과 저장하기
+	// 동료평가 평가자 피평가자 insert
+	public int insertPeerTarget(PeerTarget peerTarget) {
+		System.out.println("<< 평가 타겟 insert 저장하기 => 동료평가 >>");
+		
+		return  perMapper.insertPeerTarget(peerTarget);
+	}
+	
+	// 평가 결과 저장하기  => 동료평가
 	public int insertPeerEval(EvalPeer evalPeer) {
-		System.out.println("<< 평가 결과 저장 하기 >>");
+		System.out.println("<< 평가 결과 저장 하기 => 동료평가 >>");
 		
 		return  perMapper.insertPeerEval(evalPeer);
+	}
+	
+	// 자기평가 리스트 불러오기 
+	public List<SelfTarget> selfList(int emp_no){
+		System.out.println("<< 자기평가 불러오기 >>");
+		
+		return perMapper.selfList(emp_no);
+	}
+	
+	// insert 하기  => 자기평가
+	public int selfTargetInsert(SelfTarget selfTarget) {
+		System.out.println("<< 자기평가 insert하기 => 자기평가 >>");
+		
+		return  perMapper.selfTargetInsert(selfTarget);
+	}
+	
+	// 평가 결과 저장하기 => 자기 평가
+	public int insertSelfEval(EvalSelf evalSelf) {
+		System.out.println("<< 평가 결과 저장 하기 => 자기평가 >>");
+		
+		return  perMapper.insertSelfEval(evalSelf);
+	}
+	
+	// 전체 직원 리스트 
+	public List<Employees> employees(){
+		System.out.println("<< 자기평가 불러오기 >>");
+		
+		return perMapper.employees();
+	}
+	
+	//동료평가리스트
+	public List<EvalPeer> evalPeer(){
+		System.out.println("<< 자기평가 불러오기 >>");
+		
+		return perMapper.evalPeer();
+	}
+	
+	//자기평가 리스트
+	public List<EvalSelf> evalSelf(){
+		System.out.println("<< 자기평가 불러오기 >>");
+		
+		return perMapper.evalSelf();
+	}
+	
+	// 직원 평가 현황 
+	public List<EvalEmployees> evalStatus(){
+		System.out.println("<< 전체 직원 평가 리스트  >>");
+		
+		
+		return perMapper.evalStatus();
 	}
 }

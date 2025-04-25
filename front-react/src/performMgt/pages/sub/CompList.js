@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Card } from "react-bootstrap";
 import { Button } from "rsuite";
 import "../../../performMgt/css/CompList.css"; // CSS 파일 가져오기 (스타일 적용)

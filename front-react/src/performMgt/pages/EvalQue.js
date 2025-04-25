@@ -1,4 +1,4 @@
-
+import {request} from "../../common/components/helpers/axios_helper"
 
 import React, { useEffect, useState } from "react";
 
@@ -21,10 +21,7 @@ const EvalQue = () => {
 
     // 테스트 리스트 불러오기
      useEffect(() => {
-        fetch("http://localhost:8081/performMgt/testListT", {
-          method: "GET",
-        })
-          .then((res) => res.json())
+        request("GET", "/performMgt/testListT")
           .then((res) => {
             console.log("응답", res);
             setTestList(res);
@@ -40,10 +37,7 @@ const EvalQue = () => {
       const startTest = (orderNum) =>{
         if (window.confirm(`${orderNum}번 테스트를 시작할까요?`)){
         
-        fetch(`http://localhost:8081/performMgt/queslist/${orderNum}`, {
-          method: "GET",
-        })
-          .then((data) => data.json())
+        request("GET", `/performMgt/queslist/${orderNum}`)
           .then((data) => {
             console.log("응답", data);
             setQuesList(data);
