@@ -1,0 +1,24 @@
+/* 📁 src/pages/css/PositionManage.css */
+  
+  .position-list {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: white;
+  }
+  
+  .position-list th,
+  .position-list td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+  }
+  
+  .position-list th {
+    background-color: #f9f9f9;
+    font-weight: bold;
+  }
+  
