@@ -7,7 +7,9 @@ const data = [
     value: '',
     children: [
       { label: '사원 목록', value: 'employeeList' },
-      { label: '부서/직급 관리', value: 'departmentRoleManage' },
+      { label: '계약직/인턴 사원 관리', value: 'contractEmployeeManage' },
+      { label: '직급/기본급 관리', value: 'positionManage' },
+      { label: '부서/직책 관리', value: 'departmentRoleManage' },
       { label: '권한 설정', value: 'adminRoleManage' },
       { label: '퇴사 처리', value: 'employeeResignPage' }
     ]

@@ -1,49 +1,72 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { Container, Content, Divider, Card, Button, Input, SelectPicker, DatePicker } from "rsuite";
+import {
+  Container, Content, Divider, Card, Button,
+  Input, SelectPicker, DatePicker
+} from "rsuite";
 import Leftbar from "../../common/pages/Leftbar";
 import EmployeeLeftbar from "./EmployeeLeftbar";
-import { getPositionName, getDeptName, getRoleName, getEmpType } from "../components/getEmployeeInfo";
-import { request } from "../../common/components/helpers/axios_helper"; // ✅ axios 헬퍼 import
+import {
+  getPositionName, getDeptName, getRoleName, getEmpType
+} from "../components/getEmployeeInfo";
+import { request } from "../../common/components/helpers/axios_helper";
 
 const EmployeeDetail = () => {
-  const { emp_no } = useParams();
-  const [employee, setEmployee] = useState(null);
-  const [isEdit, setIsEdit] = useState(false);
-  const [imageFile, setImageFile] = useState(null);
+  const { emp_no } = useParams(); // 🔑 URL에서 사원번호(emp_no) 추출
+  const [employee, setEmployee] = useState(null); // 📄 사원 정보 상태
+  const [empPwdInput, setEmpPwdInput] = useState(""); // 🔐 비밀번호 별도 입력 상태
+  const [isEdit, setIsEdit] = useState(false); // ✏️ 수정 모드 여부
+  const [imageFile, setImageFile] = useState(null); // 🖼️ 이미지 파일 상태
 
-  // ✅ 사원 조회 API 호출
+  // 📌 사원 정보 조회 함수
   const fetchEmployee = useCallback(() => {
     request("get", `/api/employee/${emp_no}`)
-      .then((res) => setEmployee(res.data))
+      .then((res) => {
+        setEmployee(res.data);
+        setEmpPwdInput(""); // 🔐 비밀번호 입력은 항상 초기화
+      })
       .catch((err) => {
         console.error("사원 정보 조회 실패:", err);
         alert("사원 정보를 불러올 수 없습니다.");
       });
   }, [emp_no]);
 
+  // 📦 컴포넌트 mount 시 또는 emp_no 변경 시 조회
   useEffect(() => {
     fetchEmployee();
   }, [fetchEmployee]);
 
+  // ✍️ 일반 input 변경 핸들러
   const handleChange = (name, value) => {
     setEmployee(prev => ({ ...prev, [name]: value }));
   };
 
+  // 📸 이미지 선택 핸들러
   const handleImageChange = (e) => {
     setImageFile(e.target.files[0]);
   };
 
-  // ✅ 사원 수정 API 호출
+  // 💾 수정 저장 처리
   const handleUpdate = () => {
-    const formData = new FormData();
-    formData.append("employee", new Blob([JSON.stringify(employee)], { type: "application/json" }));
-    if (imageFile) formData.append("image", imageFile);
+    const employeeToSend = { ...employee };
 
-    request("put", `/api/updateEmployee/${emp_no}`, formData, true) // ✅ multipart 처리
+    // 🔐 비밀번호 입력값이 있을 경우만 포함
+    if (empPwdInput.trim() !== "") {
+      employeeToSend.emp_pwd = empPwdInput;
+    } else {
+      delete employeeToSend.emp_pwd; // ❌ 입력 없으면 아예 전송 제외
+    }
+
+    // 📦 FormData 구성
+    const formData = new FormData();
+    formData.append("employee", new Blob([JSON.stringify(employeeToSend)], { type: "application/json" }));
+    if (imageFile) formData.append("image", imageFile); // 📎 이미지 파일 포함 시
+
+    // 🚀 PUT 요청으로 업데이트
+    request("put", `/api/updateEmployee/${emp_no}`, formData, true)
       .then(() => {
-        setIsEdit(false);
-        fetchEmployee();
+        setIsEdit(false); // 수정 모드 종료
+        fetchEmployee();  // 최신 정보 다시 조회
       })
       .catch(err => {
         console.error("업데이트 실패:", err);
@@ -61,7 +84,8 @@ const EmployeeDetail = () => {
         <Content style={{ padding: 20 }}>
           <Divider />
           <div style={{ display: "flex", gap: "30px", justifyContent: "center", alignItems: "flex-start" }}>
-            {/* 왼쪽: 상세 보기 */}
+
+            {/* 🧾 왼쪽: 사원 상세 보기 */}
             <Card style={{ width: "45%", minHeight: "720px", padding: "30px" }}>
               <h4>👤 사원 정보</h4>
               <Divider />
@@ -72,7 +96,6 @@ const EmployeeDetail = () => {
                   style={{ width: 150, height: 150, objectFit: "cover", borderRadius: "50%", marginBottom: 20 }}
                 />
               )}
-              <p><b>사번:</b> {employee.emp_no}</p>
               <p><b>이름:</b> {employee.emp_name}</p>
               <p><b>성별:</b> {employee.emp_gender === 'M' ? '남자' : '여자'}</p>
               <p><b>생년월일:</b> {employee.emp_birthday}</p>
@@ -85,13 +108,15 @@ const EmployeeDetail = () => {
               <p><b>직책:</b> {getRoleName(employee.role_id)}</p>
               <p><b>직원구분:</b> {getEmpType(employee.emp_type)}</p>
               <p><b>입사일:</b> {employee.hire_date}</p>
-              <p><b>퇴사일:</b> {employee.leave_date || '-'}</p>
+              {['2', '3', 2, 3].includes(employee.emp_type) && (
+                <p><b>계약 만료일:</b> {employee.contract_end_date || '-'}</p>
+              )}
               <p><b>재직상태:</b> {employee.emp_status === 1 ? '재직' : '퇴사'}</p>
               <Divider />
               <Button appearance="primary" onClick={() => setIsEdit(true)}>수정</Button>
             </Card>
 
-            {/* 오른쪽: 수정 폼 */}
+            {/* ✏️ 오른쪽: 수정 폼 */}
             {isEdit && (
               <Card style={{ width: "45%", minHeight: "720px", padding: "30px" }}>
                 <h4>✏️ 사원 정보 수정</h4>
@@ -140,6 +165,15 @@ const EmployeeDetail = () => {
                   <div>
                     <p style={{ marginBottom: 4 }}>내선번호</p>
                     <Input value={employee.emp_ext_tel} onChange={(val) => handleChange("emp_ext_tel", val)} />
+                  </div>
+                  <div>
+                    <p style={{ marginBottom: 4 }}>비밀번호 (변경 시만 입력)</p>
+                    <Input
+                      type="password"
+                      value={empPwdInput}
+                      onChange={(val) => setEmpPwdInput(val)}
+                      placeholder="입력 시 새 비밀번호로 변경됩니다"
+                    />
                   </div>
                 </div>
                 <Divider />

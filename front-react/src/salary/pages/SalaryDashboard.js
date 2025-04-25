@@ -57,7 +57,7 @@ const SalaryDashboard = () => {
         padding: 20,
       }}
     >
-      <h3 style={{ marginBottom: 20 }}>📊 급여 통계 대시보드</h3>
+      <h3 style={{ marginBottom: 20 }}>📊 급여 통계</h3>
 
       <div style={{ marginBottom: 16 }}>
         <label style={{ marginRight: 10 }}>급여 월:</label>

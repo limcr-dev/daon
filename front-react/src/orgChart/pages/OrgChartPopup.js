@@ -7,7 +7,7 @@ const OrgChartPopup = ({ onClose, onSelectEmployee }) => {
   return (
     <div>
       <Panel header="조직도" bordered>
-        <div>
+        <div className="org-chart-header">
           <IconButton icon={<MdClose />} size="sm" appearance="subtle" onClick={onClose} />
         </div>
         <Treea onEmployeeSelect={onSelectEmployee} />
