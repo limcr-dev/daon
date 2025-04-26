@@ -27,15 +27,17 @@ const EmployeeProfilePage = ({ empNo, onClose }) => {
     ? `http://localhost:8081/api/images/${encodeURIComponent(emp.emp_img)}`
     : '/default-profile.jpg';
 
-  return (
-    <div>
-      <Panel header="사원 상세 정보" bordered>
-        {/* 닫기 버튼 */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
-          <IconButton icon={<MdClose />} onClick={onClose} appearance="subtle" size="sm" />
-        </div>
+  // 👉 커스텀 Header JSX
+  const HeaderWithCloseButton = (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <span>사원 상세 정보</span> {/* 왼쪽: 제목 */}
+      <IconButton icon={<MdClose />} onClick={onClose} appearance="subtle" size="sm" /> {/* 오른쪽: 버튼 */}
+    </div>
+  );
 
-        {/* 사원 정보 */}
+  return (
+    <div style={{ width: '400px', margin: '0 auto' }}> {/* 🔥 사이즈 조정도 추가했어 */}
+      <Panel header={HeaderWithCloseButton} bordered> {/* header 교체 */}
         {loading ? (
           <Loader center content="로딩 중..." />
         ) : emp && (

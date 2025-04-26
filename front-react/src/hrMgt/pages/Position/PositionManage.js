@@ -1,21 +1,21 @@
-// 📁 src/pages/hrMgt/PositionManage.js
 import React, { useEffect, useState, useCallback } from "react";
 import { Container, Content, Button, Input, Card } from "rsuite";
-
 import { request } from "../../../common/components/helpers/axios_helper";
 import Leftbar from "../../../common/pages/Leftbar";
 import EmployeeLeftbar from "../EmployeeLeftbar";
 import PositionModal from "./PositionFormModal";
 import Header from "../../../common/pages/Header";
-import "../../css/PositionManage.css"
+import "../../css/PositionManage.css";
+import Paging from "../../../common/components/paging.js"; // ✅ 페이징 컴포넌트 import 추가
 
 const PositionManage = () => {
   const [positions, setPositions] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [page, setPage] = useState(1);   // ✅ 현재 페이지
+  const size = 14;           // ✅ 한 페이지당 보여줄 개수
 
-  // ✅ 목록 조회
   const fetchPositions = useCallback(() => {
     request("get", "/api/positions")
       .then((res) => setPositions(res.data))
@@ -29,10 +29,20 @@ const PositionManage = () => {
     fetchPositions();
   }, [fetchPositions]);
 
-  // ✅ 필터
+  // 검색 + 페이지 초기화
+  const handleSearchChange = (value) => {
+    setSearchKeyword(value);
+    setPage(1); // ✅ 검색하면 1페이지로 리셋
+  };
+
   const filtered = positions.filter((pos) =>
     pos.position_name.toLowerCase().includes(searchKeyword.toLowerCase())
   );
+
+  // ✅ 현재 페이지 slice
+  const startIndex = (page - 1) * size;
+  const endIndex = startIndex + size;
+  const paginatedList = filtered.slice(startIndex, endIndex);
 
   return (
     <Container style={{ display: "flex", minHeight: "100vh" }}>
@@ -56,7 +66,7 @@ const PositionManage = () => {
               <Input
                 placeholder="직급명 검색"
                 value={searchKeyword}
-                onChange={setSearchKeyword}
+                onChange={handleSearchChange}   // ✅ 변경
                 style={{ width: 250 }}
               />
               <Button appearance="primary" onClick={() => { setSelectedItem(null); setOpen(true); }}>
@@ -64,6 +74,7 @@ const PositionManage = () => {
               </Button>
             </div>
 
+            {/* ✅ 테이블 */}
             <table className="position-list">
               <thead>
                 <tr>
@@ -73,7 +84,7 @@ const PositionManage = () => {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((row, idx) => (
+                {paginatedList.map((row, idx) => (
                   <tr key={idx}>
                     <td>{row.position_name}</td>
                     <td>{Number(row.base_salary).toLocaleString()} 원</td>
@@ -109,6 +120,19 @@ const PositionManage = () => {
                 ))}
               </tbody>
             </table>
+
+            {/* ✅ 페이징 추가 */}
+            <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+              <Paging
+                paging={{
+                  page: page,
+                  size: size,
+                  totalCount: filtered.length
+                }}
+                onPageChange={(newPage) => setPage(newPage)}
+              />
+            </div>
+
           </Card>
 
           {/* ✅ 등록/수정 모달 */}

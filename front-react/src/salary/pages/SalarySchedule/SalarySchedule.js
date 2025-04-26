@@ -3,8 +3,9 @@ import { Container, Content, Card, Input, Button } from "rsuite";
 import Leftbar from "../../../common/pages/Leftbar";
 import SalaryLeftbar from "../SalaryLeftbar";
 import Header from '../../../common/pages/Header';
+import Paging from "../../../common/components/paging.js"; // ✅ 페이징 추가
 import "../../css/SalarySchedule.css";
-import { request } from "../../../common/components/helpers/axios_helper"; // ✅ 요청 헬퍼 사용
+import { request } from "../../../common/components/helpers/axios_helper";
 
 const SalarySchedule = () => {
   const [schedules, setSchedules] = useState([]);
@@ -14,8 +15,9 @@ const SalarySchedule = () => {
   const [showClosedOnly, setShowClosedOnly] = useState(false);
   const [showCalculatedOnly, setShowCalculatedOnly] = useState(false);
   const [searchMonth, setSearchMonth] = useState("");
+  const [page, setPage] = useState(1);    // ✅ 현재 페이지
+  const [size] = useState(13);             // ✅ 한 페이지당 보여줄 개수
 
-  // ✅ 급여 대장 목록 조회
   const fetchSchedules = () => {
     request("get", "/api/schedule")
       .then((res) => setSchedules(res.data))
@@ -29,7 +31,6 @@ const SalarySchedule = () => {
     fetchSchedules();
   }, []);
 
-  // ✅ 대장 생성
   const handleCreate = () => {
     if (!newMonth) return alert("📅 급여 월을 선택해주세요.");
 
@@ -50,7 +51,6 @@ const SalarySchedule = () => {
       });
   };
 
-  // ✅ 전체 급여 계산
   const handleCalculateAll = () => {
     if (!newMonth) return alert("📅 먼저 급여 월을 선택해주세요.");
 
@@ -62,7 +62,6 @@ const SalarySchedule = () => {
       .catch(() => alert("❌ 서버 오류로 계산에 실패했습니다."));
   };
 
-  // ✅ 마감 처리
   const handleClose = (id, isCalculated) => {
     if (!isCalculated) return alert("⚠️ 전체 급여 계산 후 마감할 수 있습니다.");
     if (window.confirm("정말 마감 처리하시겠습니까?")) {
@@ -75,13 +74,11 @@ const SalarySchedule = () => {
     }
   };
 
-  // ✅ 지급일 수정 시작
   const startEdit = (row) => {
     setEditingId(row.id);
     setEditingPayday(row.payday?.substring(0, 10) || "");
   };
 
-  // ✅ 지급일 저장
   const saveEdit = () => {
     request("put", `/api/schedule/${editingId}`, {
       payday: editingPayday
@@ -95,7 +92,6 @@ const SalarySchedule = () => {
       .catch(() => alert("❌ 수정 실패 (마감된 대장은 수정 불가)"));
   };
 
-  // ✅ 대장 삭제
   const handleDelete = (id, isClosed) => {
     if (isClosed) return alert("❌ 마감된 급여 대장은 삭제할 수 없습니다.");
     if (window.confirm("정말 삭제하시겠습니까?")) {
@@ -108,7 +104,7 @@ const SalarySchedule = () => {
     }
   };
 
-  // ✅ 정렬 및 필터링
+  // ✅ 정렬 + 필터링
   const sortedSchedules = [...schedules].sort((a, b) => b.salary_month.localeCompare(a.salary_month));
   const filteredSchedules = sortedSchedules.filter((row) => {
     if (showClosedOnly && !row.is_closed) return false;
@@ -116,6 +112,11 @@ const SalarySchedule = () => {
     if (searchMonth && row.salary_month !== searchMonth) return false;
     return true;
   });
+
+  // ✅ 현재 페이지 slice
+  const startIndex = (page - 1) * size;
+  const endIndex = startIndex + size;
+  const paginatedList = filteredSchedules.slice(startIndex, endIndex);
 
   return (
     <Container style={{ minHeight: "100vh", width: "100%" }}>
@@ -141,7 +142,7 @@ const SalarySchedule = () => {
               </div>
             </div>
 
-            {/* 대장 테이블 */}
+            {/* 급여 대장 테이블 */}
             <table className="salary-schedule-table">
               <thead>
                 <tr>
@@ -154,7 +155,7 @@ const SalarySchedule = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredSchedules.map((row) => (
+                {paginatedList.map((row) => (
                   <tr key={row.id}>
                     <td>{row.salary_month}</td>
                     <td>
@@ -183,6 +184,19 @@ const SalarySchedule = () => {
                 ))}
               </tbody>
             </table>
+
+            {/* ✅ 페이징 */}
+            <div style={{ marginTop: 20, display: 'flex', justifyContent: 'center' }}>
+              <Paging
+                paging={{
+                  page: page,
+                  size: size,
+                  totalCount: filteredSchedules.length
+                }}
+                onPageChange={(newPage) => setPage(newPage)}
+              />
+            </div>
+
           </Card>
         </Content>
       </Container>

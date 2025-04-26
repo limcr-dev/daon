@@ -11,13 +11,16 @@ import EmployeeLeftbar from "./EmployeeLeftbar";
 import { request } from "../../common/components/helpers/axios_helper";
 import Header from "../../common/pages/Header";
 import "../css/AdminRoleManage.css";
+import Paging from "../../common/components/paging.js"; // ✅ Paging 컴포넌트 import
 
 const { Column, HeaderCell, Cell } = Table;
 
 const AdminRoleManage = () => {
   const [allEmployees, setAllEmployees] = useState([]);
   const [employees, setEmployees] = useState([]);
-  const [nameFilter, setNameFilter] = useState(""); // 이름 검색어
+  const [nameFilter, setNameFilter] = useState("");
+  const [page, setPage] = useState(1);    // ✅ 현재 페이지
+  const size = 10;             // ✅ 한 페이지당 보여줄 개수
 
   const fetchEmployees = useCallback(() => {
     request("get", "/api/employeeList")
@@ -50,7 +53,6 @@ const AdminRoleManage = () => {
       });
   };
 
-  // ✅ 이름 필터만 적용
   const applyFilter = (name = "", list = allEmployees) => {
     let filtered = [...list];
 
@@ -63,6 +65,7 @@ const AdminRoleManage = () => {
 
     setNameFilter(name);
     setEmployees(filtered);
+    setPage(1);  // ✅ 검색할 때 페이지 초기화
   };
 
   const adminOptions = [
@@ -73,6 +76,11 @@ const AdminRoleManage = () => {
     { label: "부서 관리자", value: 5 },
     { label: "팀 관리자", value: 6 },
   ];
+
+  // ✅ 페이지 계산
+  const startIndex = (page - 1) * size;
+  const endIndex = startIndex + size;
+  const paginatedList = employees.slice(startIndex, endIndex);
 
   return (
     <Container style={{ display: "flex", minHeight: "100vh" }}>
@@ -89,9 +97,13 @@ const AdminRoleManage = () => {
               boxShadow: "0 4px 8px rgba(0,0,0,0.05)",
             }}
           >
-            {/* 상단 제목 + 이름 검색 필터만 표시 */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <h3 style={{ margin: 0, fontSize: "20px", fontWeight: "bold" }}> 🔑 권한 설정 </h3>
+            {/* 상단 제목 + 이름 검색 */}
+            <h3 style={{ margin: 0, fontSize: "20px", fontWeight: "bold", marginBottom: 10 }}>
+              🔑 권한 설정
+            </h3>
+
+            {/* 제목 밑에 검색창 */}
+            <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 20 }}>
               <Input
                 placeholder="이름 검색"
                 value={nameFilter}
@@ -103,7 +115,7 @@ const AdminRoleManage = () => {
             {/* 테이블 */}
             <Table
               className="admin-role-table"
-              data={employees}
+              data={paginatedList}   // ✅ employees → paginatedList
               autoHeight
               rowHeight={60}
               bordered
@@ -139,10 +151,23 @@ const AdminRoleManage = () => {
                 </Cell>
               </Column>
             </Table>
+
+            {/* ✅ 페이징 */}
+            <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+              <Paging
+                paging={{
+                  page: page,
+                  size: size,
+                  totalCount: employees.length
+                }}
+                onPageChange={(newPage) => setPage(newPage)}
+              />
+            </div>
+
           </Card>
         </Content>
       </Container>
-    </Container>
+    </Container >
   );
 };
 

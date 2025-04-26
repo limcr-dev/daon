@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Container, Content, Card, Button } from "rsuite";
+import { Container, Content, Card, Button, Input } from "rsuite"; // ✅ Input 추가
 import Leftbar from "../../../common/pages/Leftbar";
 import SalaryLeftbar from "../SalaryLeftbar";
 import SalaryDetailModal from "./SalaryDetailModal";
@@ -8,16 +8,20 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { request } from "../../../common/components/helpers/axios_helper";
 import Header from '../../../common/pages/Header';
-import "../../css/EmployeeSalaryList.css"; // ✅ 고유 CSS 클래스 import
+import Paging from "../../../common/components/paging.js"; // ✅ 페이징 추가
+import "../../css/EmployeeSalaryList.css"; 
 
 const EmployeeSalaryList = () => {
   const today = new Date();
   const defaultMonth = today.toISOString().slice(0, 7);
+
   const [salaryMonth, setSalaryMonth] = useState(defaultMonth);
   const [salaryList, setSalaryList] = useState([]);
-
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [selectedEmpNo, setSelectedEmpNo] = useState(null);
+  const [page, setPage] = useState(1);    // ✅ 현재 페이지
+  const size = 14;           // ✅ 한 페이지당 보여줄 개수
+  const [searchKeyword, setSearchKeyword] = useState(""); // ✅ 검색어
 
   const fetchSalaryList = useCallback(() => {
     request("get", `/api/salaries/summary?salaryMonth=${salaryMonth}`)
@@ -38,7 +42,7 @@ const EmployeeSalaryList = () => {
   };
 
   const handleExportToExcel = () => {
-    const excelData = salaryList.map(item => ({
+    const excelData = filteredList.map(item => ({
       사번: item.emp_no,
       이름: item.emp_name,
       부서: getDeptName(item.dept_no),
@@ -59,6 +63,21 @@ const EmployeeSalaryList = () => {
     saveAs(file, `급여요약_${salaryMonth}.xlsx`);
   };
 
+  // ✅ 이름으로 검색
+  const filteredList = salaryList.filter(item =>
+    item.emp_name.toLowerCase().includes(searchKeyword.toLowerCase())
+  );
+
+  // ✅ 현재 페이지 데이터 slice
+  const startIndex = (page - 1) * size;
+  const endIndex = startIndex + size;
+  const paginatedList = filteredList.slice(startIndex, endIndex);
+
+  const handleSearchChange = (value) => {
+    setSearchKeyword(value);
+    setPage(1); // 검색어 바뀌면 페이지 초기화
+  };
+
   return (
     <Container style={{ minHeight: '100vh', width: '100%' }}>
       <Leftbar />
@@ -75,18 +94,28 @@ const EmployeeSalaryList = () => {
           >
             <h3 style={{ marginBottom: 20 }}>급여 요약 목록</h3>
 
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ marginRight: 10 }}>급여 월:</label>
-              <input
-                type="month"
-                value={salaryMonth}
-                onChange={(e) => setSalaryMonth(e.target.value)}
+            {/* ✅ 검색 + 월 선택 + 엑셀 다운로드 */}
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
+              <div style={{ display: "flex", gap: 10 }}>
+                <label style={{ alignSelf: "center" }}>급여 월:</label>
+                <input
+                  type="month"
+                  value={salaryMonth}
+                  onChange={(e) => setSalaryMonth(e.target.value)}
+                />
+                <Button size="sm" appearance="ghost" onClick={handleExportToExcel}>
+                  📥 엑셀 다운로드
+                </Button>
+              </div>
+              <Input
+                placeholder="이름 검색"
+                value={searchKeyword}
+                onChange={handleSearchChange}
+                style={{ width: 250 }}
               />
-              <Button size="sm" appearance="ghost" style={{ marginLeft: 10 }} onClick={handleExportToExcel}>
-                📥 엑셀 다운로드
-              </Button>
             </div>
 
+            {/* ✅ 테이블 */}
             <table className="salary-summary-table">
               <thead>
                 <tr>
@@ -103,7 +132,7 @@ const EmployeeSalaryList = () => {
                 </tr>
               </thead>
               <tbody>
-                {salaryList.map((row, idx) => (
+                {paginatedList.map((row, idx) => (
                   <tr key={idx} onClick={() => openDetail(row.emp_no)} style={{ cursor: 'pointer' }}>
                     <td>{row.emp_no}</td>
                     <td>{row.emp_name}</td>
@@ -119,8 +148,21 @@ const EmployeeSalaryList = () => {
                 ))}
               </tbody>
             </table>
+
+            {/* ✅ 페이징 */}
+            <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+              <Paging
+                paging={{
+                  page: page,
+                  size: size,
+                  totalCount: filteredList.length
+                }}
+                onPageChange={(newPage) => setPage(newPage)}
+              />
+            </div>
           </Card>
 
+          {/* ✅ 상세 모달 */}
           <SalaryDetailModal
             open={detailModalOpen}
             onClose={() => setDetailModalOpen(false)}
