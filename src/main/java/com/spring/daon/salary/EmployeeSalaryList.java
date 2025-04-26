@@ -20,5 +20,6 @@ public class EmployeeSalaryList {
     private BigDecimal base_pay;            // 기본급
     private BigDecimal total_allowance;     // 총 수당
     private BigDecimal total_deduction;     // 총 공제
+    private BigDecimal total_pay; //         총 지급액
     private BigDecimal actual_pay;          // 실수령액
 }

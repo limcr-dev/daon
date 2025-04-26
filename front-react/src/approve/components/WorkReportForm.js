@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Form, DatePicker, Input, Button } from 'rsuite';
-//import ReactQuill from 'react-quill'; // 리치 텍스트 에디터
-//import 'react-quill/dist/quill.snow.css'; // 에디터 스타일
 import '../css/workReportForm.css';
 import { useUser } from '../../common/contexts/UserContext';
 import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
 
 const WorkReportForm = ({ approveLine, onFormDataChange }) => {
   const { user } = useUser();
+
+  // 오늘 날짜
   const today = new Date();
-  const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+  // 내일 날짜
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  const tomorrowDate = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
+
 
   const [line, setLine] = useState(approveLine);
   const [report, setReport] = useState({
@@ -19,7 +23,7 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
     execution_date: '',
     report_file: '',
     coop_dept_no: ''
-  })
+  });
 
   useEffect(() => {
     console.log("받은 결재선 데이터:", approveLine);
@@ -74,7 +78,7 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
                 </tr>
                 <tr>
                   <td className="label-cell">기안일</td>
-                  <td>{formattedDate}</td>
+                  <td></td>
                 </tr>
                 <tr>
                   <td className="label-cell">문서번호</td>
@@ -92,11 +96,13 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
                   <td rowSpan="3" className="approval-position">신청</td>
                   <td className="approval-header">{user ? `${getPositionName(user.position_id)}` : '직급 정보 없음'}</td>
                 </tr>
-                <tr className="approver-row">
-                  <td className="approval-name">{user?.emp_name || '이름 정보 없음'}</td>
+                <tr>
+                  <td className="approval-sign">
+                    <div className="approval-name">{user.emp_name || '이름 정보 없음'}</div>
+                  </td>
                 </tr>
-                <tr className="sign-row">
-                  <td className="approval-sign"></td>
+                <tr>
+                  <td className="approval-date"></td>
                 </tr>
               </tbody>
             </table>
@@ -106,36 +112,48 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
                 <tbody>
                   <tr>
                     <td rowSpan="3" className="approval-position">승인</td>
-                    {line[0] ?
-                      <td className="approval-header">{line[0].position || '직급 정보 없음'}</td>
-                      : null}
                     {line[1] ?
-                      <td className="approval-header">{line[1].position || '직급 정보 없음'}</td>
+                      <td className="approval-header">{line[1].appr_position || '직급 정보 없음'}</td>
                       : null}
                     {line[2] ?
-                      <td className="approval-header">{line[2].position || '직급 정보 없음'}</td>
+                      <td className="approval-header">{line[2].appr_position || '직급 정보 없음'}</td>
+                      : null}
+                    {line[3] ?
+                      <td className="approval-header">{line[3].appr_position || '직급 정보 없음'}</td>
                       : null}
                   </tr>
-                  <tr className="approver-row">
-                    {line[0] ?
-                      <td className="approval-name">{line[0].emp_name || '이름 정보 없음'}</td>
-                      : null}
+                  <tr>
                     {line[1] ?
-                      <td className="approval-name">{line[1].emp_name || '이름 정보 없음'}</td>
+                      <td className="approval-sign">
+                        {line[1].appr_status === 3 && document.doc_status !== 4 && <div className="approval-stamp">승인</div>}
+                        <div className="approval-name">{line[1].appr_name || '이름 정보 없음'}</div>
+                      </td>
                       : null}
                     {line[2] ?
-                      <td className="approval-name">{line[2].emp_name || '이름 정보 없음'}</td>
+                      <td className="approval-sign">
+                        {line[2].appr_status === 3 && document.doc_status !== 4 && <div className="approval-stamp">승인</div>}
+                        <div className="approval-name">{line[2].appr_name || '이름 정보 없음'}</div>
+                      </td>
+                      : null}
+                    {line[3] ?
+                      <td className="approval-sign">
+                        {line[3].appr_status === 3 && document.doc_status !== 4 && <div className="approval-stamp">승인</div>}
+                        <div className="approval-name">{line[3].appr_name || '이름 정보 없음'}</div>
+                      </td>
                       : null}
                   </tr>
-                  <tr className="sign-row">
-                    {line[0] ?
-                      <td className="approval-sign">{line[0].status || '대기'}</td>
-                      : null}
+                  <tr>
                     {line[1] ?
-                      <td className="approval-sign">{line[1].status || '대기'}</td>
+                      <td className="approval-date">
+                      </td>
                       : null}
                     {line[2] ?
-                      <td className="approval-sign">{line[2].status || '대기'}</td>
+                      <td className="approval-date">
+                      </td>
+                      : null}
+                    {line[3] ?
+                      <td className="approval-date">
+                      </td>
                       : null}
                   </tr>
                 </tbody>
@@ -151,14 +169,15 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
               <td className="label-cell">시행일자</td>
               <td>
                 <div className="date-input">
-                  <input type="date" name='execution_date' format='yyyy/MM/dd' onChange={changeValue} />
+                  <input type="date" name='execution_date' format='yyyy/MM/dd' onChange={changeValue} min={tomorrowDate} />
                 </div>
               </td>
               <td className="label-cell">협조부서</td>
               <td>
                 <div>
-                  <select name="coop_dept_no" onChange={changeValue} required>
+                  <select name="coop_dept_no" onChange={changeValue}>
                     <option value="">부서 선택</option>
+                    <option value="1">다온</option>
                     <option value="10">경영부</option>
                     <option value="101">인사팀(경영부)</option>
                     <option value="102">총무팀(경영부)</option>

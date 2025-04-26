@@ -29,6 +29,7 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import java.net.URLDecoder;
 
 
 @Service
@@ -88,6 +89,25 @@ public class S3Service {
     
 
     public ResponseEntity<InputStreamResource> downloadFile(String filename) throws UnsupportedEncodingException {
+        // 1. 먼저 filename을 디코딩 (퍼센트 인코딩 풀어주기)
+        String decodedFilename = URLDecoder.decode(filename, StandardCharsets.UTF_8.toString());
+
+        // 2. UUID 제거 (UUID_ 이후 파일명만 추출)
+        String originalFilename = decodedFilename.contains("_")
+                ? decodedFilename.substring(decodedFilename.indexOf("_") + 1)
+                : decodedFilename;
+
+        // 3. 퍼센트 인코딩 다시 하기 (공백을 %20으로 유지)
+        String utf8Filename = URLEncoder.encode(originalFilename, StandardCharsets.UTF_8.toString())
+                .replaceAll("\\+", "%20");
+
+        // 4. 헤더 세팅
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + originalFilename + "\"; filename*=UTF-8''" + utf8Filename);
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+        // 5. 파일 읽어오기
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucketName)
                 .key(filename)
@@ -95,23 +115,6 @@ public class S3Service {
 
         ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(getObjectRequest);
         InputStreamResource resource = new InputStreamResource(s3Object);
-
-        // 🔑 UUID 제거한 원래 파일명 추출
-        String originalFilename = filename.contains("_")
-                ? filename.substring(filename.indexOf("_") + 1)
-                : filename;
-
-        // 🔤 ISO-8859-1로 인코딩 (filename 용)
-        String isoFilename = new String(originalFilename.getBytes(StandardCharsets.UTF_8), "UTF-8");
-
-        // 🌐 UTF-8로 퍼센트 인코딩 (filename* 용) + 공백 처리
-        String utf8Filename = URLEncoder.encode(originalFilename, "UTF-8").replaceAll("\\+", "%20");
-
-        // 📦 Content-Disposition 헤더 직접 작성
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + isoFilename + "\"; filename*=UTF-8''" + utf8Filename);
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
         return ResponseEntity.ok()
                 .headers(headers)

@@ -89,4 +89,67 @@
     WHERE e.emp_no = #{empNo}
    </select>
    
+	<select id="findActiveEmpNos" resultType="int">
+    SELECT emp_no FROM employees WHERE emp_status = 1
+	</select>
+	
+	<update id="updateAdminType">
+	  UPDATE employees
+	  SET admin_type = #{adminType}
+	  WHERE emp_no = #{empNo}
+	</update>
+	
+	<!-- 퇴사 처리: emp_status → 3, leave_date → NOW() -->
+	<update id="resignEmployee">
+	  UPDATE employees
+	  SET emp_status = 3,
+	      leave_date = NOW()
+	  WHERE emp_no = #{empNo}
+	</update>
+   
+   <!-- 총 사원 수 -->
+	<select id="countAllEmployees" resultType="int">
+	  SELECT COUNT(*) FROM employees
+	</select>
+	
+	<!-- 이번달 입사자 수 -->
+	<select id="countNewHiresThisMonth" resultType="int">
+	  SELECT COUNT(*) 
+	  FROM employees 
+	  WHERE MONTH(hire_date) = MONTH(NOW()) AND YEAR(hire_date) = YEAR(NOW())
+	</select>
+	
+	<!-- 이번달 퇴사자 수 -->
+	<select id="countResignedThisMonth" resultType="int">
+	  SELECT COUNT(*) 
+	  FROM employees 
+	  WHERE emp_status = 3 AND MONTH(leave_date) = MONTH(NOW()) AND YEAR(leave_date) = YEAR(NOW())
+	</select>
+	
+	<!-- 계약 만료 예정자 수 (예: emp_type = 2가 계약직이라고 가정) -->
+	<select id="countContractExpiringThisMonth" resultType="int">
+	  SELECT COUNT(*) 
+	  FROM employees 
+	  WHERE emp_type = 2 AND leave_date IS NOT NULL 
+	    AND MONTH(leave_date) = MONTH(NOW()) AND YEAR(leave_date) = YEAR(NOW())
+	</select>
+	
+	<!-- 이번달 생일자 수 -->
+	<select id="countBirthdaysThisMonth" resultType="int">
+	  SELECT COUNT(*) 
+	  FROM employees 
+	  WHERE MONTH(emp_birthday) = MONTH(NOW())
+	</select>
+	
+	<!-- 부서 별 사원 수 -->
+	<select id="getEmployeeCountByDepartment" resultType="map">
+	  SELECT d.dept_no, d.dept_name, d.dept_parent, COUNT(e.emp_no) AS count
+		FROM departments d
+		LEFT JOIN employees e 
+		  ON d.dept_no = e.dept_no AND e.emp_status = 1 -- ✅ 필터를 JOIN 안으로 이동
+		GROUP BY d.dept_no, d.dept_name, d.dept_parent
+		ORDER BY d.dept_no
+	</select>
+	
+   
 </mapper>

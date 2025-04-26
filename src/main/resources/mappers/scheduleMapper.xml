@@ -11,4 +11,10 @@
 		where emp_no = #{emp_no}
 	</select>
 	
+	<!-- 일정 카테고리 색변경 -->
+	<update id="colorEdit" parameterType="java.util.Map">
+		UPDATE schedule_setting
+		   SET c_sch_color = #{c_sch_color}
+		 where c_sch_no = #{c_sch_no}	
+	</update>
 </mapper>

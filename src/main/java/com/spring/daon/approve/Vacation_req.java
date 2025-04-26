@@ -25,14 +25,18 @@ import lombok.ToString;
 @Table(name="vacation_req")
 public class Vacation_req {
 	@Id
-	private int doc_no;
-    private int emp_no;
-    private String title;
-    private String content;
+	private int doc_no;			// 문서 번호
+    private int emp_no;			// 기안자 사번
+    private String title;		// 휴가 제목
+    private String content;		// 휴가 사유
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date start_date;
+    private Date start_date;	// 휴가 시작일
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date end_date;
-    private float used_days;
-    private int vacation_type;
+    private Date end_date;		// 휴가 종료일
+    private float used_days;	// 신청일
+    private int vacation_type;	// 휴가 타입
+    
+    private String emp_name;	// 이름
+	private String dept_name;	// 부서명
+	private int position_id;	// 직급
 }

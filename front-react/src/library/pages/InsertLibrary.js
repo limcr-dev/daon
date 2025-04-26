@@ -5,11 +5,14 @@ import Leftbar from '../../common/pages/Leftbar';
 import BoardLeftbar from './BoardLeftbar';
 import Header from '../../common/pages/Header';
 import FileUpload from '../components/FileUpload';  // FileUpload 컴포넌트 추가
+import { request } from '../../common/components/helpers/axios_helper';
+import { useUser } from '../../common/contexts/UserContext';
 
 const InsertLibrary = () => {
+    const { user } = useUser();
     const navigate = useNavigate();
     const [library, setLibrary] = useState({
-        emp_no: '',
+        emp_no: user.emp_no,
         library_title: '',
         library_filename: '',
         library_content: '',
@@ -22,16 +25,11 @@ const InsertLibrary = () => {
         });
     };
 
-    const submitLibrary = (e) => {
+    const submitLibrary = async (e) => {
         e.preventDefault();
 
         if (!library.library_title.trim()) {
             alert('자료 제목을 입력해주세요.');
-            return;
-        }
-
-        if (!library.emp_no.trim()) {
-            alert('작성자를 입력해주세요.');
             return;
         }
 
@@ -42,31 +40,19 @@ const InsertLibrary = () => {
 
         console.log('보내는 데이터:', JSON.stringify(library));
 
-        fetch('http://localhost:8081/board/library', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-            },
-            body: JSON.stringify(library),
-        })
-            .then((res) => {
-                if (res.status === 201) {
-                    return res.json();
-                } else {
-                    return null;
-                }
-            })
-            .then((res) => {
-                if (res !== null) {
-                    navigate('/board/libraryList');
-                } else {
-                    alert('자료 입력에 실패하였습니다.');
-                }
-            })
-            .catch((error) => {
-                console.log('실패', error);
-                alert('자료 입력 중 오류가 발생했습니다.');
-            });
+        try {
+            const res = await request("post", "/board/library", library);
+
+            if (res.status === 201) {
+                alert('자료를 성공적으로 입력하였습니다.');
+                navigate('/board/libraryList');
+            } else {
+                alert('자료 입력에 실패하였습니다.');
+            }
+        } catch (error) {
+            console.log('실패', error);
+            alert('자료 입력 중 오류가 발생했습니다.');
+        }
     };
 
     const libraryList = () => {
@@ -153,10 +139,11 @@ const InsertLibrary = () => {
                                             </td>
                                         </tr>
                                     </tbody>
+
                                 </table>
-                                <Card.Footer>
+                                <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', padding: '15px' }}>
                                     <div style={{ marginTop: '10px' }}>
-                                        <Button onClick={submitLibrary}>자료 입력</Button>
+                                        <Button appearance="primary" color="blue" onClick={submitLibrary}>자료 입력</Button>
                                     </div>
                                 </Card.Footer>
                             </Card>

@@ -6,6 +6,7 @@ import BoardLeftbar from './BoardLeftbar';
 import Header from '../../common/pages/Header';
 import FileUpload from '../components/FileUpload';
 import '../css/board.css'
+import { request } from '../../common/components/helpers/axios_helper';
 
 const Updatelibrary = (props) => {
 
@@ -52,6 +53,7 @@ const Updatelibrary = (props) => {
     };
 
     const submitlibrary = (e) => {
+
         e.preventDefault(); // submit이 action을 안 타고 자기 할 일을 그만함
 
         // 필수 입력값 체크
@@ -84,7 +86,8 @@ const Updatelibrary = (props) => {
             .then((res) => {    // catch는 여기에서 오류가 발생해야 실행됨.
                 console.log('정상', res);
                 if (res !== null) {
-                    navigate('/board/libraryDetail/' + library_no); // old  버전 : props.history.push()
+                    alert("게시글을 수정 하였습니다.");
+                    navigate('/board/libraryList/'); // old  버전 : props.history.push()
                 } else {
                     alert("게시글 수정에 실패하였습니다.");
                 }
@@ -122,16 +125,13 @@ const Updatelibrary = (props) => {
                                         <th style={{ width: '20%' }}>작성자</th>
                                         <td>{library.emp_no}</td>
                                         <th style={{ width: '20%' }}>첨부 파일</th>
-                                        <td>
-                                            {library.library_filename ? (
+                                                                               
                                         <td style={{ width: '40%' }} >
                                             {/* FileUpload 컴포넌트 추가 */}
                                             <FileUpload onFileUpload={handleFileUpload} />
                                         </td>
-                                        ) : (
-                                            <span>첨부 없음</span>
-                                        )}
-                                        </td>
+                                        
+                                        
                                     </tr>
                                     <tr>
                                         <th style={{ width: '20%' }}>작성일</th>
@@ -154,9 +154,9 @@ const Updatelibrary = (props) => {
                                         </td>
                                     </tr>
                                 </table>
-                                <Card.Footer>
-                                    <div style={{ marginTop:'10px'}}>
-                                        <Button onClick={submitlibrary}>수정</Button>
+                                <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', padding: '15px' }}>
+                                    <div style={{ marginTop: '10px' }}>
+                                        <Button appearance="primary" color="blue" onClick={submitlibrary}>수정</Button>
                                     </div>
                                 </Card.Footer>
                             </Card>
