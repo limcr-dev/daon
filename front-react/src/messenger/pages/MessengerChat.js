@@ -87,7 +87,7 @@ const MessengerChat = () => {
 		formData.append('roomCode', roomId);
 		formData.append('senderId', user.emp_no);
 
-		axios.post('http://localhost:8081/messenger/file/upload', formData, {
+		axios.post(`http://${window.location.hostname}:8081/messenger/file/upload`, formData, {
 			headers: { 'Authorization': `Bearer ${getAuthToken()}` }
 		})
 			.then(res => {
@@ -115,7 +115,7 @@ const MessengerChat = () => {
 			.catch(err => console.error("이전 메시지 로드 실패:", err));
 
 		// 소켓 연결
-		const socket = new SockJS('http://localhost:8081/ws-chat');
+		const socket = new SockJS(`http://${window.location.hostname}:8081/ws-chat`);
 		const client = new Client({
 			webSocketFactory: () => socket,
 			connectHeaders: {
@@ -208,13 +208,13 @@ const MessengerChat = () => {
 							<b>{msg.senderId === user.emp_no ? '나' : `👤${targetUser?.emp_name}`}</b>
 							{msg.type === 'IMAGE' ? (
 								<img
-									src={`http://localhost:8081${msg.content}`}
+									src={`http://${window.location.hostname}:8081${msg.content}`}
 									alt={msg.originalName}
 									style={{ maxWidth: '200px', borderRadius: '10px' }}
 								/>
 							) : msg.type === 'FILE' ? (
 								<a
-									href={`http://localhost:8081/messenger/file/uploads/download/${msg.content.split('/').pop()}`}
+									href={`http://${window.location.hostname}:8081/messenger/file/uploads/download/${msg.content.split('/').pop()}`}
 									download
 									target="_blank"
 									rel="noopener noreferrer"

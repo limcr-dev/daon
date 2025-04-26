@@ -38,11 +38,14 @@ public interface ChatMapper {
     // 채팅방 참여자 중 상대방 ID 찾기
     List<Integer> findOtherUserIdInRoom(@Param("roomCode") String roomCode, @Param("myId") int myId);
     
-    void markAsRead(String roomCode, int userId);
+    void markAsRead(@Param("roomCode") String roomCode, @Param("userId") int userId);
     
     // 채팅방에서 sender 제외한 receiverId 조회
     int getReceiverId(@Param("roomCode") String roomCode, @Param("senderId") int senderId);
     
     // 채팅방 이전 메시지 불러오기
     List<ChatMessage> getMessagesByRoomCode(String roomCode);
+    
+    // 채팅방 전체 참여자 userId 리스트 가져오기
+    List<Integer> getUserIdsByRoomCode(@Param("roomCode") String roomCode);
 }
