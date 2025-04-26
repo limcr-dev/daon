@@ -1,0 +1,27 @@
+.admin-role-table {
+    width: 100%;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: white;
+  }
+  
+  .admin-role-table .rs-table-cell {
+    padding: 12px;
+  }
+  
+  .admin-role-table .rs-table-row:hover {
+    background-color: #f5f5f5;
+    transition: background-color 0.2s;
+  }
+  
+  .admin-role-table .highlight-row {
+    background-color: #f0f8ff !important;
+  }
+
+  .admin-role-table .rs-table-cell {
+  display: flex;
+  align-items: center; /* 수직 가운데 정렬 */
+  padding: 16px 12px;
+  font-size: 14px;
+  }       

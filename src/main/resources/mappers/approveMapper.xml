@@ -10,30 +10,58 @@
 		SELECT * FROM documents
 		 WHERE doc_status = #{status}
 		   AND emp_no = #{emp_no}
-		 ORDER BY doc_reg_date DESC
+		 ORDER BY doc_reg_date DESC, doc_no DESC
 	</select>
 	
-	<!-- 전체 결재 목록 조회(임시저장 제외) -->
+	<!-- 결재자 - 전체 결재 목록 조회(임시저장 제외) -->
 	<select id="getAllDocList" parameterType="int" resultType="com.spring.daon.approve.Documents">
 		SELECT * FROM documents
-		 WHERE doc_status NOT LIKE 4
+		 WHERE doc_status NOT LIKE 1
 		   AND emp_no = #{emp_no}
-		 ORDER BY doc_reg_date DESC
+		 ORDER BY doc_reg_date DESC, doc_no DESC
 	</select>
 	
 	<!-- 결재자 - 결재 목록 조회 -->
 	<select id="getApproverDocList" parameterType="java.util.Map" resultType="com.spring.daon.approve.Documents">
 		SELECT d.*
 		  FROM documents d, approval_lines al
-		 WHERE al.approver_no = #{emp_no}
-		   AND al.approval_status = #{status}
+		 WHERE al.appr_no = #{emp_no}
+		   AND al.appr_status = #{status}
 		   AND d.doc_no = al.doc_no
-		   AND d.doc_status = 1
+		   AND d.doc_status = 2
+		 ORDER BY d.doc_reg_date DESC, d.doc_no DESC
+	</select>
+	
+	<!-- 결재자 - 결재 목록 조회 -->
+	<select id="getAllApproverDocList" parameterType="int" resultType="com.spring.daon.approve.Documents">
+		SELECT d.*
+		  FROM documents d, approval_lines al
+		 WHERE al.appr_no = #{emp_no}
+		   AND d.doc_no = al.doc_no
+		   AND d.doc_status NOT IN (1,5)
+		   AND al.appr_status NOT IN (0)
+		 ORDER BY d.doc_reg_date DESC, d.doc_no DESC
+	</select>
+	
+	<!-- 결재자 - 결재 목록 조회 -->
+	<select id="getApproverInfo" parameterType="int" resultType="com.spring.daon.approve.Documents">
+		SELECT d.*
+			, al.appr_no
+			, e.emp_name AS emp_name
+			, e.position_id AS position_id
+		  FROM documents d
+		  JOIN approval_lines al ON d.doc_no = al.doc_no
+		  JOIN employees e ON d.emp_no = e.emp_no
+		 WHERE al.appr_no = #{emp_no}
+		   AND d.doc_status = 2
+		   AND al.appr_order NOT LIKE 0
+		   AND al.appr_status = 2
+		 ORDER BY d.doc_reg_date DESC, d.doc_no DESC
 	</select>
 	
 	<insert id="insertDocument">
 		INSERT INTO documents(doc_form, emp_no, dept_no, doc_title, doc_reg_date, doc_status, doc_urgent)
-		VALUES(#{doc_form}, #{emp_no}, #{dept_no}, #{doc_title}, #{doc_reg_date}, #{doc_status}, #{doc_urgent})
+		VALUES(#{doc_form}, #{emp_no}, #{dept_no}, #{doc_title}, now(), #{doc_status}, #{doc_urgent})
 	</insert>
 	
 	<select id="getDocNo" parameterType="int" resultType="int">
@@ -43,29 +71,157 @@
 	</select>
 	
 	<insert id="insertApprovalLines">
-		INSERT INTO approval_lines(doc_no, approver_no, approval_order, approval_status)
-		VALUES(#{doc_no}, #{approver_no}, #{approval_order}, #{approval_status})
+		INSERT INTO approval_lines(doc_no, appr_no, appr_name, appr_position, appr_dept_no, appr_order, appr_date, appr_status)
+		VALUES(
+			  #{doc_no}, 
+			  #{appr_no}, 
+			  #{appr_name}, 
+			  #{appr_position}, 
+			  #{appr_dept_no}, 
+			  #{appr_order}, 
+			  <choose>
+			    <when test="appr_status == 0">now()</when>
+			    <otherwise>#{appr_date}</otherwise>
+			  </choose>, 
+			  #{appr_status}
+			)
+	</insert>
+	
+	<insert id="insertVacationReq">
+	    INSERT INTO vacation_req(doc_no, emp_no, title, content, start_date, end_date, used_days, vacation_type)
+	    VALUES(
+	        #{doc_no}, 
+	        #{emp_no}, 
+	        #{title}, 
+	        #{content}, 
+	        #{start_date}, 
+	        #{end_date},
+	        #{used_days},
+	        #{vacation_type}
+	    )
 	</insert>
 	
 	<insert id="insertWorkReport">
-    INSERT INTO work_report(doc_no, emp_no, title, content, coop_dept_no, execution_date)
-    VALUES(
-        #{doc_no}, 
-        #{emp_no}, 
-        #{title}, 
-        #{content}, 
-        <if test="coop_dept_no != 0">#{coop_dept_no}</if>
-        <if test="coop_dept_no == 0">null</if>, 
-        #{execution_date}
-    )
-</insert>
-	<!--  결재 진행중 목록 조회
-	<select id="getCompleteList" resultType="com.spring.daon.approve.Documents">
-		SELECT * FROM documents
-		 WHERE doc_status = 1
-		 ORDER BY doc_reg_date DESC 
-	</select> -->
- 
+	    INSERT INTO work_report(doc_no, emp_no, title, content, coop_dept_no, execution_date)
+	    VALUES(
+	        #{doc_no}, 
+	        #{emp_no}, 
+	        #{title}, 
+	        #{content}, 
+	        <if test="coop_dept_no != 0">#{coop_dept_no}</if>
+	        <if test="coop_dept_no == 0">null</if>, 
+	        #{execution_date}
+	    )
+	</insert>
 	
+	
+	
+	<select id="getDocument" parameterType="int" resultType="com.spring.daon.approve.Documents">
+		SELECT d.*
+			 , e.emp_name AS emp_name
+			 , e.position_id AS position_id
+		  FROM documents d, employees e
+		 WHERE d.doc_no = #{d.doc_no}
+		   AND d.emp_no = e.emp_no
+	</select>
+	
+	<select id="getApprLines" parameterType="int" resultType="com.spring.daon.approve.Approval_lines">
+		SELECT *
+		  FROM approval_lines
+		 WHERE doc_no = #{doc_no}
+	</select>
+	
+	<select id="getWorkReport" parameterType="int" resultType="com.spring.daon.approve.Work_report">
+		SELECT *
+		  FROM work_report
+		 WHERE doc_no = #{doc_no}
+	</select>
+	
+	<select id="getVacationReq" parameterType="int" resultType="com.spring.daon.approve.Vacation_req">
+		SELECT v.*
+			 , e.emp_name AS emp_name
+			 , e.position_id AS position_id
+		  FROM vacation_req v, employees e
+		 WHERE doc_no = #{doc_no}
+		   AND v.emp_no = e.emp_no
+	</select>
+	
+	<update id="cancelDocument" parameterType="int">
+		UPDATE documents
+		   SET doc_status = 1
+		 WHERE doc_no = #{doc_no}
+	</update>
+	
+	<update id="rejectApprove" parameterType="com.spring.daon.approve.Approval_lines">
+		UPDATE approval_lines
+		   SET appr_status = 4
+		     , appr_date = now()
+		     <if test="appr_comment != null">
+			 , appr_comment = #{appr_comment}
+			 </if>
+		 WHERE doc_no = #{doc_no}
+		   AND appr_no = #{appr_no}
+	</update>
+	
+	<update id="rejectDocument" parameterType="int">
+		UPDATE documents
+		   SET doc_status = 4
+		 WHERE doc_no = #{doc_no}
+	</update>
+	
+	<update id="signApprove" parameterType="com.spring.daon.approve.Approval_lines">
+		UPDATE approval_lines
+		   SET appr_status = #{appr_status}
+		     , appr_date = now()
+		     <if test="appr_comment != null">
+			 , appr_comment = #{appr_comment}
+			 </if>
+		 WHERE doc_no = #{doc_no}
+		   AND appr_no = #{appr_no}
+	</update>
+	
+	<select id="apprCnt" parameterType="int" resultType="int">
+		SELECT MAX(appr_order)
+		  FROM approval_lines
+		 WHERE doc_no = #{doc_no}
+	</select>
+	
+	<update id="signDocument" parameterType="int">
+		UPDATE documents
+		   SET doc_status = 3
+		 WHERE doc_no = #{doc_no}
+	</update>
+	
+	<update id="updateApprStatus" parameterType="com.spring.daon.approve.Approval_lines">
+		UPDATE approval_lines
+		   SET appr_status = 2
+		 WHERE doc_no = #{doc_no}
+		   AND appr_order = #{appr_order}+1
+	</update>
+	
+	<update id="updateDocument" parameterType="com.spring.daon.approve.Documents">
+		UPDATE documents
+		   SET doc_title = #{doc_title}
+		   	 , doc_reg_date = now()
+		   	 , doc_status = #{doc_status}
+		   	 , doc_urgent = #{doc_urgent}
+		 WHERE doc_no = #{doc_no}
+	</update>
+	
+	<delete id="deleteApprLines" parameterType="int">
+		DELETE FROM approval_lines
+		 WHERE doc_no = #{doc_no}
+	</delete>
+	
+	<update id="updateWorkReport" parameterType="com.spring.daon.approve.Work_report">
+		UPDATE work_report
+		   SET title = #{title}
+		   	 , content = #{content}
+		   	 <if test="coop_dept_no != 0 and coop_dept_no != null">
+		   	 , coop_dept_no = #{coop_dept_no}
+		   	 </if>
+		   	 , execution_date = #{execution_date}
+		 WHERE doc_no = #{doc_no}
+	</update>
 </mapper>   
 

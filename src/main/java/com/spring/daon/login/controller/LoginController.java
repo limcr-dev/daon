@@ -56,7 +56,7 @@ public class LoginController {
 		String refreshToken = userAuthProvider.createRefreshToken(emp);
 		
 		// 리프레시 토큰 저장(만료 시간 계산)
-		Date expiryDate = new Date(System.currentTimeMillis() + 604800000); // 7일
+		Date expiryDate = new Date(System.currentTimeMillis() + 259200000); 
 		refreshTokenService.createRefreshToken(emp.getEmp_no(), refreshToken, expiryDate);
 		
 		// 인증 성공 시 JWT 토큰 발급

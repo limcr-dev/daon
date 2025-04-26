@@ -37,7 +37,6 @@ public class Employees {
 	private String emp_ext_tel;		// 전화번호(내선번호)
 	private int position_id;		// 직급 코드
 	private int role_id;			// 직책 코드
-	private int manager_no;			// 매니저 코드
 	private int dept_no;			// 부서 코드
 	private int emp_status;			// 재직 구분
 	private int emp_type;			// 고용 형태
@@ -49,5 +48,8 @@ public class Employees {
 	private int admin_type;			// 관리자 유형
 	private int work_type_no;		// 근무 유형 코드
 	private String token;			// 토큰
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+	private Date contract_end_date; // 계약 종료일 (계약직, 인턴에게만 해당)
+
 }
 

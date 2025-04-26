@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+     
+<mapper namespace="com.spring.daon.hrMgt.position.PositionMapper">
+	
+	<!-- 전체 목록 조회 -->
+    <select id="getAllPositions" resultType="com.spring.daon.hrMgt.position.Position">
+        SELECT *
+        FROM positions
+        ORDER BY position_id ASC
+    </select>
+
+    <!-- 단일 조회 -->
+    <select id="getPositionById" parameterType="int" resultType="com.spring.daon.hrMgt.position.Position">
+        SELECT *
+        FROM positions
+        WHERE position_id = #{position_id}
+    </select>
+
+    <!-- 등록 -->
+    <insert id="insertPosition" parameterType="com.spring.daon.hrMgt.position.Position">
+        INSERT INTO positions (position_id, position_name, base_salary)
+        VALUES (#{position_id}, #{position_name}, #{base_salary})
+    </insert>
+
+    <!-- 수정 -->
+    <update id="updatePosition" parameterType="com.spring.daon.hrMgt.position.Position">
+        UPDATE positions
+        SET position_name = #{position_name},
+            base_salary = #{base_salary}
+        WHERE position_id = #{position_id}
+    </update>
+
+    <!-- 삭제 -->
+    <delete id="deletePosition" parameterType="int">
+        DELETE FROM positions
+        WHERE position_id = #{position_id}
+    </delete>
+
+</mapper>

@@ -1,5 +1,6 @@
 package com.spring.daon.salary;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,5 +46,11 @@ public class EmployeeSalaryController {
     ) {
         SalaryDetail dto = service.getSalaryDetail(empNo, salaryMonth);
         return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+    
+
+    @GetMapping("/salaries/total-actual-pay")
+    public ResponseEntity<BigDecimal> getTotalActualPay(@RequestParam String salaryMonth) {
+        return ResponseEntity.ok(mapper.getTotalActualPayByMonth(salaryMonth));
     }
 }

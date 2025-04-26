@@ -4,32 +4,32 @@ import { useNavigate } from 'react-router-dom';
 
 const data = [
   {
-    label: '결재하기',
-    value: 'approve',
+    // 0: 신청, 1: 예정, 2: 대기, 3: 승인, 4: 반려, 4: 완료
+    label: '결재 문서함',
+    value: 'approver',
     children: [
-      { label: '결재 대기 문서', value: 'approver/1' },
-      { label: '결재 수신 문서', value: 'approver/2' },
-      { label: '결재 예정 문서', value: 'approver/0' },
+      { label: '결재 대기 목록', value: 'approver/2' },
+      { label: '결재 예정 목록', value: 'approver/1' },
+      { label: '결재 목록', value: 'approver/all' }
     ],
   },
-  // 1: 진행중, 2:승인, 3:반려, 4: 임시저장, 5:상신취소
+  // 1: 임시저장, 2: 진행중, 3: 승인, 4: 반려, 5: 상신취소
   {
     label: '개인 문서함',
     value: 'EmpDocuments',
     children: [
-      { label: '기안 문서함', value: 'documents' },
-      { label: '임시 저장함', value: 'documents/4' },
-      { label: '결재 문서함', value: 'approver' },
+      { label: '기안 목록', value: 'documents' },
+      { label: '임시 저장 목록', value: 'documents/1' },
     ],
-  },
-  {
-    label: '부서문서함',
-    value: 'deptDocuments',
-    children: [
-      { label: '부서 문서함', value: 'docDept' },
-      { label: '부서 참조함', value: 'docReferenced' }
-    ],
-  },
+  }
+  // {
+  //   label: '부서문서함',
+  //   value: 'deptDocuments',
+  //   children: [
+  //     { label: '부서 문서함', value: 'docDept' },
+  //     { label: '부서 참조함', value: 'docReferenced' }
+  //   ],
+  // },
 ];
 
 const ApproveMenu = () => {

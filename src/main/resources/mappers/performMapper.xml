@@ -17,12 +17,14 @@
   	
   	<!-- 역량을 넣어서 테스트 insert하기 -->
 	<insert id="insertTest" parameterType="com.spring.daon.performMgt.Test">
-		INSERT INTO eval_test (eval_emp_type, eval_click_emp, eval_order_num, eval_start_date)
+		INSERT INTO eval_test (eval_emp_type, eval_click_emp, eval_order_num, eval_start_date, eval_end_date)
 		VALUES (
 		    #{eval_emp_type},
 		    #{eval_click_emp},
 		    #{eval_order_num},
-		   	current_timestamp)
+		   	current_timestamp,
+		   	DATE_ADD(NOW(), INTERVAL 7 DAY)
+		   	)
 	</insert>
 	
 	<!-- 테스트 리스트 삭제 -->
@@ -32,7 +34,7 @@
 	</delete>
 	
 	<!-- 테스트 리스트 update 등록 -->
-	<update id="updateTest" parameterType="String">
+	<update id="updateTest" parameterType="com.spring.daon.performMgt.Test">
 		update eval_test
 		   set eval_num1=TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(eval_click_emp, ',', 1), ',', -1))
 		  	 , eval_num2=TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(eval_click_emp, ',', 2), ',', -1))
@@ -54,6 +56,7 @@
 			 , eval_emp_type
 			 ,eval_click_emp
 			 , eval_order_num
+			 , eval_end_date
 		 from eval_test
 		 where registration = 'f'
 	</select>
@@ -64,6 +67,7 @@
 			 , eval_emp_type
 			 , eval_click_emp
 			 , eval_order_num
+			 , eval_end_date
 		 from eval_test
  	 	where registration = 't'
 	</select>
@@ -110,26 +114,48 @@
 		 )
 	</select>
 	
-	<!-- 평가 직원 리스트 -->
+	<!-- 평가 직원 리스트 : 수정-->
 	<select id="evalList" resultType="com.spring.daon.performMgt.Test"> 
 		select distinct eval_start_date
 			 , eval_emp_type
 			 ,eval_click_emp
 			 , eval_order_num
+			 , eval_end_date
 		 from eval_test
  	 	  where registration = 't'
 	</select>
 	
 	<!-- 동료 불러오기 -->
-	<select id="peerList" resultType="com.spring.daon.hrMgt.Employees"> 
-		select *
-		 from employees
+	<select id="peerList" parameterType="int" resultType="com.spring.daon.performMgt.PeerTarget"> 
+		select pt.eval_peer_no
+			 , e.emp_name
+			 , eval_order_num
+		  from peer_target pt  
+		 JOIN employees e ON pt.eval_peer_no = e.emp_no
+		   WHERE pt.peer_test_status = "진행전"
+		   AND pt.eval_peer_no != #{emp_no}
+		   AND pt.eval_emp_no = #{emp_no}
+		   GROUP BY pt.eval_peer_no, e.emp_name
 	</select>
 	
-	<!-- 동료 불러오기 -->
+	<!-- 동료평가 평가자 피평가자 insert -->
+	<insert id="insertPeerTarget" parameterType="com.spring.daon.performMgt.PeerTarget">
+	INSERT INTO peer_target (eval_order_num, eval_emp_no, eval_peer_no)
+		SELECT
+		  #{eval_order_num},
+		  a.emp_no, 
+		  b.emp_no
+		FROM employees a
+		JOIN employees b ON a.dept_no = b.dept_no
+		WHERE a.emp_no != b.emp_no
+		AND a.dept_no != 1   -- 평가자: 사장/임원 제외
+		AND b.dept_no != 1   -- 피평가자: 사장/임원 제외
+	</insert>
+	
+	<!-- 동료평가 결과 저장하기 -->
 	<insert id="insertPeerEval" parameterType="com.spring.daon.performMgt.EvalPeer">
 		INSERT INTO eval_peer (
-		eval_peer_no,
+			eval_peer_no,
             eval_no,
             eval_type,
             eval_comp1,
@@ -144,10 +170,10 @@
             eval_comp5_score,
             eval_status,
             eval_total_score,
-            eval_start_date,
-            eval_end_date)
+            eval_test_date,
+            eval_order_num)     
 		VALUES (
-		  #{eval_peer_no},
+		  	#{eval_peer_no},
             #{eval_no},
             #{eval_type},
             #{eval_comp1},
@@ -162,10 +188,105 @@
             #{eval_comp5_score},
             #{eval_status},
             #{eval_total_score},
-            NOW(),         <!-- 현재 날짜 저장 -->
-            #{eval_end_date}
+            NOW(),         <!-- 현재 날짜 저장 -->     
+            #{eval_order_num}
             )
 	</insert>
+	
+	<!-- selfTarget 진행안한것만 불러오기?! parameterType="int"   AND st.eval_emp_no = #{emp_no}-->
+	<select id="selfList" parameterType="int" resultType="com.spring.daon.performMgt.SelfTarget"> 
+		SELECT st.self_test_status
+			 , st.eval_order_num
+			 , st.eval_emp_no
+			 , et.*
+		  FROM self_target st, eval_test et
+		 WHERE st.eval_order_num = et.eval_order_num
+		 AND et.registration = 't'
+		   AND st.self_test_status LIKE '진행전'
+		   AND st.eval_emp_no = #{emp_no}
+	</select>
+
+	<insert id="selfTargetInsert" parameterType="com.spring.daon.performMgt.SelfTarget">
+		INSERT INTO self_target(eval_order_num, eval_emp_no)
+		SELECT
+		    #{eval_order_num},
+		  	emp_no
+	     FROM employees
+	     WHERE dept_no NOT IN(10,20,30,1)
+	</insert>
+	
+	<!-- 자기평가 결과 저장하기 -->
+	<insert id="insertSelfEval" parameterType="com.spring.daon.performMgt.EvalSelf">
+		INSERT INTO eval_self (        	
+            eval_emp_no,
+            eval_type,
+            eval_comp1,
+            eval_comp1_score,
+            eval_comp2,
+            eval_comp2_score,
+            eval_comp3,
+            eval_comp3_score,
+            eval_comp4,
+            eval_comp4_score,
+            eval_comp5,
+            eval_comp5_score,
+            eval_status,
+            eval_total_score,
+            eval_test_date,
+            eval_order_num)     
+		VALUES (
+		  	#{eval_emp_no},
+            #{eval_type},
+            #{eval_comp1},
+            #{eval_comp1_score},
+            #{eval_comp2},
+            #{eval_comp2_score},
+            #{eval_comp3},
+            #{eval_comp3_score},
+            #{eval_comp4},
+            #{eval_comp4_score},
+            #{eval_comp5},
+            #{eval_comp5_score},
+            #{eval_status},
+            #{eval_total_score},
+            NOW(),         <!-- 현재 날짜 저장 -->     
+            #{eval_order_num}
+            )
+	</insert>
+	
+	<!-- 전체 직원 평가 현황 -->
+	<select id="evalStatus" resultType="com.spring.daon.performMgt.EvalEmployees">
+		SELECT e.*
+			 , es.eval_emp_no
+			 , ROUND(AVG(es.eval_total_score / 5.0), 2) AS self_avg
+			 , COUNT(distinct es.eval_total_score) AS self_cnt
+			 , COUNT(distinct st.eval_order_num) As self_total_cnt
+			 , ROUND(AVG(ep.eval_total_score / 5.0), 2) AS peer_avg 
+		FROM eval_self es, eval_peer ep,self_target st, employees e
+		where es.eval_emp_no = ep.eval_peer_no
+		and es.eval_emp_no = st.eval_emp_no
+		and e.emp_no = es.eval_emp_no
+		GROUP BY 
+		    eval_emp_no
+	</select>
+	
+	<!-- 전체 직원 리스트 -->
+	<select id="employees" resultType="com.spring.daon.hrMgt.Employees">
+		select *
+		  from employees
+	</select>
+	
+	<!-- 동료평가리스트 -->
+	<select id="evalPeer" resultType="com.spring.daon.performMgt.EvalPeer">
+		select *
+		  from eval_Peer
+	</select>
+	
+	<!-- 자기평가 리스트 -->
+	<select id="evalSelf" resultType="com.spring.daon.performMgt.EvalSelf">
+		select *
+		  from eval_self
+	</select>
 	
 	
 	

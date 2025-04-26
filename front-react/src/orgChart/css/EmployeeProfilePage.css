@@ -1,0 +1,52 @@
+.employee-slide-card {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 100vh;
+    background-color: #ffffff;
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+    z-index: 1100;
+    padding: 20px;
+    overflow-y: auto;
+    animation: slideInRight 0.3s ease-in-out;
+    border-left: 1px solid #ddd;
+  }
+  
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0%);
+      opacity: 1;
+    }
+  }
+  
+  .employee-panel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .employee-close-button {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+  
+  .employee-detail-content {
+    text-align: center;
+  }
+  
+  .employee-avatar {
+    margin-bottom: 12px;
+  }
+  
+  .employee-name {
+    margin-top: 12px;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  
