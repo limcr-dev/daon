@@ -4,72 +4,97 @@ import { Button, Card, Col, Container, Content, Divider, Row } from 'rsuite';
 import Leftbar from '../../common/pages/Leftbar';
 import BoardLeftbar from './BoardLeftbar';
 import Header from '../../common/pages/Header';
+import FileUpload from '../components/FileUpload';
 import '../css/board.css'
 import { request } from '../../common/components/helpers/axios_helper';
 
-const UpdateNotice = (props) => {
+const Updatelibrary = (props) => {
 
     const propsParam = useParams();
     const navigate = useNavigate();
-    const notice_no = propsParam.notice_no;
+    const library_no = propsParam.library_no;
 
-    const [notice, setNotice] = useState({
-        notice_no: '',
+    const [library, setLibrary] = useState({
+        library_no: '',
         emp_no: '',
-        notice_title: '',
-        notice_reg_date: '',
-        notice_views: '',
-        notice_content: ''
+        library_title: '',
+        library_reg_date: '',
+        library_views: '',
+        library_content: ''
     })
 
     useEffect(() => {
-        const fetchNoticeDetail = async () => {
-            try {
-                const res = await request("get", "/board/notice/" + notice_no);
-                setNotice(res.data);
-            } catch (error) {
-                console.error("공지사항 조회 실패:", error);
-            }
-        };
-
-        fetchNoticeDetail();
+        fetch("http://localhost:8081/board/library/" + library_no, { // DB에 들림
+            method: "GET"   // @GetMapping 사용
+          }).then((res) => res.json())
+            .then((res) => {
+                setLibrary(res)
+            });
     }, []);
 
+    const formatDate = (timestamp) => {
+        const date = new Date(timestamp);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
     const changeValue = (e) => {
-        setNotice({
-            ...notice,
+        setLibrary({
+            ...library,
             [e.target.name]: e.target.value
         });
     }
 
-    const submitNotice = async (e) => {
+    // FileUpload 컴포넌트에서 전달된 파일 이름을 받아서 상태를 업데이트
+    const handleFileUpload = (savedFileName) => {
+        setLibrary({ ...library, library_filename: savedFileName });
+    };
+
+    const submitlibrary = (e) => {
+
         e.preventDefault(); // submit이 action을 안 타고 자기 할 일을 그만함
 
         // 필수 입력값 체크
-        if (!notice.notice_title.trim()) {
+        if (!library.library_title.trim()) {
             alert("제목을 입력해주세요.");
             return;
         }
 
-        if (!notice.notice_content.trim()) {
+        if (!library.library_content.trim()) {
             alert("내용을 입력해주세요.");
             return;
         }
 
-        try {
-            const res = await request("put", "/board/notice/" + notice_no, notice);
-            console.log(1, res);
-
-            if (res.status === 200) {
-                console.log('정상', res.data);
-                navigate('/board/noticeDetail/' + notice_no);
-            } else {
-                alert("게시글 수정에 실패하였습니다.");
-            }
-        } catch (error) {
-            console.log('실패', error);
-            alert("게시글 수정에 실패하였습니다.");
-        }
+        fetch("http://localhost:8081/board/library/" + library_no, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json;charset=utf-8"
+            },
+            body: JSON.stringify(library)
+            // javascript object를 json으로 변경해서 넘김. 데이터를 스프링부트에서 insert하고 201을 리턴한다.
+        })
+            .then((res) => {
+                console.log(1, res);
+                if (res.status === 200) {
+                    return res.json();
+                } else {
+                    return null;
+                }
+            })
+            .then((res) => {    // catch는 여기에서 오류가 발생해야 실행됨.
+                console.log('정상', res);
+                if (res !== null) {
+                    alert("게시글을 수정 하였습니다.");
+                    navigate('/board/libraryList/'); // old  버전 : props.history.push()
+                } else {
+                    alert("게시글 수정에 실패하였습니다.");
+                }
+            })
+            .catch((error) => {
+                console.log('실패', error);
+            });
     }
 
     return (
@@ -93,18 +118,26 @@ const UpdateNotice = (props) => {
                                     <tr>
                                         <th style={{ width: '20%' }}>제목</th>
                                         <td style={{ width: '80%' }} colSpan={3}>
-                                            <input type='text' name='notice_title' style={{ width: '100%' }} value={notice.notice_title} onChange={changeValue} placeholder='공지 제목을 입력하세요.' />
+                                            <input type='text' name='library_title' style={{ width: '100%' }} value={library.library_title} onChange={changeValue} placeholder='공지 제목을 입력하세요.' />
                                         </td>
                                     </tr>
                                     <tr>
                                         <th style={{ width: '20%' }}>작성자</th>
-                                        <td colSpan={3}>{notice.emp_no}</td>
+                                        <td>{library.emp_no}</td>
+                                        <th style={{ width: '20%' }}>첨부 파일</th>
+                                                                               
+                                        <td style={{ width: '40%' }} >
+                                            {/* FileUpload 컴포넌트 추가 */}
+                                            <FileUpload onFileUpload={handleFileUpload} />
+                                        </td>
+                                        
+                                        
                                     </tr>
                                     <tr>
                                         <th style={{ width: '20%' }}>작성일</th>
-                                        <td>{notice.notice_reg_date}</td>
+                                        <td>{formatDate(library.library_reg_date)}</td>
                                         <th style={{ width: '20%' }}>조회수</th>
-                                        <td>{notice.notice_views}</td>
+                                        <td>{library.library_views}</td>
                                     </tr>
                                     <tr>
                                         <th colSpan={4}>내용</th>
@@ -112,10 +145,10 @@ const UpdateNotice = (props) => {
                                     <tr>
                                         <td colSpan={4}>
                                             <textarea
-                                                name="notice_content"
+                                                name="library_content"
                                                 style={{ width: '100%', height: '500px', verticalAlign: 'top' }}
                                                 placeholder="공지 내용을 입력하세요"
-                                                value={notice.notice_content}
+                                                value={library.library_content}
                                                 onChange={changeValue}
                                             />
                                         </td>
@@ -123,7 +156,7 @@ const UpdateNotice = (props) => {
                                 </table>
                                 <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', padding: '15px' }}>
                                     <div style={{ marginTop: '10px' }}>
-                                        <Button appearance="primary" color="blue" onClick={submitNotice}>수정</Button>
+                                        <Button appearance="primary" color="blue" onClick={submitlibrary}>수정</Button>
                                     </div>
                                 </Card.Footer>
                             </Card>
@@ -138,4 +171,4 @@ const UpdateNotice = (props) => {
     );
 };
 
-export default UpdateNotice;
+export default Updatelibrary;
