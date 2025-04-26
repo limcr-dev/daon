@@ -1,16 +1,20 @@
-import { Button, Container, Content, Card } from "rsuite";
+import { Button, Container, Content, Card, Input } from "rsuite"; // ✅ Input 추가
 import Leftbar from "../../../common/pages/Leftbar";
 import SalaryLeftbar from "../SalaryLeftbar";
 import { useEffect, useState } from "react";
 import AllowanceModal from "./AllowanceModal";
 import { request } from "../../../common/components/helpers/axios_helper";
 import Header from "../../../common/pages/Header";
-import "../../css/AllowanceList.css"; // ✅ CSS 클래스 import
+import Paging from "../../../common/components/paging.js"; // ✅ 페이징 import
+import "../../css/AllowanceList.css"; 
 
 const AllowanceList = () => {
   const [list, setList] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [page, setPage] = useState(1);    // ✅ 현재 페이지
+  const size = 10;             // ✅ 한 페이지당 보여줄 개수
+  const [searchKeyword, setSearchKeyword] = useState(""); // ✅ 검색어 추가
 
   const fetchList = () => {
     request("get", "/api/allowances")
@@ -41,6 +45,21 @@ const AllowanceList = () => {
     setOpen(true);
   };
 
+  // ✅ 이름 검색 필터
+  const filteredList = list.filter((row) =>
+    row.name.toLowerCase().includes(searchKeyword.toLowerCase())
+  );
+
+  // ✅ 현재 페이지 slice
+  const startIndex = (page - 1) * size;
+  const endIndex = startIndex + size;
+  const paginatedList = filteredList.slice(startIndex, endIndex);
+
+  const handleSearchChange = (value) => {
+    setSearchKeyword(value);
+    setPage(1); // 검색하면 페이지 1로 초기화
+  };
+
   return (
     <Container style={{ minHeight: "100vh", width: "100%" }}>
       <Leftbar />
@@ -57,7 +76,13 @@ const AllowanceList = () => {
           >
             <h3 style={{ marginBottom: 20 }}>수당 요약 목록</h3>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+              <Input
+                placeholder="수당명 검색"
+                value={searchKeyword}
+                onChange={handleSearchChange} // ✅
+                style={{ width: 250 }}
+              />
               <Button
                 appearance="primary"
                 size="sm"
@@ -82,7 +107,7 @@ const AllowanceList = () => {
                 </tr>
               </thead>
               <tbody>
-                {list.map((row, index) => (
+                {paginatedList.map((row, index) => (
                   <tr key={index}>
                     <td>{row.name}</td>
                     <td>{row.fixed_amount?.toLocaleString()}원</td>
@@ -113,6 +138,19 @@ const AllowanceList = () => {
               </tbody>
             </table>
 
+            {/* ✅ 페이징 추가 */}
+            <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+              <Paging
+                paging={{
+                  page: page,
+                  size: size,
+                  totalCount: filteredList.length
+                }}
+                onPageChange={(newPage) => setPage(newPage)}
+              />
+            </div>
+
+            {/* ✅ 등록/수정 모달 */}
             {open && (
               <AllowanceModal
                 open={open}

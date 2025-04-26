@@ -11,17 +11,17 @@ import { request } from "../../common/components/helpers/axios_helper";
 import Leftbar from "../../common/pages/Leftbar";
 import Header from "../../common/pages/Header";
 import EmployeeLeftbar from "./EmployeeLeftbar";
+import Paging from "../../common/components/paging.js"; // ✅ 페이징 import
 import "../css/EmployeeResignPage.css";
-
-
 
 const { Column, HeaderCell, Cell } = Table;
 
 const EmployeeResignPage = () => {
   const [employees, setEmployees] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [page, setPage] = useState(1);    // ✅ 현재 페이지
+  const size = 13;             // ✅ 한 페이지당 보여줄 개수
 
-  // ✅ 사원 조회 (재직자만)
   const fetchEmployees = () => {
     request("get", "/api/employeeList")
       .then((res) => {
@@ -38,7 +38,6 @@ const EmployeeResignPage = () => {
     fetchEmployees();
   }, []);
 
-  // ✅ 퇴사 처리
   const handleResign = (empNo) => {
     if (window.confirm("정말 퇴사 처리하시겠습니까?")) {
       request("put", `/api/employee/${empNo}/resign`)
@@ -52,10 +51,20 @@ const EmployeeResignPage = () => {
     }
   };
 
-  // ✅ 이름 검색 필터
+  // ✅ 이름 검색 필터 + 검색하면 1페이지로 초기화
+  const handleSearchChange = (value) => {
+    setSearchKeyword(value);
+    setPage(1);
+  };
+
   const filteredEmployees = employees.filter((e) =>
     e.emp_name.toLowerCase().includes(searchKeyword.toLowerCase())
   );
+
+  // ✅ 현재 페이지 데이터 slice
+  const startIndex = (page - 1) * size;
+  const endIndex = startIndex + size;
+  const paginatedList = filteredEmployees.slice(startIndex, endIndex);
 
   return (
     <Container style={{ display: "flex", minHeight: "100vh" }}>
@@ -64,7 +73,6 @@ const EmployeeResignPage = () => {
         <EmployeeLeftbar />
         <Content>
           <Header />
-
           <Card
             style={{
               borderRadius: "12px",
@@ -81,19 +89,18 @@ const EmployeeResignPage = () => {
                 marginBottom: 20,
               }}
             >
-              <h3 style={{  margin: 0, fontSize: "20px", fontWeight: "bold"  }}>👋 퇴사 처리</h3>
+              <h3 style={{ margin: 0, fontSize: "20px", fontWeight: "bold" }}>👋 퇴사 처리</h3>
               <Input
                 placeholder="이름 검색"
                 style={{ width: 200 }}
                 value={searchKeyword}
-                onChange={setSearchKeyword}
+                onChange={handleSearchChange}   // ✅ 수정
               />
             </div>
-
             {/* ✅ 사원 테이블 */}
             <Table
               className="employee-resign-table"
-              data={filteredEmployees}
+              data={paginatedList}    // ✅ 전체 filteredEmployees ➔ paginatedList
               autoHeight
               rowHeight={50}
               bordered
@@ -127,6 +134,17 @@ const EmployeeResignPage = () => {
                 </Cell>
               </Column>
             </Table>
+            {/* ✅ 페이징 컴포넌트 추가 */}
+            <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+              <Paging
+                paging={{
+                  page: page,
+                  size: size,
+                  totalCount: filteredEmployees.length
+                }}
+                onPageChange={(newPage) => setPage(newPage)}
+              />
+            </div>
           </Card>
         </Content>
       </Container>

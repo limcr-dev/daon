@@ -5,22 +5,17 @@ import SalaryDashboard from "./SalaryDashboard";
 import Header from '../../common/pages/Header';
 
 const Salary = () => {
-    return(
-        <Container style={{ minHeight: "100vh", width: "100%" }}>
+  return (
+    <Container style={{ minHeight: "100vh", width: "100%" }}>
       <Leftbar />
-      
       <Container>
-        
         <SalaryLeftbar />
         <Content>
           <Header />
-          
-          <SalaryDashboard/>
-           
-
+          <SalaryDashboard />
         </Content>
       </Container>
     </Container>
-    )
+  )
 }
 export default Salary;
