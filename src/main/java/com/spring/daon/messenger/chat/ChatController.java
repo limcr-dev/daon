@@ -43,21 +43,31 @@ public class ChatController {
 
     // 채팅 메시지 처리
     @MessageMapping("/chat.send")
-    @SendTo("/topic/room/{roomCode}")
+//    @SendTo("/topic/room/{roomCode}")
     public void sendMessage(@Payload ChatMessage message) {
         System.out.println("<<< ChatController - send >>>");
+//        try {
+//            // receiverId는 현재 임시값이며 프론트에서 보내거나 DB 조회로 대체 가능
+//            int receiverId = chatServiceImpl.getReceiverId(message.getRoomCode(), message.getSenderId()); //1002;
+//            chatServiceImpl.handleChatMessage(message, receiverId);
+//
+//            // 구독 중인 클라이언트에게 메시지 전송
+//            messagingTemplate.convertAndSend("/topic/room/" + message.getRoomCode(), message);
+//            
+//            // 실시간 알림 전송
+////            messagingTemplate.convertAndSend("/topic/alert/" + receiverId, message);
+////            System.out.println("알림 전송 >>> /topic/alert/" + receiverId);
+//
+//        } catch (Exception e) {
+//            System.err.println("채팅 처리 중 오류 발생: " + e.getMessage());
+//            e.printStackTrace();
+//        }
+        
         try {
-            // receiverId는 현재 임시값이며 프론트에서 보내거나 DB 조회로 대체 가능
-            int receiverId = chatServiceImpl.getReceiverId(message.getRoomCode(), message.getSenderId()); //1002;
-            chatServiceImpl.handleChatMessage(message, receiverId);
+            chatServiceImpl.handleChatMessage(message); // ✅ receiverId도 여기서 처리
 
             // 구독 중인 클라이언트에게 메시지 전송
             messagingTemplate.convertAndSend("/topic/room/" + message.getRoomCode(), message);
-            
-            // 실시간 알림 전송
-            messagingTemplate.convertAndSend("/topic/alert/" + receiverId, message);
-            System.out.println("알림 전송 >>> /topic/alert/" + receiverId);
-
         } catch (Exception e) {
             System.err.println("채팅 처리 중 오류 발생: " + e.getMessage());
             e.printStackTrace();

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,25 +22,55 @@ public class ChatServiceImpl {
 	@Autowired
     private HRMgtMapper hrMgtMapper;
 	
+	@Autowired
+    private SimpMessagingTemplate messagingTemplate;
+	
 	@Transactional
-    public void handleChatMessage(ChatMessage message, int receiverId) {
+    public void handleChatMessage(ChatMessage message) {
         System.out.println("<<< ChatServiceImpl - handleChatMessage >>>");
 
+//        String roomCode = message.getRoomCode();
+//        
+//        Employees sender = hrMgtMapper.findByEmployee(message.getSenderId());
+//        if (sender != null) {
+//            message.setSenderName(sender.getEmp_name());  // 이름 세팅
+//        }
+//
+//        // 방이 없다면 생성
+//        if (!chatMapper.isRoomExists(roomCode)) {
+//            chatMapper.createRoom(roomCode); // 방 생성
+//            chatMapper.insertRoomUser(roomCode, message.getSenderId());
+//            chatMapper.insertRoomUser(roomCode, receiverId);
+//        }
+//
+//        // 메시지 저장
+//        chatMapper.saveMessage(message);
+//        
+//        messagingTemplate.convertAndSend("/topic/alert/" + receiverId, message);
+        
         String roomCode = message.getRoomCode();
         Employees sender = hrMgtMapper.findByEmployee(message.getSenderId());
         if (sender != null) {
-            message.setSenderName(sender.getEmp_name());  // 이름 세팅
+            message.setSenderName(sender.getEmp_name());
         }
 
-        // 방이 없다면 생성
+        // 방 없으면 생성
         if (!chatMapper.isRoomExists(roomCode)) {
-            chatMapper.createRoom(roomCode); // 방 생성
+            chatMapper.createRoom(roomCode);
             chatMapper.insertRoomUser(roomCode, message.getSenderId());
-            chatMapper.insertRoomUser(roomCode, receiverId);
+            // 단체방이면 여기서 receiver를 굳이 추가할 필요 없음
         }
 
         // 메시지 저장
         chatMapper.saveMessage(message);
+
+        // 실시간 알림 전송
+        List<Integer> userIds = chatMapper.getUserIdsByRoomCode(roomCode);
+        for (Integer userId : userIds) {
+            if (!userId.equals(message.getSenderId())) { // 자기 자신 제외
+                messagingTemplate.convertAndSend("/topic/alert/" + userId, message);
+            }
+        }
     }
 	
 	// 참여 중인 채팅방 목록 조회
