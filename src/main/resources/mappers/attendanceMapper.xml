@@ -219,7 +219,8 @@
 		  WHERE d.doc_no =vr.doc_no
 		    AND d.emp_no = e.emp_no 
 		    AND vr.emp_no = #{emp_no}
-		    AND d.doc_status = 2
+		    AND d.doc_status = 3
+		    AND vr.vacation_type=1
 	</select>
 	
 	<!-- 휴가 사용기록 불러오기 -->
@@ -235,7 +236,8 @@
 		  WHERE d.doc_no =vr.doc_no
 		    AND d.emp_no = e.emp_no 
 		    AND e.dept_no = de.dept_no
-		    AND d.doc_status = 2
+		    AND d.doc_status = 3
+		    AND vr.vacation_type=1
 		  ORDER BY e.position_id asc, vr.start_date DESC 
 	</select>
 </mapper>

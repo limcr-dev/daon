@@ -25,7 +25,7 @@ const MessengerTree = () => {
 
   return (
     <div className="height_change">
-      <Tree data={data} defaultExpandAll className='h-full' onSelect={handleSelect} />
+      {/* <Tree data={data} defaultExpandAll className='h-full' onSelect={handleSelect} /> */}
     </div>
   );
 };

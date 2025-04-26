@@ -10,7 +10,7 @@ const QuesList = ({ ques , onScoreChange, selectedScore }) => {
 
  
 
-    const { eval_comp_type, eval_comp_name, eval_ques_text, eval_ques_id  } = ques; // 구조분해 할당
+    const { eval_comp_type, eval_comp_name, eval_ques_text, eval_ques_id} = ques; // 구조분해 할당
     
     const handleScoreSelect = (score) =>{
         if (!score) {

@@ -1,46 +1,30 @@
 import React from 'react';
-import {
-	FiSearch,
-	FiMessageSquare,
-	FiUsers,
-	FiSettings
-} from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../common/contexts/UserContext';
+import { Button } from 'rsuite';
 
 const MessengerSetting = () => {
+	// UserContext에서 사용자 정보 가져오기
+	const { user } = useUser();
 	const navigate = useNavigate();
 
-	const goHome = () => {
-		navigate('/messenger/messengerRun');
-	}
-
-	const goChattingList = () => {
-		navigate('/messenger/messengerChatList');
-	}
-
-	const goSetting = () => {
-		navigate('/messenger/messengerSetting');
-	}
+	const goHome = () => navigate('/messenger/messengerRun');
+	const goChattingList = () => navigate('/messenger/messengerChatList');
+	const goSetting = () => navigate('/messenger/messengerSetting');
 	return (
 		<div>
 			설정 think중..
-			{/* Bottom Navigation */}
-			<div className="flex justify-around items-center py-3 border-t bg-white" style={{ display: 'flex' }}>
-				<div className="flex flex-col items-center text-gray-400">
-					<button className="text-xs mt-1" onClick={goHome}><FiUsers size={20} />Contacts</button>
-				</div>
-
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-				<div className="flex flex-col items-center text-purple-400">
-					<button className="text-xs mt-1" onClick={goChattingList}><FiMessageSquare size={20} />Chats</button>
-				</div>
-
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-				<div className="flex flex-col items-center text-gray-400">
-					<button className="text-xs mt-1" onClick={goSetting}><FiSettings size={20} />Settings</button>
-				</div>
+			{/* 하단 메뉴 고정 */}
+			<div style={{
+				display: 'flex',
+				justifyContent: 'space-around',
+				padding: '10px',
+				backgroundColor: '#f5f5f5',
+				borderTop: '1px solid #ddd'
+			}}>
+				<Button onClick={goHome}>👥 Contacts</Button>
+				<Button onClick={goChattingList}>💬 Chats</Button>
+				<Button onClick={goSetting}>⚙️ Settings</Button>
 			</div>
 		</div>
 	);

@@ -1,6 +1,7 @@
 package com.spring.daon.hrMgt;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +57,15 @@ public interface HRMgtMapper {
 
     // 부서별 사원 수 통계
     List<Map<String, Object>> getEmployeeCountByDepartment();
+    
+    // 계약직/인턴 사원 목록 
+    List<Employees> findContractEmployees();
+    
+    // 계약 만료일 연장 (계약직/인턴 대상)
+    int extendContract(@Param("empNo") int empNo, @Param("newEndDate") Date newEndDate);
+    
+    // 정직원 전환 처리 
+    int convertToRegular(@Param("empNo") int empNo);
 
     
 } 

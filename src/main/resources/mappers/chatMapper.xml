@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.daon.messenger.chat.ChatMapper">
+	
+	<!-- 채팅방 유무 체크 -->
+	<select id="isRoomExists" resultType="boolean">
+		SELECT COUNT(*) > 0
+		FROM chat_room
+		WHERE room_code = #{roomCode}
+	</select>
+
+	<!-- 기존 두 유저간 방 코드 조회 -->
+    <select id="findRoomCodeByUsers" resultType="String">
+        SELECT room_code
+	    FROM chat_room_user
+	    WHERE user_id IN (#{user1}, #{user2})
+	    GROUP BY room_code
+	    HAVING COUNT(DISTINCT user_id) = 2
+    </select>	
+    
+	<!-- 채팅방 생성 -->
+	<insert id="createRoom">
+		INSERT INTO chat_room (room_code, room_group)
+		VALUES (#{roomCode}, FALSE)
+	</insert>
+	
+	<!-- 채팅방에 유저 추가 -->
+	<insert id="insertRoomUser">
+		INSERT INTO chat_room_user (room_code, user_id)
+		VALUES (#{roomCode}, #{userId})
+	</insert>
+	
+	<!-- 메시지 저장 -->
+    <insert id="saveMessage" parameterType="com.spring.daon.messenger.chat.dto.ChatMessage">
+        INSERT INTO chat_msg (
+            msg_room_code,
+            msg_send_id,
+            msg_text,
+            msg_type,
+            msg_created
+        )
+        VALUES (
+            #{roomCode},
+            #{senderId},
+            #{content},
+            #{type},
+            NOW()
+        )
+    </insert>
+    
+    <!-- 채팅창 목록 -->
+	<select id="getChatRoomsByUser" resultType="com.spring.daon.messenger.chat.dto.ChatRoomList">
+		SELECT 
+		    r.room_code AS roomCode,
+		    m.msg_text AS lastMessage,
+		    m.msg_created AS lastTime
+		FROM chat_room_user u
+		JOIN chat_room r ON u.room_code = r.room_code
+		LEFT JOIN (
+		    SELECT msg_room_code, msg_text, msg_created
+		    FROM chat_msg
+		    WHERE (msg_room_code, msg_created) IN (
+		        SELECT msg_room_code, MAX(msg_created)
+		        FROM chat_msg
+		        GROUP BY msg_room_code
+		    )
+		) m ON r.room_code = m.msg_room_code
+		WHERE u.user_id = #{userId}
+		ORDER BY m.msg_created DESC
+	</select>
+
+    <!-- 최근 메시지 조회 -->
+    <select id="selectRecentMessages" resultType="com.spring.daon.messenger.chat.dto.ChatMessage">
+        SELECT 
+            msg_id AS id,
+            msg_room_code AS roomCode,
+            msg_send_id AS senderId,
+            msg_text AS content,
+            msg_type AS type,
+            msg_created AS timestamp
+        FROM chat_msg
+        WHERE msg_room_code = #{roomCode}
+        ORDER BY msg_created DESC
+        LIMIT 50
+    </select>
+    
+	<!-- 채팅방 상대 유저 정보 (이름/부서/직급/이미지 등) -->
+    <select id="selectTargetUser" resultType="com.spring.daon.hrMgt.Employees">
+        SELECT emp_no, emp_name, dept_no, position_id, emp_img
+        FROM employees
+        WHERE emp_no = #{targetId}
+    </select>
+    
+    <!-- roomCode 기준, 본인을 제외한 상대방 ID 조회 -->
+	<select id="findOtherUserIdInRoom" resultType="int">
+	    SELECT user_id
+		FROM chat_room_user
+		WHERE room_code = #{roomCode}
+	  	AND user_id != #{myId}
+	</select>
+	
+	<!-- 읽지 않은 메시지를 읽음 처리 -->
+	<update id="markAsRead">
+	    UPDATE chat_msg
+	    SET is_read = TRUE
+	    WHERE msg_room_code = #{roomCode} 
+	    AND msg_send_id != #{userId}
+	</update>
+	
+	<!-- roomCode + senderId로 상대방 emp_no 찾기 -->
+    <select id="getReceiverId" resultType="int">
+        SELECT user_id
+        FROM chat_room_user
+        WHERE room_code = #{roomCode}
+        AND user_id != #{senderId}
+        LIMIT 1
+    </select>
+    
+	<select id="getMessagesByRoomCode" resultType="com.spring.daon.messenger.chat.dto.ChatMessage">
+		SELECT
+		  msg_room_code AS roomCode,
+		  msg_send_id AS senderId,
+		  msg_text AS content,
+		  msg_type AS type,
+		  msg_created AS timestamp,
+		  cf.original_name AS originalName
+		FROM chat_msg cm
+		LEFT JOIN chat_file cf ON cm.msg_text = CONCAT('/uploads/', cf.saved_name)
+		WHERE msg_room_code = #{roomCode}
+		ORDER BY msg_created ASC
+	</select>
+	
+	<select id="getUserIdsByRoomCode" resultType="int">
+	    SELECT user_id
+	    FROM chat_room_user
+	    WHERE room_code = #{roomCode}
+	</select>
+</mapper>

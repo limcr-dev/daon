@@ -15,6 +15,7 @@ const Home = () => {
   const [showTodayWeather, setShowTodayWeather] = useState(false);
   const [showOrgChart, setShowOrgChart] = useState(false);
   const [selectedEmpNo, setSelectedEmpNo] = useState(null);
+  const [profileReloadKey, setProfileReloadKey] = useState(0);
 
   const handleItemClick = (path) => navigate(path);
   const handleMoreClick = () => alert('더보기 버튼 클릭!');
@@ -49,7 +50,7 @@ const Home = () => {
 
       {/* 오른쪽 전체 영역 */}
       <div style={{ flexGrow: 1 }}>
-        <Header />
+        <Header onProfileUpdated={() => setProfileReloadKey(prev => prev + 1)}/>
 
         <Content>
           <div style={{ display: 'flex', gap: '20px', padding: '20px' }}>
@@ -114,7 +115,7 @@ const Home = () => {
             </div>
 
             <div style={{ width: '260px' }}>
-              <Rightbar />
+              <Rightbar reloadTrigger={profileReloadKey}/>
             </div>
           </div>
         </Content>

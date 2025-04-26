@@ -37,6 +37,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {  // 요청당 한번�
 			return;
 		}
 		
+		// WebSocket
+		if (requestURI != null && requestURI.contains("/ws-chat")) {
+		    filterChain.doFilter(request, response);
+		    return;
+		}
+
+		// 멀티파트 업로드 URL
+		if (requestURI != null && requestURI.contains("/messenger/file/upload")) {
+		    System.out.println("파일 업로드 요청은 필터 통과");
+		    filterChain.doFilter(request, response);
+		    return;
+		}
+		
 		// Authorization 헤더에서 토큰 추출
 		String header = request.getHeader(HttpHeaders.AUTHORIZATION);	// 르그인 시점에 보인다
 		

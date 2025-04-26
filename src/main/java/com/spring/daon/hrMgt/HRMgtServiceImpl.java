@@ -1,6 +1,7 @@
 package com.spring.daon.hrMgt;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -97,5 +98,20 @@ public class HRMgtServiceImpl {
         return Mapper.getEmployeeCountByDepartment();
     }
     
+    // 계약직/인턴 사원 목록 
+    @Transactional(readOnly = true)
+    public List<Employees> findContractEmployees() {
+        return Mapper.findContractEmployees();
+    }
+    // 계약 만료일 연장 (계약직/인턴 대상)
+    @Transactional
+    public int extendContract(int empNo, Date newEndDate) {
+        return Mapper.extendContract(empNo, newEndDate);
+    }
+    // 정직원 전환 처리 
+    @Transactional
+    public int convertToRegular(int empNo) {
+        return Mapper.convertToRegular(empNo);
+    }
     
 }

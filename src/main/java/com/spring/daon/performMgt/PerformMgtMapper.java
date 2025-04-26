@@ -3,6 +3,7 @@ package com.spring.daon.performMgt;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,10 +46,35 @@ public interface PerformMgtMapper {
 	public List<EvalQuesComp> updateFind(String eval_order_num);
 	
 	// 동료 불러오기
-	public List<Employees> peerList() ;
+	public List<PeerTarget> peerList(int emp_no) ;
 	
-	// 평가 결과 저장하기
+	// 동료평가 평가자 피평가자 insert
+	public int insertPeerTarget(PeerTarget peerTarget);
+	
+	// 평가 결과 저장하기 => 동료평가
 	public int insertPeerEval(EvalPeer evalPeer);
+	
+	// 자기평가 리스트 불러오기
+	public List<SelfTarget> selfList(int emp_no) ;
+		
+	// insert 하기  => 자기평가
+	public int selfTargetInsert(SelfTarget selfTarget);
+	
+	// 평가 결과 저장하기 => 자기 평가
+	public int insertSelfEval(EvalSelf evalSelf);
+	
+	// 전체 직원 평가 현황 
+	public List<EvalEmployees> evalStatus();
+	
+	//전체 직원 리스트
+	public List<Employees> employees();
+	
+	//동료평가리스트
+	public List<EvalPeer> evalPeer();
+	
+	// 자기평가 리스트 
+	public List<EvalSelf> evalSelf();
+	
 	
 	// 역량별 문제 불러오기
 	

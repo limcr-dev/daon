@@ -3,22 +3,20 @@ import { Card, Text, Avatar, HStack, VStack } from 'rsuite';
 import Attendance from './Attendance';
 import { getPositionName, getDeptName } from "../../../hrMgt/components/getEmployeeInfo";
 import { useUser } from '../../../common/contexts/UserContext';
-import { request } from '../../../common/components/helpers/axios_helper'; // ✅ axios 헬퍼 import
+import { request } from '../../../common/components/helpers/axios_helper';
 
-const Profile = () => {
+const Profile = ({ reloadTrigger }) => {
   const { user } = useUser();
   const [empData, setEmpData] = useState(null);
 
-
+  // ✅ reloadTrigger가 변경될 때마다 다시 조회
   useEffect(() => {
-    if (user && user.emp_no) {
+    if (user?.emp_no) {
       request("get", `/api/employee/${user.emp_no}`)
         .then((res) => setEmpData(res.data))
-        .catch((err) => {
-          console.error("사원 정보 조회 실패:", err);
-        });
+        .catch((err) => console.error("사원 정보 조회 실패:", err));
     }
-  }, [user]);
+  }, [user, reloadTrigger]);
 
   if (!empData) {
     return <div style={{ textAlign: 'center', paddingTop: '40px' }}>로딩 중...</div>;
@@ -92,4 +90,4 @@ const Profile = () => {
   );
 };
 
-export default Profile; 
+export default Profile;

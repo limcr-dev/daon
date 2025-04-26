@@ -1,4 +1,4 @@
-package com.spring.daon.messenger;
+package com.spring.daon.messenger.addressBook;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import com.spring.daon.hrMgt.Employees;
 
 @Mapper
 @Repository
-public interface MessengerMapper {
+public interface AddressBookMapper {
 
 	// 주소록 목록 조회
 	public List<Employees> abList(int startRow, int size);

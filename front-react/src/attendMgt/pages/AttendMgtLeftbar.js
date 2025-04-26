@@ -200,13 +200,6 @@ const AttendMgtLeftbar = (props) => {
           {/* 퇴근 확인 모달창 끝 */}
         </div>
         {/* 출퇴근 버튼 끝 */}
-        <Dropdown title="근무상태 변경" className="custom-dropdown">
-          <Dropdown.Item>업무</Dropdown.Item>
-          <Dropdown.Item>업무종료</Dropdown.Item>
-          <Dropdown.Item>외근</Dropdown.Item>
-          <Dropdown.Item>출장</Dropdown.Item>
-          <Dropdown.Item>반차</Dropdown.Item>
-        </Dropdown>
       </Sidenav.Header>
       <Divider />
       {/* header 끝 */}

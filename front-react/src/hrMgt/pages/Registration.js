@@ -1,8 +1,42 @@
+// 📁 Registration.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Modal, Button } from "rsuite";
 import "../css/Registration.css";
 import { request } from "../../common/components/helpers/axios_helper";
+
+// ✅ 부서 계층 구조
+const departmentData = {
+  1: {
+    name: "회사",
+    children: {
+      10: {
+        name: "인사부",
+        children: [
+          { label: "인사팀", value: 101 },
+          { label: "총무팀", value: 102 },
+          { label: "회계팀", value: 103 },
+        ]
+      },
+      20: {
+        name: "개발부",
+        children: [
+          { label: "연구개발팀", value: 201 },
+          { label: "생산관리팀", value: 202 },
+          { label: "IT팀", value: 203 },
+        ]
+      },
+      30: {
+        name: "영업부",
+        children: [
+          { label: "영업팀", value: 301 },
+          { label: "마케팅팀", value: 302 },
+          { label: "품질관리팀", value: 303 },
+        ]
+      }
+    }
+  }
+};
 
 const Registration = ({ open, onClose }) => {
   const navigate = useNavigate();
@@ -18,22 +52,36 @@ const Registration = ({ open, onClose }) => {
     emp_ext_tel: '',
     position_id: '',
     role_id: '',
-    dept_no: '',
+    dept_no: '1',
     emp_status: '1',
     emp_type: '',
     emp_img: '',
     hire_date: '',
     leave_date: '',
+    contract_end_date: '',
     admin_type: '1',
     work_type_no: '',
     token: ''
   });
 
   const [imageFile, setImageFile] = useState(null);
+  const [upperDept, setUpperDept] = useState('');
+  const [middleDept, setMiddleDept] = useState('');
 
   const changeValue = (e) => {
     const { name, value } = e.target;
     setEmployee((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleTopDeptChange = (e) => {
+    setUpperDept(e.target.value);
+    setMiddleDept('');
+    setEmployee((prev) => ({ ...prev, dept_no: '' }));
+  };
+
+  const handleMiddleDeptChange = (e) => {
+    setMiddleDept(e.target.value);
+    setEmployee((prev) => ({ ...prev, dept_no: e.target.value }));
   };
 
   const handleImageChange = (e) => {
@@ -67,11 +115,9 @@ const Registration = ({ open, onClose }) => {
 
   return (
     <Modal open={open} onClose={onClose} size="lg">
-      <Modal.Header>
-        <h3>사원 등록</h3>
-      </Modal.Header>
+      <Modal.Header><h3>👤 사원 등록</h3></Modal.Header>
       <Modal.Body>
-        <form onSubmit={submitEmployee}>
+        <form onSubmit={submitEmployee} style={{ maxWidth: "860px", margin: "0 auto" }}>
           <div className="form-row">
             <div className="form-group">
               <label>프로필 이미지:</label>
@@ -80,14 +126,13 @@ const Registration = ({ open, onClose }) => {
             <div className="form-group">
               <label>성별:</label>
               <select name="emp_gender" value={employee.emp_gender} onChange={changeValue} required>
-                <option value="">성별 선택</option>
+                <option value="">선택</option>
                 <option value="M">남자</option>
                 <option value="F">여자</option>
               </select>
             </div>
           </div>
 
-          {/* 👇 나머지 입력 폼은 그대로 */}
           <div className="form-row">
             <div className="form-group">
               <label>이름:</label>
@@ -110,6 +155,7 @@ const Registration = ({ open, onClose }) => {
             </div>
           </div>
 
+          
           <div className="form-row">
             <div className="form-group">
               <label>사내 이메일:</label>
@@ -136,7 +182,7 @@ const Registration = ({ open, onClose }) => {
             <div className="form-group">
               <label>직책:</label>
               <select name="role_id" value={employee.role_id} onChange={changeValue} required>
-                <option value="">직책 선택</option>
+                <option value="">선택</option>
                 <option value="10">임원</option>
                 <option value="20">부서장</option>
                 <option value="30">팀장</option>
@@ -147,47 +193,36 @@ const Registration = ({ open, onClose }) => {
             <div className="form-group">
               <label>직급:</label>
               <select name="position_id" value={employee.position_id} onChange={changeValue} required>
-                <option value="">직급 선택</option>
+                <option value="">선택</option>
                 <option value="10">사장</option>
-                <option value="15">부사장</option>
                 <option value="20">전무</option>
-                <option value="25">상무</option>
                 <option value="30">이사</option>
-                <option value="35">부장</option>
-                <option value="40">차장</option>
-                <option value="45">과장</option>
-                <option value="50">대리</option>
-                <option value="55">사원</option>
-                <option value="60">인턴</option>
+                <option value="40">부장</option>
+                <option value="50">과장</option>
+                <option value="60">대리</option>
+                <option value="70">사원</option>
+                <option value="80">인턴</option>
               </select>
             </div>
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label>부서:</label>
-              <select name="dept_no" value={employee.dept_no} onChange={changeValue} required>
-                <option value="">부서 선택</option>
-                <option value="10">경영부</option>
-                <option value="101">경영부(인사팀)</option>
-                <option value="102">경영부(총무팀)</option>
-                <option value="103">경영부(회계팀)</option>
-                <option value="20">개발부</option>
-                <option value="201">개발부(연구개발팀)</option>
-                <option value="202">개발부(생산관리팀)</option>
-                <option value="203">개발부(IT팀)</option>
-                <option value="30">영업부</option>
-                <option value="301">영업부(영업팀)</option>
-                <option value="302">영업부(마케팅팀)</option>
-                <option value="303">영업부(품질관리팀)</option>
+              <label>상위 부서:</label>
+              <select value={upperDept} onChange={handleTopDeptChange} required>
+                <option value="">상위 부서 선택</option>
+                {Object.entries(departmentData[1].children).map(([key, dept]) => (
+                  <option key={key} value={key}>{dept.name}</option>
+                ))}
               </select>
             </div>
             <div className="form-group">
-              <label>권한:</label>
-              <select name="admin_type" value={employee.admin_type} onChange={changeValue} required>
-                <option value="1">일반 사용자</option>
-                <option value="2">관리자</option>
-                <option value="3">인사 관리자</option>
+              <label>하위 부서:</label>
+              <select value={middleDept} onChange={handleMiddleDeptChange} required>
+                <option value="">하위 부서 선택</option>
+                {departmentData[1].children[upperDept]?.children.map((child) => (
+                  <option key={child.value} value={child.value}>{child.label}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -196,17 +231,36 @@ const Registration = ({ open, onClose }) => {
             <div className="form-group">
               <label>고용 형태:</label>
               <select name="emp_type" value={employee.emp_type} onChange={changeValue} required>
+                <option value="">선택</option>
                 <option value="1">정직원</option>
                 <option value="2">계약직</option>
                 <option value="3">인턴</option>
                 <option value="4">프리랜서</option>
               </select>
             </div>
+            {(employee.emp_type === '2' || employee.emp_type === '3') && (
+            
+              <div className="form-group">
+                <label>계약 만료일:</label>
+                <input type="date" name="contract_end_date" value={employee.contract_end_date} onChange={changeValue} />
+              </div>
+            )}
+
             <div className="form-group">
               <label>근무 형태:</label>
               <select name="work_type_no" value={employee.work_type_no} onChange={changeValue} required>
                 <option value="1">오전근무</option>
                 <option value="2">오후근무</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label>권한:</label>
+              <select name="admin_type" value={employee.admin_type} onChange={changeValue} required>
+                <option value="1">일반 사용자</option>
+                <option value="2">관리자</option>
+                <option value="3">인사 관리자</option>
+                <option value="4">부서 관리자</option>
+                <option value="5">팀 관리자</option>
               </select>
             </div>
           </div>
