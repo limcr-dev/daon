@@ -6,7 +6,8 @@ import SalaryItemFormModal from "./SalaryItemFormModal";
 import { getPositionName, getDeptName } from "../../../hrMgt/components/getEmployeeInfo";
 import { request } from "../../../common/components/helpers/axios_helper";
 import Header from '../../../common/pages/Header';
-import "../../css/EmployeeItemConfig.css"; // ✅ 스타일 파일 import
+import Paging from "../../../common/components/paging.js"; // ✅ 페이징 추가
+import "../../css/EmployeeItemConfig.css";
 
 const EmployeeItemConfig = () => {
   const [employees, setEmployees] = useState([]);
@@ -21,6 +22,9 @@ const EmployeeItemConfig = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState();
   const [editItem, setEditItem] = useState(null);
+
+  const [page, setPage] = useState(1);    // ✅ 현재 페이지
+  const size = 13;             // ✅ 한 페이지당 보여줄 개수
 
   const fetchEmployees = useCallback(() => {
     request("get", "/api/employeeList")
@@ -91,6 +95,16 @@ const EmployeeItemConfig = () => {
     emp.emp_name.toLowerCase().includes(searchKeyword.toLowerCase())
   );
 
+  // ✅ 현재 페이지 데이터 slice
+  const startIndex = (page - 1) * size;
+  const endIndex = startIndex + size;
+  const paginatedList = filteredEmployees.slice(startIndex, endIndex);
+
+  const handleSearchChange = (value) => {
+    setSearchKeyword(value);
+    setPage(1); // 검색 시 페이지 초기화
+  };
+
   return (
     <Container style={{ minHeight: "100vh", width: "100%" }}>
       <Leftbar />
@@ -111,7 +125,7 @@ const EmployeeItemConfig = () => {
               <Input
                 placeholder="사원 이름 검색"
                 value={searchKeyword}
-                onChange={setSearchKeyword}
+                onChange={handleSearchChange}
                 style={{ width: 200, marginRight: 320 }}
               />
               <label style={{ marginRight: 10 }}>급여 월:</label>
@@ -133,6 +147,7 @@ const EmployeeItemConfig = () => {
             </div>
 
             <div style={{ display: "flex", gap: 20 }}>
+              {/* ✅ 사원 목록 */}
               <Card style={{ flex: 1, padding: 15 }}>
                 <table className="employee-item-config-table">
                   <thead>
@@ -143,7 +158,7 @@ const EmployeeItemConfig = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredEmployees.map((emp) => (
+                    {paginatedList.map((emp) => (
                       <tr
                         key={emp.emp_no}
                         className={selectedEmp?.emp_no === emp.emp_no ? "selected-row" : ""}
@@ -156,8 +171,21 @@ const EmployeeItemConfig = () => {
                     ))}
                   </tbody>
                 </table>
+
+                {/* ✅ 페이징 */}
+                <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+                  <Paging
+                    paging={{
+                      page: page,
+                      size: size,
+                      totalCount: filteredEmployees.length
+                    }}
+                    onPageChange={(newPage) => setPage(newPage)}
+                  />
+                </div>
               </Card>
 
+              {/* ✅ 선택된 사원 급여 항목 */}
               <Card style={{ flex: 2, padding: 15 }}>
                 {selectedEmp ? (
                   <>
@@ -199,6 +227,7 @@ const EmployeeItemConfig = () => {
               </Card>
             </div>
 
+            {/* ✅ 수당/공제 등록/수정 모달 */}
             {showModal && selectedEmp && (
               <SalaryItemFormModal
                 open={showModal}
