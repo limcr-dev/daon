@@ -35,6 +35,13 @@ const Header = ({ onProfileUpdated }) => {
     ? `http://localhost:8081/api/images/${encodeURIComponent(empImg)}`
     : '/default-profile.jpg';
 
+  //메신저 실행
+  const msgRun = () => {
+    const url = `/messenger/messengerRun`;
+    const features = 'width=500,height=600,resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no,location=no';
+    window.open(url, '_blank', features)
+  }
+
   return (
     <>
       <div
@@ -54,7 +61,7 @@ const Header = ({ onProfileUpdated }) => {
         <div style={{ fontWeight: 'bold', fontSize: '18px' }}>Daon Groupware</div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: 'auto' }}>
-          <IconButton icon={<MessageIcon />} size="sm" appearance="subtle" title="메신저" />
+          <IconButton icon={<MessageIcon />} onClick={msgRun} size="sm" appearance="subtle" title="메신저" />
           <IconButton icon={<EmailIcon />} size="sm" appearance="subtle" title="이메일" />
           <IconButton icon={<WechatOutlineIcon />} size="sm" appearance="subtle" title="챗봇" />
 

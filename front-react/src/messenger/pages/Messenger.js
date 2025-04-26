@@ -12,7 +12,7 @@ const Messenger = () => {
 
   return (
     <div>
-      <Container style={{ minHeight: '100vh', width: '100%' }}>
+      {/* <Container style={{ minHeight: '100vh', width: '100%' }}>
         <Leftbar />
         <Container>
           <MessengerLeftbar />
@@ -20,7 +20,7 @@ const Messenger = () => {
           </Content>
         </Container>
       </Container>
-      <img src="/image/chat_list.jpg" alt="Daon" style={{ width: '300px', height: 'auto' }} />
+      <img src="/image/chat_list.jpg" alt="Daon" style={{ width: '300px', height: 'auto' }} /> */}
     </div >
   );
 };
