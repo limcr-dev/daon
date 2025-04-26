@@ -1,4 +1,4 @@
-package com.spring.daon.messenger;
+package com.spring.daon.messenger.addressBook;
 
 import java.util.List;
 
@@ -9,10 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.spring.daon.hrMgt.Employees;
 
 @Service
-public class MessengerServiceImpl {
+public class AddressBookServiceImpl {
 	
 	@Autowired
-	private MessengerMapper messengerMapper;
+	private AddressBookMapper messengerMapper;
 	
 	// 주소록 목록 조회
 	@Transactional

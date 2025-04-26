@@ -1,4 +1,4 @@
-package com.spring.daon.messenger;
+package com.spring.daon.messenger.addressBook;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,16 +20,16 @@ import com.spring.daon.paging.Paging;
 @RestController
 @RequestMapping("/messenger")
 @CrossOrigin
-public class MessengerController {
+public class AddressBookController {
 	
 	@Autowired
-	private MessengerServiceImpl service;
+	private AddressBookServiceImpl service;
 	
 	// http://localhost:8081/messenger/addressBook
 	@GetMapping("/addressBook")
 	public ResponseEntity<Map<String, Object>> addressBook(
 			@RequestParam(defaultValue = "1") int page,
-		    @RequestParam(defaultValue = "10") int size,
+		    @RequestParam(defaultValue = "15") int size,
 		    @RequestParam(required = false) String search) {
 	    System.out.println("<<< addressBook >>> search : " + search);
 
