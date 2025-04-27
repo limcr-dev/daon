@@ -4,22 +4,22 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Content, Divider, Button, Modal, Form, Input } from 'rsuite';
 import Leftbar from '../../common/pages/Leftbar';
 import ApproveLeftbar from './ApproveLeftbar';
-import ApproveInfo from './ApproveInfo';
 import ExpenseForm from '../components/ExpenseForm ';
 import '../css/approveForm.css'; // 스타일 파일
-import ApproveLine from './ApproveLine';
 import { useUser } from '../../common/contexts/UserContext';
 import { request } from '../../common/components/helpers/axios_helper';
 import WorkReportDetail from '../components/WorkReportDetail';
 import { getFormName, StatusBadge, UrgentBadge } from '../components/ApprCodeToText';
 import VacationDetail from '../components/VacationDetail';
+import ApproveInfo from '../components/ApproveInfo';
+import Header from '../../common/pages/Header';
 
 const DocumentDetail = () => {
     const { user } = useUser();     // 로그인 유저 정보
     const params = useParams(); // form_no를 가져오기 위한 변수
     const form_no = parseInt(params.form_no);
     const doc_no = parseInt(params.doc_no);
-     const [isUrgent, setIsUrgent] = useState(false);
+    const [isUrgent, setIsUrgent] = useState(false);
 
     const [approveModalOpen, setApproveModalOpen] = useState(false);
     const [rejectModalOpen, setRejectModalOpen] = useState(false);
@@ -27,10 +27,8 @@ const DocumentDetail = () => {
 
     const navigate = useNavigate(); // 화면 이동을 위한 변수
 
-    const today = new Date();       // 상태 변경일 지정
     const [line, setLine] = useState([]);   // 결재 라인 정보 저장
     const [formData, setFormData] = useState(null); // 각 양식별 데이터 저장
-
     const [document, setDocument] = useState([])
 
     // 결재자 상태 확인 함수
@@ -136,9 +134,6 @@ const DocumentDetail = () => {
         }
     }, [doc_no, form_no])
 
-    // 모달창 오픈 함수
-    const [InfoOpen, setInfoOpen] = useState(false);
-
     // form_no에 따라 다른 양식 컴포넌트를 렌더링
     const renderFormContent = () => {
         switch (form_no) {
@@ -160,122 +155,148 @@ const DocumentDetail = () => {
             <Leftbar />
             <Container>
                 <ApproveLeftbar />
-                <Content style={{ marginLeft: '15px', marginTop: '15px', position: 'relative' }}>
-                    {/* 상단 헤더 */}
-                    <div className="document-header">
-                        <div className="document-title">
-                            <h3>{getFormName(form_no)} 상세내용</h3>
+                <Content>
+                    <Header />
+                    <Content style={{ margin: '20px' }}>
+                        <div className="document-header">
+                            <div className="document-title">
+                                <h3>{getFormName(form_no)} 상세내용</h3>
+                            </div>
                         </div>
-                    </div>
-                    <br />
-                    {/* 문서 액션 버튼 */}
-                    {/* Icon 컴포넌트 import 추가 필요: import { Icon } from 'rsuite'; */}
+                        <br />
+                        {/* 문서 액션 버튼 */}
+                        {/* Icon 컴포넌트 import 추가 필요: import { Icon } from 'rsuite'; */}
 
-                    <div className="document-actions" style={{ display: 'flex', flexDirection: 'row', marginTop: '10px', gap: '10px' }}>
+                        <div className="document-actions" style={{ display: 'flex', flexDirection: 'row', marginTop: '10px', gap: '10px' }}>
 
-                        {/* 문서 작성자이고 임시저장 상태일 때 */}
-                        {user.emp_no === document.emp_no && document.doc_status === 1 && (
-                            <>
-                                <Button appearance='primary' color='blue' onClick={() => { navigate(`/approve/documentUpdate/${form_no}/${doc_no}`) }}>수정</Button>
-                            </>
-                        )}
+                            {/* 문서 작성자이고 임시저장 상태일 때 */}
+                            {user.emp_no === document.emp_no && document.doc_status === 1 && (
+                                <>
+                                    <Button appearance='primary' color='blue' onClick={() => { navigate(`/approve/documentUpdate/${form_no}/${doc_no}`) }}>수정</Button>
+                                </>
+                            )}
 
-                        {/* 문서 작성자이고 임시저장 상태가 아닐 때 */}
-                        {user.emp_no === document.emp_no && document.doc_status === 2 && (
-                            <Button appearance='primary' color='orange' onClick={handleCancel}>상신 취소</Button>
-                        )}
+                            {/* 문서 작성자이고 임시저장 상태가 아닐 때 */}
+                            {user.emp_no === document.emp_no && document.doc_status === 2 && (
+                                <Button appearance='primary' color='orange' onClick={handleCancel}>상신 취소</Button>
+                            )}
 
-                        {/* 결재자이고 결재 상태가 대기(2)일 때 */}
-                        {user.emp_no !== document.emp_no && getApproverStatus() === 2 && (
-                            <>
-                                <Button appearance='primary' color='green' onClick={() => setApproveModalOpen(true)}>승인</Button>
-                                <Button appearance='primary' color='red' onClick={() => setRejectModalOpen(true)}>반려</Button>
-                            </>
-                        )}
+                            {/* 결재자이고 결재 상태가 대기(2)일 때 */}
+                            {user.emp_no !== document.emp_no && getApproverStatus() === 2 && (
+                                <>
+                                    <Button appearance='primary' color='green' onClick={() => setApproveModalOpen(true)}>승인</Button>
+                                    <Button appearance='primary' color='red' onClick={() => setRejectModalOpen(true)}>반려</Button>
+                                </>
+                            )}
 
-                        {/* 공통 버튼 */}
-                        <Button appearance='ghost' color='blue' onClick={() => navigate('/approve')}>목록</Button>
+                            {/* 공통 버튼 */}
+                            <Button appearance='ghost' color='blue' onClick={() => navigate('/approve')}>목록</Button>
 
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                        }}>
-                            <UrgentBadge isUrgent={document.doc_urgent} />
-                            <span style={{ marginLeft: '10px' }}><StatusBadge status={document.doc_status} /></span>
-                        </div>
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                            }}>
+                                <UrgentBadge isUrgent={document.doc_urgent} />
+                                <span style={{ marginLeft: '10px' }}><StatusBadge status={document.doc_status} /></span>
+                            </div>
 
-                        {/* 승인 모달 */}
-                        <Modal open={approveModalOpen} onClose={() => setApproveModalOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Modal.Header style={{ minWidth: '300px' }}>
-                                <Modal.Title>결재 승인</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <Form fluid>
-                                    <Form.Group>
-                                        <Form.ControlLabel>코멘트</Form.ControlLabel>
-                                        <Input
-                                            as="textarea"
-                                            rows={3}
-                                            placeholder="승인 코멘트를 입력하세요..."
-                                            value={comment}
-                                            onChange={(value) => setComment(value)}
-                                        />
-                                    </Form.Group>
-                                </Form>
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button onClick={handleApprove} appearance="primary" color="green">
-                                    승인
-                                </Button>
-                                <Button onClick={() => setApproveModalOpen(false)} appearance="subtle">
-                                    취소
-                                </Button>
-                            </Modal.Footer>
-                        </Modal>
+                            {/* 승인 모달 */}
+                            <Modal open={approveModalOpen} onClose={() => setApproveModalOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Modal.Header style={{ minWidth: '300px' }}>
+                                    <Modal.Title>결재 승인</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <Form fluid>
+                                        <Form.Group>
+                                            <Form.ControlLabel>코멘트</Form.ControlLabel>
+                                            <Input
+                                                as="textarea"
+                                                rows={3}
+                                                placeholder="승인 코멘트를 입력하세요..."
+                                                value={comment}
+                                                onChange={(value) => setComment(value)}
+                                            />
+                                        </Form.Group>
+                                    </Form>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button onClick={handleApprove} appearance="primary" color="green">
+                                        승인
+                                    </Button>
+                                    <Button onClick={() => setApproveModalOpen(false)} appearance="subtle">
+                                        취소
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
 
-                        {/* 반려 모달 */}
-                        <Modal open={rejectModalOpen} onClose={() => setRejectModalOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Modal.Header style={{ minWidth: '300px' }}>
-                                <Modal.Title>결재 반려</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <Form fluid>
-                                    <Form.Group>
-                                        <Form.ControlLabel>반려 사유</Form.ControlLabel>
-                                        <Input
-                                            as="textarea"
-                                            rows={3}
-                                            placeholder="반려 사유를 입력하세요..."
-                                            value={comment}
-                                            onChange={(value) => setComment(value)}
-                                        />
-                                    </Form.Group>
-                                </Form>
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button onClick={handleReject} appearance="primary" color="red">
-                                    반려
-                                </Button>
-                                <Button onClick={() => setRejectModalOpen(false)} appearance="subtle">
-                                    취소
-                                </Button>
-                            </Modal.Footer>
-                        </Modal>
-                    </div>
-
-                    <Divider />
-                    {/* 메인 콘텐츠와 우측 사이드바 */}
-                    <div style={{ display: 'flex', flexWrap: 'nowrap' }}>
-                        {/* 메인 콘텐츠 영역 */}
-                        <div style={{ flex: '1 1 auto', minWidth: '900px' }}>
-                            {renderFormContent()}
+                            {/* 반려 모달 */}
+                            <Modal open={rejectModalOpen} onClose={() => setRejectModalOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Modal.Header style={{ minWidth: '300px' }}>
+                                    <Modal.Title>결재 반려</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <Form fluid>
+                                        <Form.Group>
+                                            <Form.ControlLabel>반려 사유</Form.ControlLabel>
+                                            <Input
+                                                as="textarea"
+                                                rows={3}
+                                                placeholder="반려 사유를 입력하세요..."
+                                                value={comment}
+                                                onChange={(value) => setComment(value)}
+                                            />
+                                        </Form.Group>
+                                    </Form>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button onClick={handleReject} appearance="primary" color="red">
+                                        반려
+                                    </Button>
+                                    <Button onClick={() => setRejectModalOpen(false)} appearance="subtle">
+                                        취소
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
                         </div>
 
-                        {/* 우측 사이드바 영역 - 미디어 쿼리로 제어 */}
-                        <div className="side-panel">
-                            <ApproveInfo approveLine={line} />
+                        <div style={{ marginTop: '20px' }}>
+                            {document.doc_filename ? (
+                                <>
+                                    <Button
+                                        appearance="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                            const encodedFilename = encodeURIComponent(document.doc_filename);
+                                            const downloadUrl = `http://localhost:8081/api/s3/library/download/${encodedFilename}`;
+                                            window.open(downloadUrl, '_blank');
+                                        }}
+                                    >
+                                        파일 다운로드
+                                    </Button>
+                                    &nbsp;&nbsp;&nbsp; 파일명 &nbsp;:&nbsp;&nbsp;
+                                    {document.doc_filename && document.doc_filename.includes('_')
+                                        ? decodeURIComponent(document.doc_filename.substring(document.doc_filename.indexOf('_') + 1))
+                                        : '첨부 없음'}
+                                </>
+                            ) : (
+                                <span>첨부 없음</span>
+                            )}
                         </div>
-                    </div>
+
+                        <Divider />
+                        {/* 메인 콘텐츠와 우측 사이드바 */}
+                        <div style={{ display: 'flex', flexWrap: 'nowrap' }}>
+                            {/* 메인 콘텐츠 영역 */}
+                            <div style={{ flex: '1 1 auto', minWidth: '900px' }}>
+                                {renderFormContent()}
+                            </div>
+
+                            {/* 우측 사이드바 영역 - 미디어 쿼리로 제어 */}
+                            <div className="side-panel">
+                                <ApproveInfo approveLine={line} />
+                            </div>
+                        </div>
+                    </Content>
                 </Content>
             </Container>
         </Container>

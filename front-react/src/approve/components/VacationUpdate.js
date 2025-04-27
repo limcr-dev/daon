@@ -90,6 +90,7 @@ const VacationUpdate = ({ approveLine, onFormDataChange, formData, docData }) =>
     vacationForm.start_date,
     vacationForm.end_date,
     vacationForm.used_days,
+    vacationForm.remaining_days,
     line
   ]);
 
@@ -331,17 +332,6 @@ const VacationUpdate = ({ approveLine, onFormDataChange, formData, docData }) =>
             </tr>
           </tbody>
         </table>
-
-        <div className="form-footer">
-          <div className="attachment-section">
-            <h3>파일첨부</h3>
-            <div className="attachment-box">
-              <div className="attachment-placeholder">
-                <span>이 곳에 파일을 드래그 하세요. 또는 파일첨부</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

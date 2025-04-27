@@ -3,7 +3,7 @@ import { Button, Tree } from 'rsuite';
 import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
 import { useUser } from '../../common/contexts/UserContext';
 import '../css/approve.css'
-import { getApprStatusText } from '../components/ApprCodeToText';
+import { getApprStatusText } from './ApprCodeToText';
 
 const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
 
@@ -37,9 +37,6 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
 
     // 신청자 결재선 제일 첫번째에 넣기
     useEffect(() => {
-        console.log("컴포넌트 마운트 - 초기 line 상태:", line);
-        console.log("컴포넌트 마운트 - 초기 user 상태:", user);
-
         // 이미 approveLine이 있으면 그대로 사용
         if (approveLine && approveLine.length > 0) {
             console.log("props로 받은 결재선 사용");
@@ -171,7 +168,7 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
             <div style={{ display: 'flex', flex: 1}}>
                 {/* 왼쪽 패널 - 조직도/나의 결재선 */}
                 <div style={{ width: '30%', display: 'flex', flexDirection: 'column', borderRight: '1px solid #e0e0e0', overflow: 'hidden' }}>
-                    <div style={{ padding: '10px' }}>
+                    {/* <div style={{ padding: '10px' }}>
                         <input
                             type="text"
                             placeholder="이름으로 검색하세요"
@@ -179,7 +176,7 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
                             onChange={handleInputChange}
                             style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
                         />
-                    </div>
+                    </div> */}
                     <div style={{ flex: 1, overflow: 'hidden' }}>
                         <Tree
                             data={deptTree}

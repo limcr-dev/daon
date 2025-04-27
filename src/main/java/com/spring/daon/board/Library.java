@@ -33,4 +33,8 @@ public class Library {
 	private Date library_reg_date;	// 자료 등록일
 	private int library_views;		// 자료 조회수
 	private char library_delete;		// 자료 삭제 여부
+	
+	private String emp_name;
+	private int dept_no;
+	private int position_id;
 }

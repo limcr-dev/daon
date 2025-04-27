@@ -4,13 +4,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Content, Divider, Button, Modal, ButtonGroup } from 'rsuite';
 import Leftbar from '../../common/pages/Leftbar';
 import ApproveLeftbar from './ApproveLeftbar';
-import ApproveInfo from './ApproveInfo';
 import ExpenseForm from '../components/ExpenseForm ';
 import '../css/approveForm.css'; // 스타일 파일
-import ApproveLine from './ApproveLine';
+import ApproveLine from '../components/ApproveLine';
 import { request } from '../../common/components/helpers/axios_helper';
 import WorkReportUpdate from '../components/WorkReportUpdate';
 import VacationUpdate from '../components/VacationUpdate';
+import ApproveInfo from '../components/ApproveInfo';
+import Header from '../../common/pages/Header';
+import FileUpload from '../../library/components/FileUpload';
 
 const DocumentUpdate = () => {
     const params = useParams(); // form_no를 가져오기 위한 변수
@@ -276,70 +278,78 @@ const DocumentUpdate = () => {
             <Leftbar />
             <Container>
                 <ApproveLeftbar />
-                <Content style={{ marginLeft: '15px', marginTop: '15px', position: 'relative' }}>
-                    {/* 상단 헤더 */}
-                    <div className="document-header">
-                        <div className="document-title">
-                            <h3>결재 문서 수정</h3>
+                <Content>
+                    <Header />
+                    <Content style={{ margin: '20px', position: 'relative' }}>
+                        {/* 상단 헤더 */}
+                        <div className="document-header">
+                            <div className="document-title">
+                                <h3>결재 문서 수정</h3>
+                            </div>
                         </div>
-                    </div>
-                    <br />
-
-                    {/* 문서 액션 버튼 */}
-                    <div className="document-actions" style={{ display: 'flex', flexDirection: 'row', marginTop: '10px', gap: '10px' }}>
+                        <br />
 
                         {/* 문서 액션 버튼 */}
-                        <div className="document-actions" style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
-                            <Button appearance='primary' color='blue' onClick={handleSubmitRequest}>결재 요청</Button>
-                            <Button appearance='ghost' color='blue' onClick={handleSaveRequest}>임시저장</Button>
-                            <Button appearance='ghost' color='blue' onClick={() => navigate('/approve')}>목록</Button>
-                            <Button appearance='primary' color='green' onClick={() => setInfoOpen(true)}>결재선 지정</Button>
-                            <ButtonGroup>
-                                <Button
-                                    appearance={isUrgent ? 'primary' : 'ghost'}
-                                    color="red"
-                                    onClick={() => {
-                                        setIsUrgent(true);
-                                        setDocument({ ...document, doc_urgent: 'Y' });
-                                    }}
-                                >
-                                    긴급
-                                </Button>
-                                <Button
-                                    appearance={!isUrgent ? 'primary' : 'ghost'}
-                                    color="green"
-                                    onClick={() => {
-                                        setIsUrgent(false);
-                                        setDocument({ ...document, doc_urgent: 'N' });
-                                    }}
-                                >
-                                    일반
-                                </Button>
-                            </ButtonGroup>
+                        <div className="document-actions" style={{ display: 'flex', flexDirection: 'row', marginTop: '10px', gap: '10px' }}>
+
+                            {/* 문서 액션 버튼 */}
+                            <div className="document-actions" style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
+                                <Button appearance='primary' color='blue' onClick={handleSubmitRequest}>결재 요청</Button>
+                                <Button appearance='ghost' color='blue' onClick={handleSaveRequest}>임시저장</Button>
+                                <Button appearance='ghost' color='blue' onClick={() => navigate('/approve')}>목록</Button>
+                                <Button appearance='primary' color='green' onClick={() => setInfoOpen(true)}>결재선 지정</Button>
+                                <ButtonGroup>
+                                    <Button
+                                        appearance={isUrgent ? 'primary' : 'ghost'}
+                                        color="red"
+                                        onClick={() => {
+                                            setIsUrgent(true);
+                                            setDocument({ ...document, doc_urgent: 'Y' });
+                                        }}
+                                    >
+                                        긴급
+                                    </Button>
+                                    <Button
+                                        appearance={!isUrgent ? 'primary' : 'ghost'}
+                                        color="green"
+                                        onClick={() => {
+                                            setIsUrgent(false);
+                                            setDocument({ ...document, doc_urgent: 'N' });
+                                        }}
+                                    >
+                                        일반
+                                    </Button>
+                                </ButtonGroup>
+                            </div>
                         </div>
-
-                    </div>
-
-                    <Modal open={InfoOpen} onClose={() => setInfoOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Modal.Header><h3>결재선 지정</h3></Modal.Header>
-                        <Modal.Body style={{ width: '800px' }}>
-                            <ApproveLine closeModal={() => setInfoOpen(false)} approveLine={line} onSave={handleSaveLine} />
-                        </Modal.Body>
-                    </Modal>
-
-                    <Divider />
-
-                    {/* 메인 콘텐츠와 우측 사이드바 */}
-                    <div style={{ display: 'flex', flexWrap: 'nowrap' }}>
-                        {/* 메인 콘텐츠 영역 */}
-                        <div style={{ flex: '1 1 auto', minWidth: '900px' }}>
-                            {renderFormContent()}
+                        <div style={{marginTop:'20px'}}>
+                            <FileUpload
+                                initialFileName={document.doc_filename}
+                                onFileUpload={(savedFileName) => setDocument({ ...document, doc_filename: savedFileName })}
+                            />
                         </div>
+                        <Modal open={InfoOpen} onClose={() => setInfoOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Modal.Header><h3>결재선 지정</h3></Modal.Header>
+                            <Modal.Body style={{ width: '800px' }}>
+                                <ApproveLine closeModal={() => setInfoOpen(false)} approveLine={line} onSave={handleSaveLine} />
+                            </Modal.Body>
+                        </Modal>
 
-                        <div className="side-panel">
-                            <ApproveInfo approveLine={line} />
+                        <Divider />
+
+                        {/* 메인 콘텐츠와 우측 사이드바 */}
+                        <div style={{ display: 'flex', flexWrap: 'nowrap' }}>
+                            {/* 메인 콘텐츠 영역 */}
+                            <div style={{ flex: '1 1 auto', minWidth: '900px' }}>
+                                {renderFormContent()}
+                            </div>
+
+                            <div className="side-panel">
+                                <ApproveInfo approveLine={line} />
+                            </div>
                         </div>
-                    </div>
+                    </Content>
+
                 </Content>
             </Container>
         </Container>

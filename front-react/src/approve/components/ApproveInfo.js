@@ -3,7 +3,7 @@ import { Panel, Divider } from 'rsuite';
 import '../css/approveForm.css'; // 스타일 파일
 import { useUser } from '../../common/contexts/UserContext';
 import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
-import { ApprStatusBadge, getApprStatusText, StatusBadge } from '../components/ApprCodeToText';
+import { ApprStatusBadge, getApprStatusText, StatusBadge } from './ApprCodeToText';
 
 const ApproveInfo = ({ approveLine = [] }) => {
     const { user } = useUser();
@@ -92,11 +92,12 @@ const ApproveInfo = ({ approveLine = [] }) => {
                                                 {approver.appr_name} ({approver.appr_position})
                                             </div>
                                             <div>부서: {getDeptName(approver.appr_dept_no)}</div>
+                                            
                                         </div>
                                     </div>
 
                                     {/* 코멘트 영역 - 코멘트가 있을 때만 표시 */}
-                                    {(approver.status === 3 || approver.status === 4) && approver.appr_comment !== '' && approver.appr_comment !== null && (
+                                    {(approver.appr_status === 3 || approver.appr_status === 4) &&  (
                                         <div style={{
                                             marginTop: '5px',
                                             backgroundColor: '#f5f5f5',
@@ -105,7 +106,8 @@ const ApproveInfo = ({ approveLine = [] }) => {
                                             fontSize: '0.9em',
                                             borderLeft: '3px solid #ccc'
                                         }}>
-                                            {approver.appr_comment}
+                                            변경일 : {approver.appr_date} <br/>
+                                            {approver.appr_comment !== '' && approver.appr_comment !== null && <>의견 : {approver.appr_comment}</> }
                                         </div>
                                     )}
                                 </div>

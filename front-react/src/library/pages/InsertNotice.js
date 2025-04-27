@@ -6,6 +6,8 @@ import BoardLeftbar from './BoardLeftbar';
 import Header from '../../common/pages/Header';
 import { useUser } from '../../common/contexts/UserContext';
 import { request } from '../../common/components/helpers/axios_helper';
+import FileUpload from '../components/FileUpload';
+import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
 
 const InsertNotice = () => {
 
@@ -22,6 +24,7 @@ const InsertNotice = () => {
         position_id: user ? user.position_id : '',
         dept_no: user ? user.dept_no : '',
         notice_title: '',
+        notice_filename: '',
         notice_content: ''
     });
 
@@ -74,16 +77,19 @@ const InsertNotice = () => {
         navigate('/board/noticeList');
     }
 
+    // FileUpload 컴포넌트에서 전달된 파일 이름을 받아서 상태를 업데이트
+    const handleFileUpload = (savedFileName) => {
+        setNotice({ ...notice, notice_filename: savedFileName });
+    };
+
     return (
         <Container style={{ minHeight: '100vh', width: '100%' }}>
             <Leftbar />
             <Container>
-                < BoardLeftbar />
-                <Content style={{ marginLeft: '15px', marginTop: '15px' }}>
+                <BoardLeftbar />
+                <Content>
                     <Header />
-                    <Divider />
                     <Row gutter={20} style={{ display: 'flex', flexDirection: 'column' }}>
-
                         <Col style={{ marginBottom: '20px' }}>
                             <Card style={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
                                 <Card.Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', backgroundColor: '#f5f5f5', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
@@ -91,38 +97,42 @@ const InsertNotice = () => {
                                     <Button appearance="link" onClick={noticeList}>목록</Button>
                                 </Card.Header>
                                 <table className='board-table'>
-                                    <tr>
-                                        <th style={{ width: '20%' }}>제목</th>
-                                        <td style={{ width: '80%' }} colSpan={3}>
-                                            <input type='text' name='notice_title' style={{ width: '100%' }} onChange={changeValue} placeholder='공지 제목을 입력하세요.' />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th style={{ width: '20%' }}>작성자</th>
-                                        <td style={{ width: '80%' }} colSpan={3}>
-                                            {/* 현재 로그인한 사용자 이름을 표시하고 읽기 전용으로 설정 */}
-                                            <input
-                                                type="text"
-                                                value={user ? user.emp_name : '로그인 필요'}
-                                                style={{ width: '100%' }}
-                                                readOnly
-                                            />
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <th colSpan={4}>내용</th>
-                                    </tr>
-                                    <tr>
-                                        <td colSpan={4}>
-                                            <textarea
-                                                name="notice_content"
-                                                style={{ width: '100%', height: '500px', verticalAlign: 'top' }}
-                                                placeholder="공지 내용을 입력하세요"
-                                                onChange={changeValue}
-                                            />
-                                        </td>
-                                    </tr>
+                                    <thead>
+                                        <tr>
+                                            <th style={{ width: '20%' }}>제목</th>
+                                            <td style={{ width: '80%' }} colSpan={3}>
+                                                <input type='text' name='notice_title' style={{ width: '100%' }} onChange={changeValue} placeholder='공지 제목을 입력하세요.' />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th style={{ width: '20%' }}>작성자</th>
+                                            <td style={{ width: '30%' }}>{user.emp_name}({getPositionName(user.position_id)})</td>
+                                            <th style={{ width: '20%' }}>부서</th>
+                                            <td style={{ width: '30%' }}>{getDeptName(user.dept_no)}</td>
+                                        </tr>
+                                        <tr>
+                                            <th style={{ width: '20%' }}>첨부 파일  </th>
+                                            <td colSpan={3}>
+                                                {/* FileUpload 컴포넌트 추가 */}
+                                                <FileUpload onFileUpload={handleFileUpload} />
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th colSpan={4}>내용</th>
+                                        </tr>
+                                        <tr>
+                                            <td colSpan={4}>
+                                                <textarea
+                                                    name="notice_content"
+                                                    style={{ width: '100%', height: '500px', verticalAlign: 'top' }}
+                                                    placeholder="공지 내용을 입력하세요"
+                                                    onChange={changeValue}
+                                                />
+                                            </td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                                 <Card.Footer>
                                     <div style={{ marginTop: '10px', width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
