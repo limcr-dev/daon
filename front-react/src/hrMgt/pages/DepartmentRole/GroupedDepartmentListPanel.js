@@ -1,23 +1,30 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Button, IconButton } from "rsuite";
+import { Button, IconButton, toaster, Notification } from "rsuite";
+import PlusIcon from "@rsuite/icons/Plus";
 import EditIcon from "@rsuite/icons/Edit";
 import TrashIcon from "@rsuite/icons/Trash";
 import DepartmentAddModal from "./DepartmentAddModal";
+import DepartmentEditModal from "./DepartmentEditModal";
 import { request } from "../../../common/components/helpers/axios_helper";
 
 const GroupedDepartmentListPanel = ({ onSelectDept }) => {
   const [departments, setDepartments] = useState([]);
   const [selectedDept, setSelectedDept] = useState(null);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // 부서 추가 모달
+  const [editDept, setEditDept] = useState(null); // 부서 수정 모달
   const [isEditMode, setIsEditMode] = useState(false);
 
-  // ✅ 부서 목록 불러오기
   const fetchDepartments = useCallback(() => {
     request("get", "/api/departments")
       .then((res) => setDepartments(res.data))
       .catch((err) => {
         console.error("부서 목록 조회 실패:", err);
-        alert("부서 목록을 불러오지 못했습니다.");
+        toaster.push(
+          <Notification type="error" header="조회 실패" closable>
+            부서 목록을 불러오지 못했습니다.
+          </Notification>,
+          { placement: "topEnd" }
+        );
       });
   }, []);
 
@@ -31,16 +38,29 @@ const GroupedDepartmentListPanel = ({ onSelectDept }) => {
   };
 
   const handleEdit = (dept) => {
-    alert(`부서 수정: ${dept.dept_name}`);
+    setEditDept(dept);
   };
 
   const handleDelete = (dept) => {
     if (window.confirm("정말로 삭제하시겠습니까?")) {
       request("delete", `/api/departments/${dept.dept_no}`)
-        .then(() => fetchDepartments())
+        .then(() => {
+          toaster.push(
+            <Notification type="success" header="삭제 완료" closable>
+              부서가 성공적으로 삭제되었습니다.
+            </Notification>,
+            { placement: "topEnd" }
+          );
+          fetchDepartments();
+        })
         .catch((err) => {
           console.error("부서 삭제 실패:", err);
-          alert("부서 삭제에 실패했습니다.");
+          toaster.push(
+            <Notification type="error" header="삭제 실패" closable>
+              부서 삭제에 실패했습니다.
+            </Notification>,
+            { placement: "topEnd" }
+          );
         });
     }
   };
@@ -64,13 +84,16 @@ const GroupedDepartmentListPanel = ({ onSelectDept }) => {
           <Button size="xs" onClick={() => setIsEditMode(!isEditMode)}>
             {isEditMode ? "편집 종료" : "✏️ 수정"}
           </Button>
-          <Button appearance="primary" size="xs" onClick={() => setOpen(true)}>
-            + 등록
-          </Button>
+          <IconButton
+            icon={<PlusIcon />}
+            appearance="primary"
+            size="xs"
+            onClick={() => setOpen(true)}
+          />
         </div>
       </div>
 
-      {/* ✅ 각 상위 부서별 카드 스타일 */}
+      {/* ✅ 부서 목록 */}
       {topDepartments.map((top) => {
         const children = departments.filter((d) => d.dept_parent === top.dept_no);
         return (
@@ -84,7 +107,7 @@ const GroupedDepartmentListPanel = ({ onSelectDept }) => {
               backgroundColor: "#fdfdfd",
             }}
           >
-            {/* 상위 부서 타이틀 */}
+            {/* 상위 부서 */}
             <div
               style={{
                 padding: "10px 12px",
@@ -115,7 +138,7 @@ const GroupedDepartmentListPanel = ({ onSelectDept }) => {
                 >
                   <span>{child.dept_name}</span>
                   {isEditMode && (
-                    <span>
+                    <span style={{ display: "flex", gap: 6 }}>
                       <IconButton
                         icon={<EditIcon />}
                         size="xs"
@@ -127,8 +150,8 @@ const GroupedDepartmentListPanel = ({ onSelectDept }) => {
                       <IconButton
                         icon={<TrashIcon />}
                         size="xs"
+                        appearance="subtle"
                         color="red"
-                        style={{ marginLeft: 6 }}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(child);
@@ -143,8 +166,11 @@ const GroupedDepartmentListPanel = ({ onSelectDept }) => {
         );
       })}
 
-      {/* ✅ 부서 추가 모달 */}
+      {/* 부서 추가 모달 */}
       <DepartmentAddModal open={open} onClose={() => setOpen(false)} onSuccess={fetchDepartments} />
+
+      {/* 부서 수정 모달 */}
+      <DepartmentEditModal open={!!editDept} onClose={() => setEditDept(null)} dept={editDept} onSuccess={fetchDepartments} />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Modal, Button } from "rsuite";
+import { Modal, Button, Notification, toaster } from "rsuite";
 import "../css/Registration.css";
 import { request } from "../../common/components/helpers/axios_helper";
 
@@ -34,7 +34,12 @@ const EmployeeUpdate = ({ open, onClose, emp_no }) => {
       .then(res => setEmployee(res.data))
       .catch(err => {
         console.error("사원 정보 조회 실패:", err);
-        alert("사원 정보를 불러올 수 없습니다.");
+        toaster.push(
+          <Notification type="error" header="조회 실패" closable>
+            사원 정보를 불러올 수 없습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
       });
   }, [emp_no]);
 
@@ -63,15 +68,30 @@ const EmployeeUpdate = ({ open, onClose, emp_no }) => {
     request("put", `/api/updateEmployee/${emp_no}`, formData, true)
       .then(res => {
         if (res.status === 200 || res.data) {
-          alert("사원 정보가 수정되었습니다.");
+          toaster.push(
+            <Notification type="success" header="수정 완료" closable>
+              사원 정보가 수정되었습니다.
+            </Notification>,
+            { placement: "topCenter" }
+          );
           onClose();
         } else {
-          alert("사원 정보 수정 실패");
+          toaster.push(
+            <Notification type="error" header="수정 실패" closable>
+              사원 정보 수정에 실패했습니다.
+            </Notification>,
+            { placement: "topCenter" }
+          );
         }
       })
       .catch(err => {
         console.error("사원 수정 실패:", err);
-        alert("수정 중 오류가 발생했습니다.");
+        toaster.push(
+          <Notification type="error" header="수정 오류" closable>
+            수정 중 오류가 발생했습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
       });
   };
 
@@ -117,7 +137,7 @@ const EmployeeUpdate = ({ open, onClose, emp_no }) => {
             </div>
           </div>
 
-          {/* 생략된 부서/직책/직급 등은 기존 구조 동일하게 유지 */}
+          {/* 필요하면 부서, 직급, 직책 입력 추가 가능 */}
 
           <div className="button">
             <Button type="submit" appearance="primary">수정</Button>

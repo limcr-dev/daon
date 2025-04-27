@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.daon.hrMgt.Role.DepartmentMapper">
+
+  <update id="updateDepartment" parameterType="com.spring.daon.hrMgt.Role.Department">
+    UPDATE departments
+    <set>
+      <if test="dept_name != null">
+        dept_name = #{dept_name},
+      </if>
+      <if test="dept_parent != null">
+        dept_parent = #{dept_parent},
+      </if>
+    </set>
+    WHERE dept_no = #{dept_no}
+  </update>
+
+</mapper>
