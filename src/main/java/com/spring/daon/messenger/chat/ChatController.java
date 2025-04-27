@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.daon.hrMgt.Employees;
+import com.spring.daon.hrMgt.HRMgtMapper;
+import com.spring.daon.messenger.chat.dto.ChatGroup;
 import com.spring.daon.messenger.chat.dto.ChatMessage;
 import com.spring.daon.messenger.chat.dto.ChatRequest;
 import com.spring.daon.messenger.chat.dto.ChatRoomList;
@@ -33,12 +35,14 @@ public class ChatController {
 	private final SimpMessagingTemplate messagingTemplate;
     private final ChatServiceImpl chatServiceImpl;
     private final PresenceTracker presenceTracker;
+    private final HRMgtMapper hrMgtMapper;
 
     @Autowired
-    public ChatController(SimpMessagingTemplate messagingTemplate, ChatServiceImpl chatServiceImpl, PresenceTracker presenceTracker) {
+    public ChatController(SimpMessagingTemplate messagingTemplate, ChatServiceImpl chatServiceImpl, PresenceTracker presenceTracker, HRMgtMapper hrMgtMapper) {
         this.messagingTemplate = messagingTemplate;
         this.chatServiceImpl = chatServiceImpl;
         this.presenceTracker = presenceTracker;
+        this.hrMgtMapper = hrMgtMapper;
     }
 
     // 채팅 메시지 처리
@@ -46,28 +50,11 @@ public class ChatController {
 //    @SendTo("/topic/room/{roomCode}")
     public void sendMessage(@Payload ChatMessage message) {
         System.out.println("<<< ChatController - send >>>");
-//        try {
-//            // receiverId는 현재 임시값이며 프론트에서 보내거나 DB 조회로 대체 가능
-//            int receiverId = chatServiceImpl.getReceiverId(message.getRoomCode(), message.getSenderId()); //1002;
-//            chatServiceImpl.handleChatMessage(message, receiverId);
-//
-//            // 구독 중인 클라이언트에게 메시지 전송
-//            messagingTemplate.convertAndSend("/topic/room/" + message.getRoomCode(), message);
-//            
-//            // 실시간 알림 전송
-////            messagingTemplate.convertAndSend("/topic/alert/" + receiverId, message);
-////            System.out.println("알림 전송 >>> /topic/alert/" + receiverId);
-//
-//        } catch (Exception e) {
-//            System.err.println("채팅 처리 중 오류 발생: " + e.getMessage());
-//            e.printStackTrace();
-//        }
-        
         try {
-            chatServiceImpl.handleChatMessage(message); // ✅ receiverId도 여기서 처리
+        	ChatMessage savedMessage = chatServiceImpl.handleChatMessage(message); // receiverId도 여기서 처리
 
             // 구독 중인 클라이언트에게 메시지 전송
-            messagingTemplate.convertAndSend("/topic/room/" + message.getRoomCode(), message);
+        	messagingTemplate.convertAndSend("/topic/room/" + savedMessage.getRoomCode(), savedMessage);
         } catch (Exception e) {
             System.err.println("채팅 처리 중 오류 발생: " + e.getMessage());
             e.printStackTrace();
@@ -116,6 +103,13 @@ public class ChatController {
         return ResponseEntity.ok(Map.of("targetUser", targetUser));
     }
     
+    // 보낸 사람 이름 불러오기
+    @GetMapping("/userName")
+    public ResponseEntity<Employees> getUserName(@RequestParam int userId) {
+        Employees emp = hrMgtMapper.findByEmployee(userId);
+        return ResponseEntity.ok(emp);
+    }
+    
     // 입력중
     @MessageMapping("/chat.typing")
     public void typing(@Payload ChatTyping typingInfo) {
@@ -136,5 +130,38 @@ public class ChatController {
     public ResponseEntity<List<ChatMessage>> getChatHistory(@RequestParam String roomCode) {
         List<ChatMessage> messages = chatServiceImpl.getMessagesByRoomCode(roomCode);
         return ResponseEntity.ok(messages);
+    }
+    
+    // 단체채팅 생성 및 참가자등록
+    @PostMapping("/createGroup")
+    public ResponseEntity<Map<String, String>> createGroupChat(@RequestBody ChatGroup request) {
+    	String roomCode = chatServiceImpl.createGroupChat(request);
+        return ResponseEntity.ok(Map.of("roomCode", roomCode));
+    }
+    
+    // 단체 채팅방 목록 조회
+    @GetMapping("/groupList")
+    public List<ChatRoomList> getGroupChatRooms(@RequestParam int userId) {
+        return chatServiceImpl.getGroupChatRooms(userId);
+    }
+    
+    // 단체 채팅방 메시지 리스트 가져오기
+    @GetMapping("/messages")
+    public List<ChatMessage> getMessages(@RequestParam String roomCode) {
+        return chatServiceImpl.getMessagesByRoomCode(roomCode);
+    }
+    
+    // 단체채팅(사용자 전체 목록 (본인제외))
+    @GetMapping("/users")
+    public ResponseEntity<List<Employees>> getAllUsersExceptMe(@RequestParam int myId) {
+        List<Employees> users = hrMgtMapper.findAllExceptMe(myId);
+        return ResponseEntity.ok(users);
+    }
+    
+    // 단체채팅 사용자 목록
+    @GetMapping("/participants")
+    public ResponseEntity<List<Employees>> getParticipants(@RequestParam String roomCode) {
+        List<Employees> participants = chatServiceImpl.getParticipants(roomCode);
+        return ResponseEntity.ok(participants);
     }
 }

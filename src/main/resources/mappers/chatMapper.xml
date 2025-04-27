@@ -4,9 +4,26 @@
      "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.spring.daon.messenger.chat.ChatMapper">
 	
+	<resultMap id="ChatMessageResultMap" type="com.spring.daon.messenger.chat.dto.ChatMessage">
+		<result property="id" column="msg_id"/>
+	    <result property="roomCode" column="msg_room_code"/>
+	    <result property="senderId" column="msg_send_id"/>
+	    <result property="content" column="msg_text"/>
+	    <result property="type" column="msg_type"/>
+	    <result property="originalName" column="original_name"/>
+	    <result property="timestamp" column="msg_created" typeHandler="com.spring.daon.messenger.common.LocalDateTimeTypeHandler"/>
+	</resultMap>
+	
+	<resultMap id="ChatRoomListResultMap" type="com.spring.daon.messenger.chat.dto.ChatRoomList">
+	    <result property="roomCode" column="roomCode"/>
+	    <result property="lastMessage" column="lastMessage"/>
+	    <result property="lastTime" column="lastTime" typeHandler="com.spring.daon.messenger.common.LocalDateTimeTypeHandler"/>
+	    <result property="roomCreated" column="room_created"/>
+	</resultMap>
+	
 	<!-- 채팅방 유무 체크 -->
-	<select id="isRoomExists" resultType="boolean">
-		SELECT COUNT(*) > 0
+	<select id="isRoomExists" resultType="int">
+		SELECT COUNT(*)
 		FROM chat_room
 		WHERE room_code = #{roomCode}
 	</select>
@@ -46,44 +63,67 @@
             #{senderId},
             #{content},
             #{type},
-            NOW()
+            #{timestamp}
         )
     </insert>
     
     <!-- 채팅창 목록 -->
-	<select id="getChatRoomsByUser" resultType="com.spring.daon.messenger.chat.dto.ChatRoomList">
+	<select id="getChatRoomsByUser" resultMap="ChatRoomListResultMap">
 		SELECT 
-		    r.room_code AS roomCode,
-		    m.msg_text AS lastMessage,
-		    m.msg_created AS lastTime
-		FROM chat_room_user u
-		JOIN chat_room r ON u.room_code = r.room_code
-		LEFT JOIN (
-		    SELECT msg_room_code, msg_text, msg_created
-		    FROM chat_msg
-		    WHERE (msg_room_code, msg_created) IN (
-		        SELECT msg_room_code, MAX(msg_created)
-		        FROM chat_msg
-		        GROUP BY msg_room_code
-		    )
-		) m ON r.room_code = m.msg_room_code
-		WHERE u.user_id = #{userId}
-		ORDER BY m.msg_created DESC
+	        r.room_code AS roomCode,
+	        m.msg_text AS lastMessage,
+	        m.msg_created AS lastTime,
+	        r.room_created AS roomCreated
+	    FROM chat_room_user u
+	    JOIN chat_room r ON u.room_code = r.room_code
+	    LEFT JOIN (
+	        SELECT msg_room_code, msg_text, msg_created
+	        FROM chat_msg
+	        WHERE (msg_room_code, msg_created) IN (
+	            SELECT msg_room_code, MAX(msg_created)
+	            FROM chat_msg
+	            GROUP BY msg_room_code
+	        )
+	    ) m ON r.room_code = m.msg_room_code
+	    WHERE u.user_id = #{userId}
+	
+	    UNION ALL
+	
+	    SELECT 
+	        r.room_code AS roomCode,
+	        m.msg_text AS lastMessage,
+	        m.msg_created AS lastTime,
+	        r.room_created AS roomCreated
+	    FROM chat_participant p
+	    JOIN chat_room r ON p.room_code = r.room_code
+	    LEFT JOIN (
+	        SELECT msg_room_code, msg_text, msg_created
+	        FROM chat_msg
+	        WHERE (msg_room_code, msg_created) IN (
+	            SELECT msg_room_code, MAX(msg_created)
+	            FROM chat_msg
+	            GROUP BY msg_room_code
+	        )
+	    ) m ON r.room_code = m.msg_room_code
+	    WHERE p.user_id = #{userId}
+	
+	    ORDER BY COALESCE(lastTime, roomCreated) DESC
 	</select>
 
     <!-- 최근 메시지 조회 -->
-    <select id="selectRecentMessages" resultType="com.spring.daon.messenger.chat.dto.ChatMessage">
-        SELECT 
-            msg_id AS id,
-            msg_room_code AS roomCode,
-            msg_send_id AS senderId,
-            msg_text AS content,
-            msg_type AS type,
-            msg_created AS timestamp
-        FROM chat_msg
-        WHERE msg_room_code = #{roomCode}
-        ORDER BY msg_created DESC
-        LIMIT 50
+    <select id="selectRecentMessages" resultMap="ChatMessageResultMap">
+         SELECT 
+	        msg_id,
+	        msg_room_code,
+	        msg_send_id,
+	        msg_text,
+	        msg_type,
+	        msg_created,
+	        NULL AS original_name
+	    FROM chat_msg
+	    WHERE msg_room_code = #{roomCode}
+	    ORDER BY msg_created DESC
+	    LIMIT 50
     </select>
     
 	<!-- 채팅방 상대 유저 정보 (이름/부서/직급/이미지 등) -->
@@ -118,23 +158,92 @@
         LIMIT 1
     </select>
     
-	<select id="getMessagesByRoomCode" resultType="com.spring.daon.messenger.chat.dto.ChatMessage">
-		SELECT
-		  msg_room_code AS roomCode,
-		  msg_send_id AS senderId,
-		  msg_text AS content,
-		  msg_type AS type,
-		  msg_created AS timestamp,
-		  cf.original_name AS originalName
-		FROM chat_msg cm
-		LEFT JOIN chat_file cf ON cm.msg_text = CONCAT('/uploads/', cf.saved_name)
-		WHERE msg_room_code = #{roomCode}
-		ORDER BY msg_created ASC
+	<select id="getMessagesByRoomCode" resultMap="ChatMessageResultMap">
+		 SELECT 
+	        cm.msg_room_code,
+	        cm.msg_send_id,
+	        cm.msg_text,
+	        cm.msg_type,
+	        cm.msg_created,
+	        cf.original_name
+	    FROM chat_msg cm
+	    LEFT JOIN chat_file cf 
+	      ON cm.msg_text = CONCAT('/uploads/', cf.saved_name)
+	    WHERE cm.msg_room_code = #{roomCode}
+	    ORDER BY cm.msg_created ASC
 	</select>
 	
 	<select id="getUserIdsByRoomCode" resultType="int">
 	    SELECT user_id
 	    FROM chat_room_user
+	    WHERE room_code = #{roomCode}
+	</select>
+	
+	<!-- 단체채팅방 생성 -->
+	<insert id="insertChatRoom">
+	    INSERT INTO chat_room (room_code, room_group)
+   		VALUES (#{roomCode}, TRUE)
+	</insert>
+	
+	<!-- 단체채팅 참가자 -->
+	<insert id="insertChatParticipant">
+	    INSERT INTO chat_participant (room_code, user_id)
+	    VALUES (#{roomCode}, #{userId})
+	</insert>
+	
+	<!-- 단체 채팅 방 리스트 -->
+	<select id="findGroupChatRooms" resultType="com.spring.daon.messenger.chat.dto.ChatRoomList">
+	    SELECT 
+	        cr.room_code,
+	        (
+	            SELECT cm.msg_text 
+	            FROM chat_msg cm 
+	            WHERE cm.msg_room_code = cr.room_code 
+	            ORDER BY cm.msg_created DESC 
+	            LIMIT 1
+	        ) AS lastMessage,
+	        (
+	            SELECT cm.msg_created 
+	            FROM chat_msg cm 
+	            WHERE cm.msg_room_code = cr.room_code 
+	            ORDER BY cm.msg_created DESC 
+	            LIMIT 1
+	        ) AS lastTime,
+	        cr.room_created
+	    FROM chat_room cr
+	    JOIN chat_participant cp ON cr.room_code = cp.room_code
+	    WHERE cp.user_id = #{userId}
+	    AND cr.room_group = 1
+	</select>
+	
+	<!-- 이전 메세지 조회 -->
+	<select id="findMessagesByRoomCode" resultMap="ChatMessageResultMap">
+	    SELECT 
+	        cm.msg_id,
+	        cm.msg_room_code,
+	        cm.msg_send_id,
+	        cm.msg_text,
+	        cm.msg_type,
+	        cm.msg_created,
+	        cf.original_name
+	    FROM chat_msg cm
+	    LEFT JOIN chat_file cf 
+	      ON cm.msg_text = CONCAT('/uploads/', cf.saved_name)
+	    WHERE cm.msg_room_code = #{roomCode}
+	    ORDER BY cm.msg_created ASC
+	</select>
+	
+	<!-- 방 타입(room_group) 조회 -->
+	<select id="getRoomGroupByRoomCode" resultType="boolean">
+	    SELECT room_group
+	    FROM chat_room
+	    WHERE room_code = #{roomCode}
+	</select>
+	
+	<!-- 단체 채팅방 전체 참여자 userId 조회 -->
+	<select id="getParticipantIdsByRoomCode" resultType="int">
+	    SELECT user_id
+	    FROM chat_participant
 	    WHERE room_code = #{roomCode}
 	</select>
 </mapper>
