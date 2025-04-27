@@ -33,7 +33,7 @@ const Header = ({ onProfileUpdated }) => {
 
   const imageUrl = empImg
     ? `http://localhost:8081/api/images/${encodeURIComponent(empImg)}`
-    : '/default-profile.jpg';
+    : '/default-profile.png';
 
   //메신저 실행
   const msgRun = () => {
@@ -65,7 +65,6 @@ const Header = ({ onProfileUpdated }) => {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '0 20px',
-          backgroundColor: '#f0f0f0',
           borderBottom: '1px solid #eee',
           position: 'sticky',
           top: 0,
@@ -86,7 +85,7 @@ const Header = ({ onProfileUpdated }) => {
             alt="프로필"
             onClick={() => setShowModal(true)}
             style={{ cursor: 'pointer' }}
-            onError={(e) => { e.target.src = '/default-profile.jpg'; }}
+            onError={(e) => { e.target.src = '/default-profile.png'; }}
           />
           <span
             style={{ fontSize: '14px', fontWeight: 500, cursor: 'pointer' }}

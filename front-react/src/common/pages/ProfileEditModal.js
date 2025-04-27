@@ -81,7 +81,7 @@ const ProfileEditModal = ({ show, onClose, empNo, onSuccess }) => {
       <Modal.Header><Modal.Title>프로필 수정</Modal.Title></Modal.Header>
       <Modal.Body>
         <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-          <Avatar circle size="lg" src={preview || '/default-profile.jpg'} />
+          <Avatar circle size="lg" src={preview || '/default-profile.png'} />
         </div>
         <Form fluid>
           <Form.Group controlId="name">

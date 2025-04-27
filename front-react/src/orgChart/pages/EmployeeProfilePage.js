@@ -47,7 +47,7 @@ const EmployeeProfilePage = ({ empNo, onClose }) => {
               size="lg"
               circle
               style={{ marginBottom: '10px' }}
-              onError={(e) => { e.target.src = '/default-profile.jpg'; }}
+              onError={(e) => { e.target.src = '/default-profile.png'; }}
             />
             <h4 style={{ marginBottom: '10px' }}>{emp.emp_name}</h4>
             <p>📧 사내메일: {emp.emp_email}</p>

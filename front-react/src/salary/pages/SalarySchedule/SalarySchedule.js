@@ -125,79 +125,81 @@ const SalarySchedule = () => {
         <SalaryLeftbar />
         <Content>
           <Header />
-          <Card style={{ borderRadius: 15, padding: 20 }}>
-            <h3 style={{ marginBottom: 20 }}>급여 대장 관리</h3>
+          <div style={{ marginTop: "50px" }}>
+            <Card style={{ borderRadius: 15, padding: 20 }}>
+              <h3 style={{ marginBottom: 20 }}>급여 대장 관리</h3>
 
-            {/* 컨트롤 영역 */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <div style={{ display: 'flex', gap: 10 }}>
-                <Input type="month" value={newMonth} onChange={setNewMonth} style={{ width: 160 }} />
-                <Button onClick={handleCreate} appearance="primary">📌 대장 생성</Button>
-                <Button onClick={handleCalculateAll} appearance="ghost" color="green">💵 전체 급여 계산</Button>
+              {/* 컨트롤 영역 */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <Input type="month" value={newMonth} onChange={setNewMonth} style={{ width: 160 }} />
+                  <Button onClick={handleCreate} appearance="primary">📌 대장 생성</Button>
+                  <Button onClick={handleCalculateAll} appearance="ghost" color="green">💵 전체 급여 계산</Button>
+                </div>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <label><input type="checkbox" checked={showClosedOnly} onChange={() => setShowClosedOnly(!showClosedOnly)} /> 마감만</label>
+                  <label><input type="checkbox" checked={showCalculatedOnly} onChange={() => setShowCalculatedOnly(!showCalculatedOnly)} /> 계산됨만</label>
+                  <Input type="month" value={searchMonth} onChange={setSearchMonth} style={{ width: 160 }} />
+                </div>
               </div>
-              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                <label><input type="checkbox" checked={showClosedOnly} onChange={() => setShowClosedOnly(!showClosedOnly)} /> 마감만</label>
-                <label><input type="checkbox" checked={showCalculatedOnly} onChange={() => setShowCalculatedOnly(!showCalculatedOnly)} /> 계산됨만</label>
-                <Input type="month" value={searchMonth} onChange={setSearchMonth} style={{ width: 160 }} />
-              </div>
-            </div>
 
-            {/* 급여 대장 테이블 */}
-            <table className="salary-schedule-table">
-              <thead>
-                <tr>
-                  <th>급여월</th>
-                  <th>지급일</th>
-                  <th>생성일</th>
-                  <th>마감</th>
-                  <th>계산</th>
-                  <th>관리</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedList.map((row) => (
-                  <tr key={row.id}>
-                    <td>{row.salary_month}</td>
-                    <td>
-                      {editingId === row.id ? (
-                        <Input type="date" value={editingPayday} onChange={setEditingPayday} />
-                      ) : row.payday || "-"}
-                    </td>
-                    <td>{row.created_at}</td>
-                    <td>{row.is_closed ? "✅" : "❌"}</td>
-                    <td>{row.is_calculated ? "🟢" : "⚪"}</td>
-                    <td>
-                      {!row.is_closed && editingId === row.id ? (
-                        <>
-                          <Button size="xs" onClick={saveEdit}>저장</Button>
-                          <Button size="xs" onClick={() => setEditingId(null)}>취소</Button>
-                        </>
-                      ) : !row.is_closed && (
-                        <>
-                          <Button size="xs" onClick={() => startEdit(row)}>수정</Button>
-                          <Button size="xs" onClick={() => handleClose(row.id, row.is_calculated)}>마감</Button>
-                          <Button size="xs" color="red" appearance="ghost" onClick={() => handleDelete(row.id, row.is_closed)}>삭제</Button>
-                        </>
-                      )}
-                    </td>
+              {/* 급여 대장 테이블 */}
+              <table className="salary-schedule-table">
+                <thead>
+                  <tr>
+                    <th>급여월</th>
+                    <th>지급일</th>
+                    <th>생성일</th>
+                    <th>마감</th>
+                    <th>계산</th>
+                    <th>관리</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {paginatedList.map((row) => (
+                    <tr key={row.id}>
+                      <td>{row.salary_month}</td>
+                      <td>
+                        {editingId === row.id ? (
+                          <Input type="date" value={editingPayday} onChange={setEditingPayday} />
+                        ) : row.payday || "-"}
+                      </td>
+                      <td>{row.created_at}</td>
+                      <td>{row.is_closed ? "✅" : "❌"}</td>
+                      <td>{row.is_calculated ? "🟢" : "⚪"}</td>
+                      <td>
+                        {!row.is_closed && editingId === row.id ? (
+                          <>
+                            <Button size="xs" onClick={saveEdit}>저장</Button>
+                            <Button size="xs" onClick={() => setEditingId(null)}>취소</Button>
+                          </>
+                        ) : !row.is_closed && (
+                          <>
+                            <Button size="xs" onClick={() => startEdit(row)}>수정</Button>
+                            <Button size="xs" onClick={() => handleClose(row.id, row.is_calculated)}>마감</Button>
+                            <Button size="xs" color="red" appearance="ghost" onClick={() => handleDelete(row.id, row.is_closed)}>삭제</Button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-            {/* ✅ 페이징 */}
-            <div style={{ marginTop: 20, display: 'flex', justifyContent: 'center' }}>
-              <Paging
-                paging={{
-                  page: page,
-                  size: size,
-                  totalCount: filteredSchedules.length
-                }}
-                onPageChange={(newPage) => setPage(newPage)}
-              />
-            </div>
+              {/* ✅ 페이징 */}
+              <div style={{ marginTop: 20, display: 'flex', justifyContent: 'center' }}>
+                <Paging
+                  paging={{
+                    page: page,
+                    size: size,
+                    totalCount: filteredSchedules.length
+                  }}
+                  onPageChange={(newPage) => setPage(newPage)}
+                />
+              </div>
 
-          </Card>
+            </Card>
+          </div>
         </Content>
       </Container>
     </Container>

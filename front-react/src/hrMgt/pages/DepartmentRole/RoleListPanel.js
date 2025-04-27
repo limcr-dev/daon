@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Button, Input, Divider, Table, IconButton, Modal } from "rsuite";
+import { Card, Button, Input, Divider, Table, IconButton, Modal, Notification, toaster } from "rsuite";
 import EditIcon from "@rsuite/icons/Edit";
 import TrashIcon from "@rsuite/icons/Trash";
 
@@ -25,9 +25,23 @@ const RoleListPanel = ({ deptNo }) => {
       .then((data) => setRoles(data));
   }, [deptNo]);
 
+  const fetchRoles = () => {
+    fetch(`http://localhost:8081/api/roles?deptNo=${deptNo}`)
+      .then((res) => res.json())
+      .then((data) => setRoles(data));
+  };
+
   // ✅ 직책 추가
   const handleAddRole = () => {
-    if (!newRoleName.trim()) return;
+    if (!newRoleName.trim()) {
+      toaster.push(
+        <Notification type="warning" header="입력 필요" closable>
+          직책명을 입력해주세요.
+        </Notification>,
+        { placement: "topCenter" }
+      );
+      return;
+    }
 
     fetch("http://localhost:8081/api/roles", {
       method: "POST",
@@ -37,10 +51,21 @@ const RoleListPanel = ({ deptNo }) => {
       .then((res) => res.json())
       .then(() => {
         setNewRoleName("");
-        // 🔁 목록 다시 조회
-        fetch(`http://localhost:8081/api/roles?deptNo=${deptNo}`)
-          .then((res) => res.json())
-          .then((data) => setRoles(data));
+        toaster.push(
+          <Notification type="success" header="등록 완료" closable>
+            직책이 등록되었습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
+        fetchRoles();
+      })
+      .catch(() => {
+        toaster.push(
+          <Notification type="error" header="등록 실패" closable>
+            직책 등록에 실패했습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
       });
   };
 
@@ -52,7 +77,15 @@ const RoleListPanel = ({ deptNo }) => {
 
   // ✅ 수정 완료
   const handleEditSubmit = () => {
-    if (!editName.trim()) return;
+    if (!editName.trim()) {
+      toaster.push(
+        <Notification type="warning" header="입력 필요" closable>
+          직책명을 입력해주세요.
+        </Notification>,
+        { placement: "topCenter" }
+      );
+      return;
+    }
 
     fetch("http://localhost:8081/api/roles", {
       method: "PUT",
@@ -63,9 +96,21 @@ const RoleListPanel = ({ deptNo }) => {
       .then(() => {
         setEditRole(null);
         setEditName("");
-        fetch(`http://localhost:8081/api/roles?deptNo=${deptNo}`)
-          .then((res) => res.json())
-          .then((data) => setRoles(data));
+        toaster.push(
+          <Notification type="success" header="수정 완료" closable>
+            직책명이 수정되었습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
+        fetchRoles();
+      })
+      .catch(() => {
+        toaster.push(
+          <Notification type="error" header="수정 실패" closable>
+            직책 수정에 실패했습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
       });
   };
 
@@ -83,9 +128,21 @@ const RoleListPanel = ({ deptNo }) => {
       .then(() => {
         setShowConfirm(false);
         setDeleteRoleId(null);
-        fetch(`http://localhost:8081/api/roles?deptNo=${deptNo}`)
-          .then((res) => res.json())
-          .then((data) => setRoles(data));
+        toaster.push(
+          <Notification type="success" header="삭제 완료" closable>
+            직책이 삭제되었습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
+        fetchRoles();
+      })
+      .catch(() => {
+        toaster.push(
+          <Notification type="error" header="삭제 실패" closable>
+            직책 삭제에 실패했습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
       });
   };
 
@@ -131,7 +188,7 @@ const RoleListPanel = ({ deptNo }) => {
             {(rowData) => (
               <>
                 <IconButton icon={<EditIcon />} size="xs" onClick={() => handleEdit(rowData)} />
-                <IconButton icon={<TrashIcon />} size="xs" color="red" onClick={() => handleDelete(rowData.role_id)} style={{ marginLeft: 8 }} />
+                <IconButton icon={<TrashIcon />} size="xs" appearance="subtle" color="red" onClick={() => handleDelete(rowData.role_id)} style={{ marginLeft: 8 }} />
               </>
             )}
           </Cell>
