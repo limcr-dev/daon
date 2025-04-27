@@ -240,4 +240,116 @@
 		    AND vr.vacation_type=1
 		  ORDER BY e.position_id asc, vr.start_date DESC 
 	</select>
+	
+	<!-- 근무 유형 불러오기 -->
+	<select id="allWorkType" resultType="com.spring.daon.attendMgt.Work_schedules">
+		SELECT * FROM work_schedules
+	</select>
+	
+	<!-- 근무 유형 불러오기 -->
+	<select id="getWorkType" parameterType="int" resultType="com.spring.daon.attendMgt.Work_schedules">
+		SELECT * FROM work_schedules
+		where work_type_no = #{work_type_no} 
+	</select>
+	
+	<!-- 근무유형 등록 -->
+	<insert id="addWorkSchedule" parameterType="com.spring.daon.attendMgt.Work_schedules">
+		INSERT INTO work_schedules(type_name, start_time, end_time, total_time)
+		VALUES(#{type_name},#{start_time}, #{end_time}, #{total_time})
+	</insert>
+	
+	<!-- 근무유형 수정 -->
+	<update id="editWorkSchedule" parameterType="com.spring.daon.attendMgt.Work_schedules">
+		UPDATE work_schedules
+		SET 
+		  type_name = #{type_name},
+		  start_time = #{start_time},
+		  end_time = #{end_time},
+		  total_time = SEC_TO_TIME(
+		    TIME_TO_SEC(#{end_time}) - TIME_TO_SEC(#{start_time})
+		  )
+		WHERE work_type_no = #{work_type_no};
+	</update>
+	
+	<!-- 근무유형 삭제 -->
+    <delete id="deleteWorkSchedule" parameterType="java.util.List">
+        DELETE FROM work_schedules
+        WHERE work_type_no IN 
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    
+	<!-- 근무유형 삭제 시 연관된 직원의 근무유형 재설정 -->
+	<update id="reassignWorkType" parameterType="java.util.List">
+	    UPDATE employees
+	    SET work_type_no = (
+	        SELECT MIN(work_type_no)
+	        FROM work_schedules
+	        WHERE work_type_no NOT IN
+	        <foreach collection="list" item="workType" open="(" separator="," close=")">
+	            #{workType}
+	        </foreach>
+	    )
+	    WHERE work_type_no IN
+	    <foreach collection="list" item="workType" open="(" separator="," close=")">
+	        #{workType}
+	    </foreach>
+	</update>
+	
+	<!-- 직원 목록 조회 -->
+	<select id="empList" resultType="com.spring.daon.attendMgt.Work_schedules">
+		SELECT w.*
+			 , e.emp_no
+			 , e.emp_name
+			 , e.position_id
+			 , e.dept_no
+		FROM employees e
+		JOIN work_schedules w
+		WHERE e.work_type_no = w.work_type_no 
+		  AND leave_date IS NULL
+		ORDER BY emp_no ASC
+		LIMIT #{size} OFFSET #{startRow}
+	</select>
+	
+	<!-- 직원 검색(검색 시 조회) -->
+	<select id="searchPerson" resultType="com.spring.daon.attendMgt.Work_schedules">
+		SELECT w.*
+			 , e.emp_no
+			 , e.emp_name
+			 , e.position_id
+			 , e.dept_no
+		FROM employees e
+		JOIN work_schedules w
+		WHERE e.work_type_no = w.work_type_no 
+		  AND leave_date IS NULL
+		AND (emp_no LIKE CONCAT('%', #{search}, '%')
+		   	 OR emp_name LIKE CONCAT('%', #{search}, '%')
+		    )
+		ORDER BY emp_no ASC
+		LIMIT #{size} OFFSET #{startRow}
+	</select>
+	
+	<!-- 리스트 갯수 -->
+	<select id="empCount" resultType="int"> 
+		SELECT COUNT(*)
+		FROM employees 
+		WHERE leave_date IS NULL
+	</select>
+	
+	<!-- 리스트 갯수 -->
+	<select id="empCountSearch" resultType="int">
+		SELECT COUNT(*)
+		FROM employees
+		WHERE leave_date IS NULL
+		AND (emp_no LIKE CONCAT('%', #{search}, '%')
+		     OR emp_name LIKE CONCAT('%', #{search}, '%'))
+	</select>
+	
+	<!-- 직원 근무유형 변경 -->
+	<update id="changeWorkSchedule" parameterType="java.util.Map">
+		UPDATE employees
+		  SET work_type_no = #{work_type_no}
+		WHERE emp_no = #{emp_no}
+	</update>
 </mapper>

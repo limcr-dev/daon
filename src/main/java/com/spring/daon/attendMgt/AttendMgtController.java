@@ -2,18 +2,26 @@ package com.spring.daon.attendMgt;
 
 import java.sql.Time;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.spring.daon.hrMgt.Employees;
+import com.spring.daon.paging.Paging;
 
 @RestController
 @RequestMapping("/attend")
@@ -41,7 +49,7 @@ public class AttendMgtController {
 	public ResponseEntity<?> attendByDate(@PathVariable int emp_no) {
 		System.out.println("<<< attendByDate >>>");
 		Attendance result = service.attendByDate(emp_no);
-		System.out.println("tset" + result);
+
 		 if (result == null) {
 		        return ResponseEntity.ok(Collections.emptyMap());
 		    }
@@ -139,4 +147,75 @@ public class AttendMgtController {
 		
 		return new ResponseEntity<>(service.allVacationHistory(), HttpStatus.OK);
 	}
+	
+	// 근무유형 목록 불러오기
+	@GetMapping("/workType")
+	public ResponseEntity<?> allWorkType() {
+		System.out.println("<<< allWorkType >>>"+service.allWorkType());
+		
+		return new ResponseEntity<>(service.allWorkType(), HttpStatus.OK);
+	}
+	// 선택한 근무유형 불러오기
+	@GetMapping("/getWorkType/{work_type_no}")
+	public ResponseEntity<?> getWorkType(@PathVariable int work_type_no) {
+		System.out.println("<<< getWorkType >>>"+service.getWorkType(work_type_no));
+		 
+		return new ResponseEntity<>(service.getWorkType(work_type_no), HttpStatus.OK);
+	}
+	
+	// 근무유형 등록
+	@PostMapping("/addWorkSchedule")
+	public ResponseEntity<?> addWorkSchedule(@RequestBody Work_schedules work_schedules) {
+		System.out.println("<<< addWorkSchedule >>>");
+		 
+		return new ResponseEntity<>(service.addWorkSchedule(work_schedules), HttpStatus.OK);
+	}
+	
+	// 근무유형 수정
+	@PutMapping("/editWorkSchedule")
+	public ResponseEntity<?> editWorkSchedule(@RequestBody Work_schedules work_schedules) {
+		System.out.println("<<< editWorkSchedule >>>"+service.editWorkSchedule(work_schedules));
+		 
+		return new ResponseEntity<>(service.editWorkSchedule(work_schedules), HttpStatus.OK);
+	}
+	
+	// 근무유형 삭제
+	@DeleteMapping("/deleteWorkSchedule")
+	public ResponseEntity<?> deleteWorkSchedule(@RequestBody List<Integer> work_type_no) {
+		System.out.println("<<< deleteWorkSchedule >>>");
+		 
+		return new ResponseEntity<>(service.deleteWorkSchedule(work_type_no), HttpStatus.OK);
+	}
+	
+	// 근태 설정 직원목록
+	@GetMapping("/workScheduleEmpList")
+	public ResponseEntity<?> workScheduleEmpList(
+			@RequestParam(defaultValue = "1") int page,
+		    @RequestParam(defaultValue = "10") int size,
+		    @RequestParam(required = false) String search) {
+	    System.out.println("<<< workScheduleEmpList >>> search : " + search);
+
+	    int totalCount = service.empCount(search);
+	    Paging paging = new Paging(page, size, totalCount);
+
+	    List<Work_schedules> result = (search == null || search.trim().isEmpty())
+	        ? service.empList(paging.getStartRow(), paging.getSize())
+	        : service.searchPerson(search, paging.getStartRow(), paging.getSize());
+
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("list", result);
+	    response.put("paging", paging);
+
+	    System.out.println("result : " + result);
+	    return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
+	// 직원 근무유형 변경
+	@PutMapping("/changeWorkSchedule/{emp_no}/{work_type_no}")
+	public ResponseEntity<?> changeWorkSchedule(@PathVariable int emp_no, @PathVariable int work_type_no) {
+		System.out.println("<<< changeWorkSchedule >>>");
+		 
+		return new ResponseEntity<>(service.changeWorkSchedule(emp_no, work_type_no), HttpStatus.OK);
+	}
+	
 }

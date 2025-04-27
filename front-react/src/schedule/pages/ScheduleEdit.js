@@ -205,14 +205,14 @@ const ScheduleEdit = ({ user, pickEvent, closeEditModal }) => {
         >
           {/* 전사일정만 작성자 보이게 설정 */}
           {eventInfo.sch_type === 'A' ? 
-          <div className="form-row">
-            <div className="form-group">
+          <div className="schedule-form-row">
+            <div className="schedule-form-group">
               <label>* 작성자: {eventInfo.emp_name}</label>
             </div>
           </div>
            : ""}
-          <div className="form-row">
-            <div className="form-group">
+          <div className="schedule-form-row">
+            <div className="schedule-form-group">
               <label>* 일정명:</label>
               <input
                 type="text"
@@ -224,8 +224,8 @@ const ScheduleEdit = ({ user, pickEvent, closeEditModal }) => {
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="form-group" >
+          <div className="schedule-form-row">
+            <div className="schedule-form-group" >
               <label style={{ display: "flex", alignItems: "center" }}>반복 횟수 :&nbsp;
                 <select style={{ width: "50px" }} value={eventInfo.sch_repeat_count} name="sch_repeat_count" onChange={changeValue} disabled={repeatAndAllDayStatus === 'N' || repeatAndAllDayStatus === 'A'}>
                   <option value="1">1</option>
@@ -244,8 +244,8 @@ const ScheduleEdit = ({ user, pickEvent, closeEditModal }) => {
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
+          <div className="schedule-form-row">
+            <div className="schedule-form-group">
               <label>* 일시:</label>
               <DatePicker
                 name="sch_start_time"
@@ -254,7 +254,7 @@ const ScheduleEdit = ({ user, pickEvent, closeEditModal }) => {
                 onChange={(value) => setStartDate(value)}
                 format=" yyyy-MM-dd"
               />
-              &nbsp;&nbsp;&nbsp;
+              &nbsp;
               <TimePicker
                 className="custom-datepicker"
                 value={startTime}
@@ -262,15 +262,15 @@ const ScheduleEdit = ({ user, pickEvent, closeEditModal }) => {
                 format="HH:mm"
                 disabled={repeatAndAllDayStatus !== 'N'}
               />
-              &nbsp;&nbsp;&nbsp;
+              &nbsp;
               <Button variant="primary" onClick={() => handleRepeatAndAll("A")}>
                 종일
               </Button>
             </div>
           </div>
-          <div className="form-row">
-            <div style={{ marginLeft: "50px" }} className="form-group">
-              ~ &nbsp;
+          <div className="schedule-form-row">
+            <div style={{ marginLeft: "50px" }} className="schedule-form-group">
+              ~ 
               <DatePicker
                 className="custom-datepicker"
                 value={endDate}
@@ -278,7 +278,7 @@ const ScheduleEdit = ({ user, pickEvent, closeEditModal }) => {
                 onChange={(value) => setEndDate(value)}
                 disabled={repeatAndAllDayStatus !== 'N' && repeatAndAllDayStatus !== 'A'}
               />
-              &nbsp;&nbsp;&nbsp;
+              &nbsp;
               <TimePicker
                 className="custom-datepicker"
                 value={endTime}
@@ -289,8 +289,8 @@ const ScheduleEdit = ({ user, pickEvent, closeEditModal }) => {
             </div>
           </div>
           <div style={{ display: eventInfo.sch_type === 'I' ? "block" : "none" }}>
-            <div className="form-row">
-              <div className="form-group">
+            <div className="schedule-form-row">
+              <div className="schedule-form-group">
                 <label>* 카테고리: </label>
                 <select
                   name="c_sch_no"
@@ -309,8 +309,8 @@ const ScheduleEdit = ({ user, pickEvent, closeEditModal }) => {
               </div>
             </div>
           </div>
-          <div className="form-row">
-            <div className="form-group">
+          <div className="schedule-form-row">
+            <div className="schedule-form-group">
               <label>일정내용:</label>
               <textarea
                 style={{ width: "100%" }}

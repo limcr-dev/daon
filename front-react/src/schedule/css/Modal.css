@@ -11,3 +11,33 @@
 .custom-form{
     font-size: 14px;
 }
+
+
+.schedule-form-row {
+    display: flex;
+    flex-wrap: wrap;  /* 여러 줄로 표시될 수 있게 함 */
+    gap: 20px; /* 각 항목 사이의 간격 */
+  }
+  
+  .schedule-form-group {
+    flex: 1; /* 각 요소가 동일한 크기를 차지하도록 설정 */
+    margin-bottom: 10px; /* 아래쪽에 간격을 추가 */
+  }
+  
+  .schedule-form-group label {
+    display: block; /* 라벨을 블록 레벨로 설정하여 입력 필드와의 간격을 조정 */
+    margin-bottom: 5px;
+  }
+  
+  .schedule-form-group input,
+  .schedule-form-group select {
+    width: 100%; /* 입력 요소가 부모 요소에 맞게 100%로 크기 조정 */
+    padding: 8px;
+    box-sizing: border-box;
+  }
+  
+  .schedule-button {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px; /* 버튼 간격 조정 */
+  }

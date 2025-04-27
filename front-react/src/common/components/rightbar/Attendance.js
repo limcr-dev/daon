@@ -166,8 +166,8 @@ const Attendance = () => {
         // 이미 누른 경우 비활성화
         disabled={!!todayAttendance.check_in_time || !!todayAttendance.vacation}>
         <FontAwesomeIcon icon={faPersonWalking} />
-        <p style={{ margin: "5px" }}>출근</p>{todayAttendance.check_in_time}
-      </Button>
+        <p style={{ margin: "5px" }}>출근</p>
+      </Button><br></br>
 
       {/* 퇴근 버튼 */}
       <Button
