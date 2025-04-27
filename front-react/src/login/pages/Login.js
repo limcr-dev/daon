@@ -42,7 +42,7 @@ const Login = () => {
       // 요청 시작 로깅
       console.log("===== 서버 요청 시작 =====");
 
-      // 요청 전송 및 응답 받기
+      // 요청 전송 및 응답 받기 (withCredentials: true로 쿠키 수신 가능)
       const response = await request("POST", "/api/login", dto);
 
       // 응답 데이터 상세 로깅
@@ -51,22 +51,19 @@ const Login = () => {
       console.log("응답 헤더:", response.headers);
       console.log("응답 전체 데이터:", response.data);
 
-      // 토큰 추출 및 확인
-      const user = response.data.user;
-      const accessToken = user?.token;
-      const refreshToken = response.data.refreshToken;
+      // 토큰 추출 및 확인(쿠키 기반에서는 리프레시 토큰을 직접 추출하지 않음)
+      const accessToken = response.data.accessToken;
 
       console.log("추출된 액세스 토큰:", accessToken);
-      console.log("추출된 리프레시 토큰:", refreshToken);
 
       if (!accessToken) {
         console.error("액세스 토큰이 없거나 null/undefined 입니다");
         throw new Error("토큰이 제공되지 않았습니다.");
       }
 
-      // 토큰 저장 및 사용자 정보 설정
+      // 토큰 저장 및 사용자 정보 설정(리프레시 토큰은 쿠키로 자동 저장됨)
       console.log("===== 로그인 함수 호출 전 =====");
-      await login(accessToken, refreshToken);
+      await login(accessToken);
       console.log("===== 로그인 함수 호출 완료 =====");
 
       // 홈 화면 이동

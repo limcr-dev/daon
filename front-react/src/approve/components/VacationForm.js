@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../css/vacationForm.css';
 import { useUser } from '../../common/contexts/UserContext';
-import FormErrorMessage from 'rsuite/esm/FormErrorMessage';
 import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
 import { getCurrentVacationCycle, getExpireDate, getUsedVacation } from '../../attendMgt/components/VacationUtil';
 import { request } from '../../common/components/helpers/axios_helper';
@@ -294,17 +293,6 @@ const VacationForm = ({ approveLine, onFormDataChange }) => {
             </tr>
           </tbody>
         </table>
-
-        <div className="form-footer">
-          <div className="attachment-section">
-            <h3>파일첨부</h3>
-            <div className="attachment-box">
-              <div className="attachment-placeholder">
-                <span>이 곳에 파일을 드래그 하세요. 또는 파일첨부</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

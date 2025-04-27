@@ -37,9 +37,7 @@ public class BoardController {
 		System.out.println("<<< noticeDetail >>> ");
 		
 		Notice notice = service.noticeDetail(notice_no);
-		if(notice != null) {
-			service.updateViews(notice_no);
-		}
+		
 		return new ResponseEntity<>(notice, HttpStatus.OK);
 	}
 	
@@ -79,9 +77,6 @@ public class BoardController {
 		System.out.println("<<< library_no >>> " + library_no);
 					
 		Library library = service.libraryDetail(library_no);
-		if(library != null) {
-			service.libraryViews(library_no);
-		}
 		return new ResponseEntity<>(library, HttpStatus.OK);
 	}
 	

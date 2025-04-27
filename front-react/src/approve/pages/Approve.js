@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Container, Content, Divider, FlexboxGrid, Row } from 'rsuite';
+import { Button, Card, Col, Container, Content, Divider, FlexboxGrid, Row, Tooltip } from 'rsuite';
 import Leftbar from '../../common/pages/Leftbar';
 import ApproveLeftbar from './ApproveLeftbar';
 import Header from '../../common/pages/Header';
@@ -7,8 +7,10 @@ import "../css/approve.css";
 import { request } from '../../common/components/helpers/axios_helper';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../common/contexts/UserContext';
-import { StatusBadge, UrgentBadge } from '../components/ApprCodeToText';
+import { getFormName, StatusBadge, UrgentBadge } from '../components/ApprCodeToText';
 import { getPositionName } from '../../hrMgt/components/getEmployeeInfo';
+import OverlayTrigger from 'rsuite/esm/internals/Overlay/OverlayTrigger';
+import { MdAttachFile } from 'react-icons/md';
 
 const Approve = () => {
   const { user } = useUser();
@@ -71,9 +73,8 @@ const Approve = () => {
       <Leftbar />
       <Container>
         < ApproveLeftbar />
-        <Content style={{ marginLeft: '15px', marginTop: '15px' }}>
+        <Content>
           <Header />
-          <Divider />
           <Row gutter={20} style={{ display: 'flex', flexDirection: 'column' }}>
 
             <Col style={{ marginBottom: '20px' }}>
@@ -97,7 +98,7 @@ const Approve = () => {
                         <p style={{ color: 'gray' }}>기안자 : {doc.emp_name || '이름 없음'} ({getPositionName(doc.position_id) || ''})</p>
                         <p style={{ color: 'gray' }}>기안일 : {doc.doc_reg_date || '-'}</p>
                         <p style={{ color: 'gray' }}>
-                          결재양식 : {doc.doc_form_name || doc.doc_form || '-'}
+                          결재양식 : {getFormName(doc.doc_form) || '-'}
                         </p>
                       </Card.Body>
 
@@ -155,9 +156,26 @@ const Approve = () => {
                         <tr key={doc.doc_no}>
                           <td>{doc.doc_no}</td>
                           <td>{doc.doc_reg_date}</td>
-                          <td>{doc.doc_form}</td>
+                          <td>{getFormName(doc.doc_form)}</td>
                           <td><Link to={"/approve/documentDetail/" + doc.doc_form + "/" + doc.doc_no}>{doc.doc_title}</Link></td>
-                          <td>{doc.doc_attachment ? '📎' : ''}</td>
+                          <td>
+                            {doc.doc_filename ? (
+                              <OverlayTrigger
+                                placement="top"
+                                speaker={
+                                  <Tooltip>
+                                    {doc.doc_filename.includes('_')
+                                      ? decodeURIComponent(doc.doc_filename.substring(doc.doc_filename.indexOf('_') + 1))
+                                      : doc.doc_filename}
+                                  </Tooltip>
+                                }
+                              >
+                                <div style={{ display: 'inline-block', cursor: 'pointer' }}>
+                                  <MdAttachFile />
+                                </div>
+                              </OverlayTrigger>
+                            ) : ''}
+                          </td>
                           <td><UrgentBadge isUrgent={doc.doc_urgent} /></td>
                           <td><StatusBadge status={doc.doc_status} /></td>
                         </tr>
@@ -199,9 +217,26 @@ const Approve = () => {
                         <tr key={doc.doc_no}>
                           <td>{doc.doc_no}</td>
                           <td>{doc.doc_reg_date}</td>
-                          <td>{doc.doc_form}</td>
+                          <td>{getFormName(doc.doc_form)}</td>
                           <td><Link to={"/approve/documentDetail/" + doc.doc_form + "/" + doc.doc_no}>{doc.doc_title}</Link></td>
-                          <td>{doc.doc_attachment ? '📎' : ''}</td>
+                          <td>
+                            {doc.doc_filename ? (
+                              <OverlayTrigger
+                                placement="top"
+                                speaker={
+                                  <Tooltip>
+                                    {doc.doc_filename.includes('_')
+                                      ? decodeURIComponent(doc.doc_filename.substring(doc.doc_filename.indexOf('_') + 1))
+                                      : doc.doc_filename}
+                                  </Tooltip>
+                                }
+                              >
+                                <div style={{ display: 'inline-block', cursor: 'pointer' }}>
+                                  <MdAttachFile />
+                                </div>
+                              </OverlayTrigger>
+                            ) : ''}
+                          </td>
                           <td><UrgentBadge isUrgent={doc.doc_urgent} /></td>
                           <td><StatusBadge status={doc.doc_status} /></td>
                         </tr>

@@ -60,8 +60,8 @@
 	</select>
 	
 	<insert id="insertDocument">
-		INSERT INTO documents(doc_form, emp_no, dept_no, doc_title, doc_reg_date, doc_status, doc_urgent)
-		VALUES(#{doc_form}, #{emp_no}, #{dept_no}, #{doc_title}, now(), #{doc_status}, #{doc_urgent})
+		INSERT INTO documents(doc_form, emp_no, dept_no, doc_title, doc_reg_date, doc_status, doc_urgent, doc_filename)
+		VALUES(#{doc_form}, #{emp_no}, #{dept_no}, #{doc_title}, now(), #{doc_status}, #{doc_urgent}, #{doc_filename})
 	</insert>
 	
 	<select id="getDocNo" parameterType="int" resultType="int">
@@ -205,6 +205,9 @@
 		   	 , doc_reg_date = now()
 		   	 , doc_status = #{doc_status}
 		   	 , doc_urgent = #{doc_urgent}
+		   	 <if test="doc_filename != null">
+		   	 , doc_filename = #{doc_filename}
+		   	 </if>
 		 WHERE doc_no = #{doc_no}
 	</update>
 	

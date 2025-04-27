@@ -1,11 +1,4 @@
-import {
-  Button,
-  Divider,
-  Modal,
-  Sidebar,
-  Sidenav,
-  Text,
-} from 'rsuite';
+import { Button, Divider, Modal, Sidebar, Sidenav, Text } from 'rsuite';
 
 import ApproveMenu from '../components/ApproveMenu';
 import { Icon } from '@rsuite/icons';
@@ -30,10 +23,9 @@ const ApproveLeftbar = () => {
         <Text size={25} weight={'bold'} style={{ marginTop: '35px' }}>전자결재</Text>
 
         {/* leftmenu - button */}
-        <Button style={{ marginTop: '15px', backgroundColor: '#CECEF2' }} onClick={() => setOpen(true)}>  
+        <Button style={{ marginTop: '15px', backgroundColor: '#CECEF2' }} onClick={() => setOpen(true)}>
           <Icon as={MdDescription} /> <p style={{ margin: '5px' }}>새 결재 진행</p>
         </Button>
-        
 
       </Sidenav.Header>
       <Divider />
@@ -42,7 +34,7 @@ const ApproveLeftbar = () => {
           <ApproveMenu />
         </Sidenav.Body>
       </Sidenav>
-      
+
       {/* 모달 창 */}
       <Modal open={open} onClose={() => setOpen(false)} size="md">
         <Modal.Header>

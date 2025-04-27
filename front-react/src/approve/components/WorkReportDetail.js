@@ -183,19 +183,6 @@ const WorkReportDetail = ({ approveLine, formData, docData }) => {
             </tr>
           </tbody>
         </table>
-
-        {/* 첨부파일 및 관련 문서 */}
-        <div className="form-footer">
-          <div className="attachment-section">
-            <h3>파일첨부</h3>
-            <div className="attachment-box">
-              <div className="attachment-placeholder">
-                <img src="/paperclip-icon.png" alt="첨부" className="attachment-icon" />
-                <span>이 곳에 파일을 드래그 하세요. 또는 파일첨부</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
