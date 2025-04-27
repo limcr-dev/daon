@@ -126,7 +126,10 @@ const ScheduleAdd = ({ user, pickDate, closeModal }) => {
       sch_start_time: fullStart,
       sch_end_time: fullEnd,
     };
-
+    if (updatedSchedule.sch_start_time > updatedSchedule.sch_end_time){
+      alert("종료 시간은 시작 시간 이후여야 합니다.");
+      return false;
+    }
     // 등록 request
     request("POST", "/schedule/addSchedule/", updatedSchedule)
       .then((res) => {
@@ -181,8 +184,8 @@ const ScheduleAdd = ({ user, pickDate, closeModal }) => {
               <Tabs.Tab eventKey="2" title="전사일정등록"></Tabs.Tab>
             </Tabs>
           </label>
-          <div className="form-row">
-            <div className="form-group">
+          <div className="schedule-form-row">
+            <div className="schedule-form-group">
               <label>* 일정명:</label>
               <input
                 type="text"
@@ -193,8 +196,8 @@ const ScheduleAdd = ({ user, pickDate, closeModal }) => {
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="form-group" >
+          <div className="schedule-form-row">
+            <div className="schedule-form-group" >
               <label style={{ display: "flex", alignItems: "center" }}>반복 횟수:&nbsp;
                 <select style={{ width: "50px" }} name="sch_repeat_count" onChange={changeValue} disabled={repeatAndAllDayStatus === 'N' || repeatAndAllDayStatus === 'A'}>
                   <option value="1">1</option>
@@ -213,8 +216,8 @@ const ScheduleAdd = ({ user, pickDate, closeModal }) => {
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
+          <div className="schedule-form-row">
+            <div className="schedule-form-group">
               <label>* 일시:</label>
               <DatePicker
                 name="sch_start_time"
@@ -223,29 +226,29 @@ const ScheduleAdd = ({ user, pickDate, closeModal }) => {
                 onChange={(value) => setStartDate(value)}
                 format=" yyyy-MM-dd"
               />
-              &nbsp;&nbsp;&nbsp;
+              &nbsp;
               <TimePicker
                 className="custom-datepicker"
                 onChange={(value) => setStartTime(value)}
                 format="HH:mm"
                 disabled={repeatAndAllDayStatus !== 'N'}
               />
-              &nbsp;&nbsp;&nbsp;
+              &nbsp;
               <Button variant="primary" onClick={() => handleRepeatAndAll("A")}>
                 종일
               </Button>
             </div>
           </div>
-          <div className="form-row">
-            <div style={{ marginLeft: "50px" }} className="form-group">
-              ~ &nbsp;
+          <div className="schedule-form-row">
+            <div style={{ marginLeft: "50px" }} className="schedule-form-group">
+              ~ 
               <DatePicker
                 className="custom-datepicker"
                 format=" yyyy-MM-dd"
                 onChange={(value) => setEndDate(value)}
                 disabled={repeatAndAllDayStatus !== 'N' && repeatAndAllDayStatus !== 'A'}
               />
-              &nbsp;&nbsp;&nbsp;
+              &nbsp;
               <TimePicker
                 className="custom-datepicker"
                 onChange={(value) => setEndTime(value)}
@@ -255,8 +258,8 @@ const ScheduleAdd = ({ user, pickDate, closeModal }) => {
             </div>
           </div>
           <div style={{ display: isVisible ? "block" : "none" }}>
-            <div className="form-row">
-              <div className="form-group">
+            <div className="schedule-form-row">
+              <div className="schedule-form-group">
                 <label>* 카테고리:</label>
                 <select name="c_sch_no" onChange={changeValue} required>
                   <option value="">카테고리 선택</option>
@@ -271,8 +274,8 @@ const ScheduleAdd = ({ user, pickDate, closeModal }) => {
               </div>
             </div>
           </div>
-          <div className="form-row">
-            <div className="form-group">
+          <div className="schedule-form-row">
+            <div className="schedule-form-group">
               <label>일정내용:</label>
               <textarea
                 style={{ width: "100%" }}
