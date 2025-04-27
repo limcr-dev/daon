@@ -1,7 +1,7 @@
 // 📁 Registration.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Modal, Button } from "rsuite";
+import { Modal, Button, toaster, Notification } from "rsuite";  // ✅ 추가
 import "../css/Registration.css";
 import { request } from "../../common/components/helpers/axios_helper";
 
@@ -46,14 +46,11 @@ const Registration = ({ open, onClose }) => {
   const [imageFile, setImageFile] = useState(null);
   const [upperDept, setUpperDept] = useState('');
   const [middleDept, setMiddleDept] = useState('');
-
-  // 📌 휴대폰, 내선 번호 분리 입력
   const [phone2, setPhone2] = useState('');
   const [phone3, setPhone3] = useState('');
   const [ext1, setExt1] = useState('');
   const [ext2, setExt2] = useState('');
 
-  // 📌 공통 입력 핸들러
   const changeValue = (e) => {
     const { name, value } = e.target;
     setEmployee((prev) => ({ ...prev, [name]: value }));
@@ -83,11 +80,21 @@ const Registration = ({ open, onClose }) => {
 
     // 📌 유효성 검사
     if (phone2.length !== 4 || phone3.length !== 4) {
-      alert("휴대폰 번호를 정확히 입력해주세요. (010-1234-5678 형식)");
+      toaster.push(
+        <Notification type="warning" header="휴대폰 번호 오류" closable>
+          휴대폰 번호를 정확히 입력해주세요. (010-1234-5678 형식)
+        </Notification>,
+        { placement: "topCenter" }
+      );
       return;
     }
     if ((ext1 || ext2) && (ext1.length < 3 || ext1.length > 4 || ext2.length !== 4)) {
-      alert("내선 번호를 정확히 입력해주세요. (앞자리 3~4자리, 뒷자리 4자리)");
+      toaster.push(
+        <Notification type="warning" header="내선 번호 오류" closable>
+          내선 번호를 정확히 입력해주세요. (앞자리 3~4자리, 뒷자리 4자리)
+        </Notification>,
+        { placement: "topCenter" }
+      );
       return;
     }
 
@@ -105,16 +112,31 @@ const Registration = ({ open, onClose }) => {
     request("post", "/api/insertEmployee", formData, {})
       .then((res) => {
         if (res.status === 201 || res.data) {
-          alert("사원 등록이 완료되었습니다.");
+          toaster.push(
+            <Notification type="success" header="등록 완료" closable>
+              사원 등록이 완료되었습니다.
+            </Notification>,
+            { placement: "topCenter" }
+          );
           navigate("/employee");
           onClose();
         } else {
-          alert("사원 등록에 실패했습니다.");
+          toaster.push(
+            <Notification type="error" header="등록 실패" closable>
+              사원 등록에 실패했습니다.
+            </Notification>,
+            { placement: "topCenter" }
+          );
         }
       })
       .catch((err) => {
         console.error("등록 실패:", err);
-        alert("사원 등록 중 오류가 발생했습니다.");
+        toaster.push(
+          <Notification type="error" header="등록 오류" closable>
+            사원 등록 중 오류가 발생했습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
       });
   };
 
@@ -123,9 +145,8 @@ const Registration = ({ open, onClose }) => {
       <Modal.Header><h3>👤 사원 등록</h3></Modal.Header>
       <Modal.Body>
         <form onSubmit={submitEmployee} style={{ maxWidth: "860px", margin: "0 auto" }}>
-          
-          {/* 프로필 이미지, 성별 */}
-          <div className="form-row">
+         {/* 프로필 이미지, 성별 */}
+         <div className="form-row">
             <div className="form-group">
               <label>프로필 이미지:</label>
               <input type="file" accept="image/*" onChange={handleImageChange} />
@@ -253,13 +274,16 @@ const Registration = ({ open, onClose }) => {
               <select name="position_id" value={employee.position_id} onChange={changeValue} required>
                 <option value="">선택</option>
                 <option value="10">사장</option>
+                <option value="15">부사장</option>
                 <option value="20">전무</option>
+                <option value="25">상무</option>
                 <option value="30">이사</option>
-                <option value="40">부장</option>
-                <option value="50">과장</option>
-                <option value="60">대리</option>
-                <option value="70">사원</option>
-                <option value="80">인턴</option>
+                <option value="35">부장</option>
+                <option value="40">차장</option>
+                <option value="45">과장</option>
+                <option value="50">대리</option>
+                <option value="55">사원</option>
+                <option value="60">인턴</option>
               </select>
             </div>
           </div>
@@ -331,7 +355,6 @@ const Registration = ({ open, onClose }) => {
             <Button type="submit" appearance="primary" style={{ marginRight: "10px" }}>등록</Button>
             <Button onClick={onClose} appearance="subtle">취소</Button>
           </div>
-
         </form>
       </Modal.Body>
     </Modal>
@@ -339,4 +362,3 @@ const Registration = ({ open, onClose }) => {
 };
 
 export default Registration;
-

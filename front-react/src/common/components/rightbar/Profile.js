@@ -26,7 +26,7 @@ const Profile = ({ reloadTrigger }) => {
 
   const imageUrl = emp_img
     ? `http://localhost:8081/api/images/${encodeURIComponent(emp_img)}`
-    : '/default-profile.jpg';
+    : '/default-profile.png';
 
   return (
     <div style={{ padding: 20, display: 'flex', justifyContent: 'center' }}>
@@ -55,7 +55,7 @@ const Profile = ({ reloadTrigger }) => {
               alt={`${emp_name} 프로필`}
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src = '/default-profile.jpg';
+                e.target.src = '/default-profile.png';
               }}
             />
             <VStack spacing={2}>

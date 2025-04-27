@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import {
   Container, Content, Divider, Card, Button,
-  Input, SelectPicker, DatePicker
+  Input, SelectPicker, DatePicker, Notification, toaster
 } from "rsuite";
 import Leftbar from "../../common/pages/Leftbar";
 import EmployeeLeftbar from "./EmployeeLeftbar";
@@ -12,65 +12,73 @@ import {
 import { request } from "../../common/components/helpers/axios_helper";
 
 const EmployeeDetail = () => {
-  const { emp_no } = useParams(); // 🔑 URL에서 사원번호(emp_no) 추출
-  const [employee, setEmployee] = useState(null); // 📄 사원 정보 상태
-  const [empPwdInput, setEmpPwdInput] = useState(""); // 🔐 비밀번호 별도 입력 상태
-  const [isEdit, setIsEdit] = useState(false); // ✏️ 수정 모드 여부
-  const [imageFile, setImageFile] = useState(null); // 🖼️ 이미지 파일 상태
+  const { emp_no } = useParams();
+  const [employee, setEmployee] = useState(null);
+  const [empPwdInput, setEmpPwdInput] = useState("");
+  const [isEdit, setIsEdit] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
 
-  // 📌 사원 정보 조회 함수
   const fetchEmployee = useCallback(() => {
     request("get", `/api/employee/${emp_no}`)
       .then((res) => {
         setEmployee(res.data);
-        setEmpPwdInput(""); // 🔐 비밀번호 입력은 항상 초기화
+        setEmpPwdInput("");
       })
       .catch((err) => {
         console.error("사원 정보 조회 실패:", err);
-        alert("사원 정보를 불러올 수 없습니다.");
+        toaster.push(
+          <Notification type="error" header="조회 실패" closable>
+            사원 정보를 불러올 수 없습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
       });
   }, [emp_no]);
 
-  // 📦 컴포넌트 mount 시 또는 emp_no 변경 시 조회
   useEffect(() => {
     fetchEmployee();
   }, [fetchEmployee]);
 
-  // ✍️ 일반 input 변경 핸들러
   const handleChange = (name, value) => {
     setEmployee(prev => ({ ...prev, [name]: value }));
   };
 
-  // 📸 이미지 선택 핸들러
   const handleImageChange = (e) => {
     setImageFile(e.target.files[0]);
   };
 
-  // 💾 수정 저장 처리
   const handleUpdate = () => {
     const employeeToSend = { ...employee };
 
-    // 🔐 비밀번호 입력값이 있을 경우만 포함
     if (empPwdInput.trim() !== "") {
       employeeToSend.emp_pwd = empPwdInput;
     } else {
-      delete employeeToSend.emp_pwd; // ❌ 입력 없으면 아예 전송 제외
+      delete employeeToSend.emp_pwd;
     }
 
-    // 📦 FormData 구성
     const formData = new FormData();
     formData.append("employee", new Blob([JSON.stringify(employeeToSend)], { type: "application/json" }));
-    if (imageFile) formData.append("image", imageFile); // 📎 이미지 파일 포함 시
+    if (imageFile) formData.append("image", imageFile);
 
-    // 🚀 PUT 요청으로 업데이트
     request("put", `/api/updateEmployee/${emp_no}`, formData, true)
       .then(() => {
-        setIsEdit(false); // 수정 모드 종료
-        fetchEmployee();  // 최신 정보 다시 조회
+        setIsEdit(false);
+        fetchEmployee();
+        toaster.push(
+          <Notification type="success" header="수정 완료" closable>
+            사원 정보가 수정되었습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
       })
       .catch(err => {
         console.error("업데이트 실패:", err);
-        alert("사원 정보 수정에 실패했습니다.");
+        toaster.push(
+          <Notification type="error" header="수정 실패" closable>
+            사원 정보 수정에 실패했습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
       });
   };
 
@@ -123,56 +131,41 @@ const EmployeeDetail = () => {
                 <Divider />
                 <input type="file" accept="image/*" onChange={handleImageChange} style={{ marginBottom: 20 }} />
                 <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                  <div>
-                    <p style={{ marginBottom: 4 }}>이름</p>
-                    <Input value={employee.emp_name} onChange={(val) => handleChange("emp_name", val)} />
-                  </div>
-                  <div>
-                    <p style={{ marginBottom: 4 }}>영문 이름</p>
-                    <Input value={employee.emp_eng_name} onChange={(val) => handleChange("emp_eng_name", val)} />
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "16px" }}>
-                    <div>
+                  {/* 이름, 이메일 등 수정 입력 폼 */}
+                  <InputItem label="이름" value={employee.emp_name} onChange={(val) => handleChange("emp_name", val)} />
+                  <InputItem label="영문 이름" value={employee.emp_eng_name} onChange={(val) => handleChange("emp_eng_name", val)} />
+                  <InputItem label="사내 이메일" value={employee.emp_email} onChange={(val) => handleChange("emp_email", val)} />
+                  <InputItem label="외부 이메일" value={employee.emp_ext_email} onChange={(val) => handleChange("emp_ext_email", val)} />
+                  <InputItem label="휴대폰" value={employee.emp_mobile} onChange={(val) => handleChange("emp_mobile", val)} />
+                  <InputItem label="내선번호" value={employee.emp_ext_tel} onChange={(val) => handleChange("emp_ext_tel", val)} />
+                  {/* 성별/생년월일 */}
+                  <div style={{ display: "flex", gap: "16px" }}>
+                    <div style={{ flex: 1 }}>
                       <p style={{ marginBottom: 4 }}>성별</p>
                       <SelectPicker
                         data={[{ label: "남자", value: "M" }, { label: "여자", value: "F" }]}
                         value={employee.emp_gender}
                         onChange={(val) => handleChange("emp_gender", val)}
-                        style={{ width: 120 }}
+                        style={{ width: "100%" }}
                       />
                     </div>
-                    <div>
+                    <div style={{ flex: 1 }}>
                       <p style={{ marginBottom: 4 }}>생년월일</p>
                       <DatePicker
                         value={new Date(employee.emp_birthday)}
                         onChange={(val) => handleChange("emp_birthday", val.toISOString().split("T")[0])}
-                        style={{ width: 200 }}
+                        style={{ width: "100%" }}
                       />
                     </div>
                   </div>
+                  {/* 비밀번호 */}
                   <div>
-                    <p style={{ marginBottom: 4 }}>사내 이메일</p>
-                    <Input value={employee.emp_email} onChange={(val) => handleChange("emp_email", val)} />
-                  </div>
-                  <div>
-                    <p style={{ marginBottom: 4 }}>외부 이메일</p>
-                    <Input value={employee.emp_ext_email} onChange={(val) => handleChange("emp_ext_email", val)} />
-                  </div>
-                  <div>
-                    <p style={{ marginBottom: 4 }}>휴대폰</p>
-                    <Input value={employee.emp_mobile} onChange={(val) => handleChange("emp_mobile", val)} />
-                  </div>
-                  <div>
-                    <p style={{ marginBottom: 4 }}>내선번호</p>
-                    <Input value={employee.emp_ext_tel} onChange={(val) => handleChange("emp_ext_tel", val)} />
-                  </div>
-                  <div>
-                    <p style={{ marginBottom: 4 }}>비밀번호 (변경 시만 입력)</p>
+                    <p style={{ marginBottom: 4 }}>비밀번호 (변경 시 입력)</p>
                     <Input
                       type="password"
                       value={empPwdInput}
                       onChange={(val) => setEmpPwdInput(val)}
-                      placeholder="입력 시 새 비밀번호로 변경됩니다"
+                      placeholder="변경할 경우에만 입력"
                     />
                   </div>
                 </div>
@@ -189,5 +182,13 @@ const EmployeeDetail = () => {
     </Container>
   );
 };
+
+// 🔹 공통 Input 줄이기
+const InputItem = ({ label, value, onChange }) => (
+  <div>
+    <p style={{ marginBottom: 4 }}>{label}</p>
+    <Input value={value} onChange={onChange} />
+  </div>
+);
 
 export default EmployeeDetail;

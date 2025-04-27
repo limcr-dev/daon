@@ -122,7 +122,7 @@ const Home = () => {
         <div style={{
           position: 'fixed',
           bottom: '20px',
-          left: '150px',
+          left: '200px',
           backgroundColor: 'white', // ✅ 배경 없음
           borderRadius: '12px',  // ✅ 모서리를 둥글게 만든다
         }}>

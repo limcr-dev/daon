@@ -17,19 +17,30 @@ public class WebSocketEventListener {
     @EventListener
     public void handleSessionConnected(SessionConnectEvent event) {
         // JWT에서 사용자 정보 추출
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+    	StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String empNo = headerAccessor.getFirstNativeHeader("emp_no");
         if (empNo != null) {
-            presenceTracker.setOnline(Integer.parseInt(empNo));
+            int userId = Integer.parseInt(empNo);
+            System.out.println("🔗 WebSocket 연결됨, emp_no: " + userId);
+            presenceTracker.setOnline(userId);
+
+            // 여기 추가!
+            if (headerAccessor.getSessionAttributes() != null) {
+                headerAccessor.getSessionAttributes().put("emp_no", userId);
+            }
         }
     }
 
     @EventListener
     public void handleSessionDisconnect(SessionDisconnectEvent event) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String empNo = headerAccessor.getFirstNativeHeader("emp_no");
-        if (empNo != null) {
-            presenceTracker.setOffline(Integer.parseInt(empNo));
+    	StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+        if (headerAccessor.getSessionAttributes() != null) {
+            Object empNoObj = headerAccessor.getSessionAttributes().get("emp_no");
+            if (empNoObj != null) {
+                int empNo = Integer.parseInt(empNoObj.toString());
+                System.out.println("❌ WebSocket 연결 끊김, emp_no: " + empNo);
+                presenceTracker.setOffline(empNo);
+            }
         }
     }
 }
