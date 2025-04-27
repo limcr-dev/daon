@@ -1,16 +1,20 @@
-import { Button, Container, Content, Card } from "rsuite";
+import { Button, Container, Content, Card, Input } from "rsuite"; // ✅ Input 추가
 import Leftbar from "../../../common/pages/Leftbar";
 import SalaryLeftbar from "../SalaryLeftbar";
 import { useEffect, useState } from "react";
 import DeductionModal from "./DeductionModal";
 import { request } from "../../../common/components/helpers/axios_helper";
 import Header from "../../../common/pages/Header";
-import "../../css/DeductionList.css"; // ✅ 스타일 적용
+import Paging from "../../../common/components/paging.js"; // ✅ 페이징 import
+import "../../css/DeductionList.css";
 
 const DeductionList = () => {
   const [list, setList] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [page, setPage] = useState(1);    // ✅ 현재 페이지
+  const size = 10;             // ✅ 한 페이지당 보여줄 개수
+  const [searchKeyword, setSearchKeyword] = useState(""); // ✅ 검색어 추가
 
   const fetchList = () => {
     request("get", "/api/deductions")
@@ -41,6 +45,21 @@ const DeductionList = () => {
     setOpen(true);
   };
 
+  // ✅ 이름 검색 필터
+  const filteredList = list.filter((row) =>
+    row.name.toLowerCase().includes(searchKeyword.toLowerCase())
+  );
+
+  // ✅ 현재 페이지 slice
+  const startIndex = (page - 1) * size;
+  const endIndex = startIndex + size;
+  const paginatedList = filteredList.slice(startIndex, endIndex);
+
+  const handleSearchChange = (value) => {
+    setSearchKeyword(value);
+    setPage(1); // 검색하면 페이지 1로 초기화
+  };
+
   return (
     <Container style={{ minHeight: "100vh", width: "100%" }}>
       <Leftbar />
@@ -57,7 +76,14 @@ const DeductionList = () => {
           >
             <h3 style={{ marginBottom: 20 }}>공제 요약 목록</h3>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
+            {/* ✅ 검색창 + 등록버튼 */}
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+              <Input
+                placeholder="공제명 검색"
+                value={searchKeyword}
+                onChange={handleSearchChange}
+                style={{ width: 250 }}
+              />
               <Button
                 appearance="primary"
                 size="sm"
@@ -70,6 +96,7 @@ const DeductionList = () => {
               </Button>
             </div>
 
+            {/* ✅ 테이블 */}
             <table className="deduction-summary-table">
               <thead>
                 <tr>
@@ -82,7 +109,7 @@ const DeductionList = () => {
                 </tr>
               </thead>
               <tbody>
-                {list.map((row, index) => (
+                {paginatedList.map((row, index) => (
                   <tr key={index}>
                     <td>{row.name}</td>
                     <td>{row.rate ? `${row.rate}%` : "-"}</td>
@@ -113,6 +140,19 @@ const DeductionList = () => {
               </tbody>
             </table>
 
+            {/* ✅ 페이징 */}
+            <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+              <Paging
+                paging={{
+                  page: page,
+                  size: size,
+                  totalCount: filteredList.length
+                }}
+                onPageChange={(newPage) => setPage(newPage)}
+              />
+            </div>
+
+            {/* ✅ 수정/등록 모달 */}
             {open && (
               <DeductionModal
                 open={open}

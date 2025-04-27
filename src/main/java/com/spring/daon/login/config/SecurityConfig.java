@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -29,6 +31,30 @@ public class SecurityConfig {
 
    // JwtAuthFilter 빈 정의
    // new로 저장해서 웹소켓 반응x -> 추가
+   
+   // 웹소켓 때문에 추가
+   @Bean
+   public CorsConfigurationSource corsConfigurationSource() {
+       CorsConfiguration config = new CorsConfiguration();
+       config.setAllowedOriginPatterns(List.of("*")); // 모든 Origin 허용
+       config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+       config.setAllowedHeaders(List.of("*"));
+       config.setAllowCredentials(true); // 쿠키 전송 허용
+
+
+       UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+       source.registerCorsConfiguration("/**", config);
+       return source;
+   }
+   
+   // % 등의 기호 허용
+   @Bean
+   public HttpFirewall allowUrlEncodedPercentHttpFirewall() {
+	   StrictHttpFirewall firewall = new StrictHttpFirewall();
+       firewall.setAllowUrlEncodedPercent(true);  // 핵심 설정!
+       return firewall;
+    }
+   
    @Bean
     public JwtAuthFilter jwtAuthFilter() {
         System.out.println(">>> JwtAuthFilter Bean 등록됨");
@@ -61,19 +87,6 @@ public class SecurityConfig {
 		return http.build();
 	}
 	
-	// 웹소켓 때문에 추가
-	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-	    CorsConfiguration config = new CorsConfiguration();
-	    config.setAllowedOriginPatterns(List.of("*")); // 모든 Origin 허용
-	    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-	    config.setAllowedHeaders(List.of("*"));
-	    config.setAllowCredentials(true); // 쿠키 전송 허용
-
-	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-	    source.registerCorsConfiguration("/**", config);
-	    return source;
-	}
 }
 
 // 작성

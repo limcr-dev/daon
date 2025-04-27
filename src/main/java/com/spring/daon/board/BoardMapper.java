@@ -43,6 +43,6 @@ public interface BoardMapper {
 	public int updateLibrary(Library library);
 	
 	// 자료 삭제
-	public String deleteLibrary(int library_no) ;
+	public int deleteLibrary(int library_no) ;
 	
 }

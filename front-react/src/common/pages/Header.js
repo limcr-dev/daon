@@ -42,6 +42,20 @@ const Header = ({ onProfileUpdated }) => {
     window.open(url, '_blank', features)
   }
 
+  // 메일 실행
+  const emailRun = () => {
+    const url = 'https://mail.daon-ai.com';
+    const features = 'width=1024,height=768,resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no,location=no';
+    window.open(url, 'DaonWebmail', features);
+  }
+
+  // 챗봇 실행
+  const chatbotRun = () => {
+    const url = 'http://localhost:8501';  // ✨ 수정: 'http://' 붙여주고 포트번호 8501로!
+    const features = 'width=800,height=600,resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no,location=no';
+    window.open(url, 'Daoni', features);
+  }
+
   return (
     <>
       <div
@@ -62,8 +76,8 @@ const Header = ({ onProfileUpdated }) => {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: 'auto' }}>
           <IconButton icon={<MessageIcon />} onClick={msgRun} size="sm" appearance="subtle" title="메신저" />
-          <IconButton icon={<EmailIcon />} size="sm" appearance="subtle" title="이메일" />
-          <IconButton icon={<WechatOutlineIcon />} size="sm" appearance="subtle" title="챗봇" />
+          <IconButton icon={<EmailIcon />} onClick={emailRun} size="sm" appearance="subtle" title="이메일" />
+          <IconButton icon={<WechatOutlineIcon />} onClick={chatbotRun} size="sm" appearance="subtle" title="챗봇" />
 
           <Avatar
             circle

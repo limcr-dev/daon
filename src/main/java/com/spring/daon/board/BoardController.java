@@ -47,7 +47,6 @@ public class BoardController {
 	@DeleteMapping("/notice/{notice_no}")
 	public ResponseEntity<?> deleteNotice(@PathVariable int notice_no){
 		System.out.println("<<< deleteNotice >>> ");
-		
 		return new ResponseEntity<>(service.deleteNotice(notice_no), HttpStatus.OK);
 	}
 	
@@ -90,7 +89,6 @@ public class BoardController {
 	@DeleteMapping("/library/{library_no}")
 	public ResponseEntity<?> deleteLibrary(@PathVariable int library_no){
 		System.out.println("<<< deleteLibrary >>> ");
-		
 		return new ResponseEntity<>(service.deleteLibrary(library_no), HttpStatus.OK);
 	}
 	
@@ -98,7 +96,6 @@ public class BoardController {
 	@PostMapping("/library")
 	public ResponseEntity<?> insertLibrary(@RequestBody Library library){
 		System.out.println("<<< insertLibrary >>> ");
-		
 		return new ResponseEntity<>(service.insertLibrary(library), HttpStatus.CREATED);
 	}
 	
