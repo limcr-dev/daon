@@ -67,5 +67,6 @@ public interface HRMgtMapper {
     // 정직원 전환 처리 
     int convertToRegular(@Param("empNo") int empNo);
 
-    
+    // 본인제외 전체 조회
+    List<Employees> findAllExceptMe(@Param("myId") int myId);
 } 

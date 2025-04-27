@@ -14,7 +14,7 @@ import com.spring.daon.messenger.chat.dto.ChatRoomList;
 @Repository
 public interface ChatMapper {
 	// 방 존재 여부 확인
-	boolean isRoomExists(String roomCode);
+	int isRoomExists(String roomCode);
 	
     String findRoomCodeByUsers(@Param("user1") int user1, @Param("user2") int user2);
     
@@ -41,11 +41,29 @@ public interface ChatMapper {
     void markAsRead(@Param("roomCode") String roomCode, @Param("userId") int userId);
     
     // 채팅방에서 sender 제외한 receiverId 조회
-    int getReceiverId(@Param("roomCode") String roomCode, @Param("senderId") int senderId);
+    Integer getReceiverId(@Param("roomCode") String roomCode, @Param("senderId") int senderId);
     
     // 채팅방 이전 메시지 불러오기
     List<ChatMessage> getMessagesByRoomCode(String roomCode);
     
     // 채팅방 전체 참여자 userId 리스트 가져오기
     List<Integer> getUserIdsByRoomCode(@Param("roomCode") String roomCode);
+    
+    // 단체채팅 방 생성
+    void insertChatRoom(String roomCode);
+    
+    // 단체채팅 참가자
+    void insertChatParticipant(String roomCode, int userId);
+    
+    // 단체채팅 리스트
+    List<ChatRoomList> findGroupChatRooms(int userId);
+    
+    // 이전 메세지 조회
+    List<ChatMessage> findMessagesByRoomCode(String roomCode);
+    
+    // 방 타입 조회 (1대1/단체 구분용)
+    boolean getRoomGroupByRoomCode(String roomCode);
+
+    // 단체 채팅방 참여자 리스트 가져오기
+    List<Integer> getParticipantIdsByRoomCode(@Param("roomCode") String roomCode);
 }

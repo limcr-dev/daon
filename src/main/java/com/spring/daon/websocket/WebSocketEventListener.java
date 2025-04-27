@@ -19,6 +19,7 @@ public class WebSocketEventListener {
         // JWT에서 사용자 정보 추출
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String empNo = headerAccessor.getFirstNativeHeader("emp_no");
+        System.out.println("🔗 WebSocket 연결됨, emp_no: " + empNo);
         if (empNo != null) {
             presenceTracker.setOnline(Integer.parseInt(empNo));
         }

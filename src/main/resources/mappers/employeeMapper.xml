@@ -186,5 +186,12 @@
 	      contract_end_date = NULL
 	  WHERE emp_no = #{empNo} AND (emp_type = 2 OR emp_type = 3)
 	</update>
+	
+	<!-- 본인제외 전체조회 -->
+	<select id="findAllExceptMe" resultType="com.spring.daon.hrMgt.Employees">
+	    SELECT emp_no, emp_name, dept_no, position_id, emp_img
+	    FROM employees
+	    WHERE emp_no != #{myId}
+	</select>
    
 </mapper>

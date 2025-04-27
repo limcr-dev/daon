@@ -6,6 +6,9 @@ import MessengerRun from './pages/MessengerRun';
 import MessengerChatList from './pages/MessengerChatList';
 import MessengerSetting from './pages/MessengerSetting';
 import MessengerChat from './pages/MessengerChat';
+import MessengerNewChat from './pages/MessengerNewChat';
+import MessengerNewGroup from './pages/MessengerNewGroup';
+import MessengerNewSingle from './pages/MessengerNewSingle';
 
 const MessengerRouter = () => {
 	return (
@@ -16,6 +19,9 @@ const MessengerRouter = () => {
 			<Route path="/messengerChatList" exact={true} element={<MessengerChatList />} />
 			<Route path="/messengerSetting" exact={true} element={<MessengerSetting />} />
 			<Route path="/chat/:roomId" element={<MessengerChat />} />
+			<Route path="/messengerNewChat" element={<MessengerNewChat />} />
+			<Route path="/messengerNewSingle" element={<MessengerNewSingle />} />	{/*1:1 대화*/}
+			<Route path="/messengerNewGroup" element={<MessengerNewGroup />} />		{/*단체 대화*/}
 		</Routes>
 	);
 };
