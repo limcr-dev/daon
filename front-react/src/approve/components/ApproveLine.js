@@ -175,7 +175,7 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
             <div style={{ display: 'flex', flex: 1}}>
                 {/* 왼쪽 패널 - 조직도/나의 결재선 */}
                 <div style={{ width: '30%', display: 'flex', flexDirection: 'column', borderRight: '1px solid #e0e0e0', overflow: 'hidden' }}>
-                    <div style={{ padding: '10px' }}>
+                    {/* <div style={{ padding: '10px' }}>
                         <input
                             type="text"
                             placeholder="이름으로 검색하세요"
@@ -183,7 +183,7 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
                             onChange={handleInputChange}
                             style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
                         />
-                    </div>
+                    </div> */}
                     <div style={{ flex: 1, overflow: 'hidden' }}>
                         <Tree
                             data={deptTree}
