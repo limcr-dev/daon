@@ -22,6 +22,8 @@ const departmentData = {
   }
 };
 
+
+
 const EmployeeDetail = () => {
   const { emp_no } = useParams();
   const [employee, setEmployee] = useState(null);
@@ -113,7 +115,10 @@ const EmployeeDetail = () => {
     formData.append("employee", new Blob([JSON.stringify(employeeToSend)], { type: "application/json" }));
     if (imageFile) formData.append("image", imageFile);
 
-    request("put", `/api/updateEmployee/${emp_no}`, formData, true)
+    request("put", `/api/updateEmployee/${emp_no}`, formData,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
       .then(() => {
         setIsEdit(false);
         fetchEmployee();
@@ -158,9 +163,9 @@ const EmployeeDetail = () => {
               <Divider />
               {employee.emp_img && (
                 <img
-                  src={`http://localhost:8081/api/images/${employee.emp_img.split("/").pop()}`}
+                  src={`http://localhost:8081/api/images/${encodeURIComponent(employee.emp_img)}`}
                   alt="프로필"
-                  style={{ width: 150, height: 150, objectFit: "cover", borderRadius: "50%", marginBottom: 20 }}
+                style={{ width: 150, height: 150, objectFit: "cover", borderRadius: "50%", marginBottom: 20 }}
                 />
               )}
               <p><b>이름:</b> {employee.emp_name}</p>

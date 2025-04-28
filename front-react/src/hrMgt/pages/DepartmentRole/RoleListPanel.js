@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Card, Button, Input, Divider, Table, IconButton, Modal, Notification, toaster } from "rsuite";
 import EditIcon from "@rsuite/icons/Edit";
 import TrashIcon from "@rsuite/icons/Trash";
+import { request } from "../../../common/components/helpers/axios_helper";
 
 const { Column, HeaderCell, Cell } = Table;
 
@@ -13,25 +14,27 @@ const RoleListPanel = ({ deptNo }) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleteRoleId, setDeleteRoleId] = useState(null);
 
-  // 부서 선택 시 목록 불러오기
-  useEffect(() => {
+  const fetchRoles = useCallback(() => {
     if (!deptNo) {
       setRoles([]);
       return;
     }
-
-    fetch(`http://localhost:8081/api/roles?deptNo=${deptNo}`)
-      .then((res) => res.json())
-      .then((data) => setRoles(data));
+    request("get", `/api/roles?deptNo=${deptNo}`)
+      .then((res) => setRoles(res.data))
+      .catch(() => {
+        toaster.push(
+          <Notification type="error" header="조회 실패" closable>
+            직책 목록 조회에 실패했습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
+      });
   }, [deptNo]);
 
-  const fetchRoles = () => {
-    fetch(`http://localhost:8081/api/roles?deptNo=${deptNo}`)
-      .then((res) => res.json())
-      .then((data) => setRoles(data));
-  };
+  useEffect(() => {
+    fetchRoles();
+  }, [fetchRoles]);
 
-  // 직책 추가
   const handleAddRole = () => {
     if (!newRoleName.trim()) {
       toaster.push(
@@ -43,12 +46,10 @@ const RoleListPanel = ({ deptNo }) => {
       return;
     }
 
-    fetch("http://localhost:8081/api/roles", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ role_name: newRoleName, dept_no: deptNo })
+    request("post", "/api/roles", {
+      role_name: newRoleName,
+      dept_no: deptNo
     })
-      .then((res) => res.json())
       .then(() => {
         setNewRoleName("");
         toaster.push(
@@ -69,13 +70,11 @@ const RoleListPanel = ({ deptNo }) => {
       });
   };
 
-  // 수정 시작
   const handleEdit = (role) => {
     setEditRole(role);
     setEditName(role.role_name);
   };
 
-  // 수정 완료
   const handleEditSubmit = () => {
     if (!editName.trim()) {
       toaster.push(
@@ -87,12 +86,10 @@ const RoleListPanel = ({ deptNo }) => {
       return;
     }
 
-    fetch("http://localhost:8081/api/roles", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...editRole, role_name: editName })
+    request("put", "/api/roles", {
+      ...editRole,
+      role_name: editName
     })
-      .then((res) => res.json())
       .then(() => {
         setEditRole(null);
         setEditName("");
@@ -114,17 +111,13 @@ const RoleListPanel = ({ deptNo }) => {
       });
   };
 
-  // 제 요청
   const handleDelete = (roleId) => {
     setDeleteRoleId(roleId);
     setShowConfirm(true);
   };
 
-  // 삭제 확인
   const confirmDelete = () => {
-    fetch(`http://localhost:8081/api/roles/${deleteRoleId}`, {
-      method: "DELETE"
-    })
+    request("delete", `/api/roles/${deleteRoleId}`)
       .then(() => {
         setShowConfirm(false);
         setDeleteRoleId(null);
@@ -147,9 +140,11 @@ const RoleListPanel = ({ deptNo }) => {
   };
 
   return (
-    <Card style={{ orderRadius: "15px",
+    <Card style={{
+      borderRadius: "15px",
       boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      padding: 20, }}>
+      padding: 20,
+    }}>
       <h4>🧩 직책 목록</h4>
       <Divider />
       {/* 등록 */}

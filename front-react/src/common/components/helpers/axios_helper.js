@@ -119,6 +119,14 @@ api.interceptors.response.use(
    async (error) => {
       const originalRequest = error.config;
 
+      // 네트워크 에러 따로 처리
+      if (error.message === 'Network Error') {
+         setTimeout(() => {
+            alert('서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.');
+         }, 100);
+         return Promise.reject(error);
+      }
+
       // 토큰이 만료되었고, 이 요청이 이미 재시도된 것이 아니라면
       if (error.response?.status === 401 && !originalRequest._retry) {
 
