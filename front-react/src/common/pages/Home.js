@@ -27,7 +27,9 @@ const Home = () => {
   const [docList, setDocList] = useState([]);
 
   // 핸들러
-  const handleNewsClick = () => navigate('../Crwal/news_more.js');
+  const handleNewsClick = () => {
+    window.open('/messenger/crwal/news_more', '_blank', 'width=1200,height=800');
+  };
 
   // noticeList 링크로 들어왔을 때 처음 실행되는 부분
   useEffect(() => {
@@ -261,14 +263,14 @@ const Home = () => {
 
                   {/* 뉴스 */}
                   <FlexboxGrid.Item colspan={24}>
-                    <Card style={{ borderRadius: 15, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
-                      <Card.Header style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>랭킹 뉴스</span>
+                    <Card style={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', minWidth: '500px' }}>
+                      <Card.Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', backgroundColor: '#f5f5f5', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
+                        <span style={{ fontWeight: '600', fontSize: '16px' }}>
+                          랭킹뉴스
+                        </span>
                         <Button onClick={handleNewsClick} appearance="link">더보기</Button>
                       </Card.Header>
-                      <Card.Body>
                         <News />
-                      </Card.Body>
                     </Card>
                   </FlexboxGrid.Item>
 
