@@ -9,6 +9,7 @@ import MessengerChat from './pages/MessengerChat';
 import MessengerNewChat from './pages/MessengerNewChat';
 import MessengerNewGroup from './pages/MessengerNewGroup';
 import MessengerNewSingle from './pages/MessengerNewSingle';
+import News_more from '../crawl/news_more';
 
 const MessengerRouter = () => {
 	return (
@@ -22,6 +23,7 @@ const MessengerRouter = () => {
 			<Route path="/messengerNewChat" element={<MessengerNewChat />} />
 			<Route path="/messengerNewSingle" element={<MessengerNewSingle />} />	{/*1:1 대화*/}
 			<Route path="/messengerNewGroup" element={<MessengerNewGroup />} />		{/*단체 대화*/}
+			<Route path="/crwal/news_more" element={<News_more />} />
 		</Routes>
 	);
 };
