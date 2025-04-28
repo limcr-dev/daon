@@ -121,6 +121,12 @@ api.interceptors.response.use(
 
       // 토큰이 만료되었고, 이 요청이 이미 재시도된 것이 아니라면
       if (error.response?.status === 401 && !originalRequest._retry) {
+
+         // 로그인 요청이면 토큰 갱신 시도하지 않고 바로 에러 던짐
+         if (originalRequest.url.includes('/api/login')) {
+            return Promise.reject(error);
+         }
+
          if (isRefreshing) {
             // 이미 토큰 갱신 중이면 대기열에 요청 추가
             return new Promise((resolve, reject) => {
