@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Container, Content, Divider, Row, Tooltip, Whisper } from 'rsuite';
+import { Button, Card, Col, Container, Content, Row, Tooltip } from 'rsuite';
 import Leftbar from '../../common/pages/Leftbar';
 import Header from '../../common/pages/Header';
 import "../css/board.css";
@@ -8,15 +8,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MdAttachFile } from "react-icons/md";
 import OverlayTrigger from 'rsuite/esm/internals/Overlay/OverlayTrigger';
 import { request } from '../../common/components/helpers/axios_helper';
-
-
-const formatDate = (timestamp) => {
-  const date = new Date(timestamp);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
 
 const Board = () => {
 
@@ -58,6 +49,7 @@ const Board = () => {
 
     fetchLibraryData();
   }, []); // 페이지가 처음 로딩될 때 한 번만 실행
+
   const library = () => {
     navigate('/board/libraryList');
   }

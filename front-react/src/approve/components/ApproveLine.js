@@ -22,11 +22,11 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
     };
 
     const [deptTree, setDeptTree] = useState([]); // 조직도 정보
-    const [searchTerm, setSearchTerm] = useState('');   // 실시간 검색을 위한 변수
-    const handleInputChange = (e) => {
-        const newSearchTerm = e.target.value;
-        setSearchTerm(newSearchTerm);
-    }
+    // const [searchTerm, setSearchTerm] = useState('');   // 실시간 검색을 위한 변수
+    // const handleInputChange = (e) => {
+    //     const newSearchTerm = e.target.value;
+    //     setSearchTerm(newSearchTerm);
+    // }
 
     // 조직도 불러오기
     useEffect(() => {
@@ -189,6 +189,7 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
                             data={deptTree}
                             showIndentLine
                             defaultExpandAll
+                            
                             onSelect={handleSelect}
                             style={{ overflow: 'hidden' }}
                         />

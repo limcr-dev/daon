@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Form, DatePicker, Input, Button } from 'rsuite';
-//import ReactQuill from 'react-quill'; // 리치 텍스트 에디터
-//import 'react-quill/dist/quill.snow.css'; // 에디터 스타일
 import '../css/workReportForm.css';
 import { useUser } from '../../common/contexts/UserContext';
 import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
