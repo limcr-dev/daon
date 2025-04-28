@@ -111,9 +111,10 @@ const AttendMgtLeftbar = (props) => {
           flexDirection: "column",
         }}
       >
-        <Text size={24} style={{ marginTop: "20px" }}>
+        <Text size={25} weight={'bold'} style={{ marginTop: "35px" }}>
           근태관리  
         </Text>
+        
         <Divider />
         {formattedDate} {/* 오늘 날짜 */}
         {/* 현재시각 시작 */}
