@@ -5,7 +5,8 @@ import {
   Container,
   Content,
   Divider,
-  Row
+  Row,
+  Tooltip
 } from 'rsuite';
 import Leftbar from '../../common/pages/Leftbar';
 import ApproveLeftbar from './ApproveLeftbar';
@@ -14,7 +15,9 @@ import "../css/approve.css";
 import { request } from '../../common/components/helpers/axios_helper';
 import { Link, useParams } from 'react-router-dom';
 import { useUser } from '../../common/contexts/UserContext';
-import { getApprStatusText, getStatusText, StatusBadge, UrgentBadge } from '../components/ApprCodeToText';
+import { getApprStatusText, getFormName, getStatusText, StatusBadge, UrgentBadge } from '../components/ApprCodeToText';
+import OverlayTrigger from 'rsuite/esm/internals/Overlay/OverlayTrigger';
+import { MdAttachFile } from 'react-icons/md';
 
 // 결재자 문서 목록
 const ApproverDocList = () => {
@@ -56,9 +59,8 @@ const ApproverDocList = () => {
       <Leftbar />
       <Container>
         < ApproveLeftbar />
-        <Content style={{ marginLeft: '15px', marginTop: '15px' }}>
+        <Content>
           <Header />
-          <Divider />
           <Row gutter={20} style={{ display: 'flex', flexDirection: 'column' }}>
             <Col style={{ marginBottom: '20px' }}>
               <Card style={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', minWidth: '500px' }}>
@@ -89,9 +91,26 @@ const ApproverDocList = () => {
                         <tr key={doc.doc_no}>
                           <td>{doc.doc_no}</td>
                           <td>{doc.doc_reg_date}</td>
-                          <td>{doc.doc_form}</td>
+                          <td>{getFormName(doc.doc_form)}</td>
                           <td><Link to={"/approve/documentDetail/" + doc.doc_form + "/" + doc.doc_no}>{doc.doc_title}</Link></td>
-                          <td>{doc.doc_attachment ? '📎' : ''}</td>
+                          <td>
+                            {doc.doc_filename ? (
+                              <OverlayTrigger
+                                placement="top"
+                                speaker={
+                                  <Tooltip>
+                                    {doc.doc_filename.includes('_')
+                                      ? decodeURIComponent(doc.doc_filename.substring(doc.doc_filename.indexOf('_') + 1))
+                                      : doc.doc_filename}
+                                  </Tooltip>
+                                }
+                              >
+                                <div style={{ display: 'inline-block', cursor: 'pointer' }}>
+                                  <MdAttachFile />
+                                </div>
+                              </OverlayTrigger>
+                            ) : ''}
+                          </td>
                           <td><UrgentBadge isUrgent={doc.doc_urgent} /></td>
                           <td><StatusBadge status={doc.doc_status} /></td>
                         </tr>
@@ -100,7 +119,6 @@ const ApproverDocList = () => {
                 </table>
               </Card>
             </Col>
-
           </Row>
         </Content>
       </Container>

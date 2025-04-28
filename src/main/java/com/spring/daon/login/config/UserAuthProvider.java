@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
+import javax.xml.catalog.Catalog;
 
 import org.springframework.beans.factory.annotation.Value;  // 경로주의(롬복 아님)
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Component;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier; // 경로주의
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.spring.daon.hrMgt.Employees;
 import com.spring.daon.login.service.LoginService;
@@ -29,12 +32,12 @@ public class UserAuthProvider {
 	
 	// application.yml/properties에서 비밀키 값을 가져옴 (없으면 "secret-value" 사용)
 	@Value("${security.jwt.token.secret-key:secret-value}")
-	private String secretKey;
-	
-	@Value("${security.jwt.token.access-expiration:3600000}")	// 1시간
+    private String secretKey;
+    
+    @Value("${security.jwt.token.access-expiration:3600000}")
     private long accessTokenValidity;
     
-    @Value("${security.jwt.token.refresh-expiration:259200000}")	// 3일
+    @Value("${security.jwt.token.refresh-expiration:86400000L}")
     private long refreshTokenValidity;
     
 	private final LoginService loginService;
@@ -51,9 +54,13 @@ public class UserAuthProvider {
 	public String createAccessToken(Employees employee) {
 		System.out.println("<<< UserAuthProvider - createToken() >>>");
 		
-		Date now = new Date();  // java.util.Date (import 주의)
-		Date validity = new Date(now.getTime() + accessTokenValidity);   // 토큰 유효시간 1시간
-		String jwtId = UUID.randomUUID().toString();
+		Date now = new Date();
+	    Date validity = new Date(now.getTime() + accessTokenValidity); // 5분
+	    
+	    String jwtId = UUID.randomUUID().toString();
+	    
+	    System.out.println("액세스 토큰 생성 시간: " + now);
+	    System.out.println("액세스 토큰 만료 시간: " + validity);
 		
 		// JWT를 사용하려면 pom.xml에 java-jwt 추가
 		return JWT.create()
@@ -62,11 +69,10 @@ public class UserAuthProvider {
 				.withJWTId(jwtId) // 토큰 ID 설정
 				.withIssuedAt(now)
 				.withExpiresAt(validity)
-				
-				// payload 정보 담기
 				.withClaim("emp_name", employee.getEmp_name())
 				.withClaim("dept_no", employee.getDept_no())
 				.withClaim("position_id", employee.getPosition_id())
+				.withClaim("role_id", employee.getRole_id())
 				.withClaim("admin_type", employee.getAdmin_type())
 				.withClaim("token_type", "access")
 				.sign(Algorithm.HMAC256(secretKey));	// HMAC256 알고리즘으로 서명하여 토큰 생성
@@ -93,11 +99,11 @@ public class UserAuthProvider {
 	}
 	
 	// 토큰 검증
-	public Authentication validationToken(String token) {  // import org.springframework.security.core. 주의
+	public Authentication validationToken(String token) {
 		System.out.println("<<< UserAuthProvider - validationToken() >>>");
 		System.out.println("<<< UserAuthProvider - token >>>" + token);
 		
-		// import com.auth0.jwt.JWTVerifier; // 주의
+		try {
 		// 토큰 서명 검증 (HMAC256 알고리즘)
 		JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secretKey)).build();
 
@@ -106,6 +112,7 @@ public class UserAuthProvider {
 		
 		// 토큰 타입 확인
 		String tokenType = decoded.getClaim("token_type").asString();
+		System.out.println("받은 토큰 타입: " + tokenType); 
 		if(!"access".equals(tokenType)) {
 			throw new RuntimeException("Invalid token type");
 		}
@@ -115,7 +122,17 @@ public class UserAuthProvider {
 		
 		// 사용자가 데이터베이스에 존재하는지 확인
 		return new UsernamePasswordAuthenticationToken(emp, null, Collections.emptyList());
-		
+
+		} catch (TokenExpiredException e) {
+            System.out.println("토큰이 만료되었습니다: " + e.getMessage());
+            throw e; // 호출자에게 만료 예외 다시 전달
+        } catch (JWTVerificationException e) {
+            System.out.println("토큰 검증 실패: " + e.getMessage());
+            throw new RuntimeException("Invalid token: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("토큰 검증 중 오류 발생: " + e.getMessage());
+            throw new RuntimeException("Error validating token: " + e.getMessage());
+        }
 	}
 	
 	public String validateRefreshToken(String refreshToken) {
@@ -156,11 +173,27 @@ public class UserAuthProvider {
 	        
 	        // 새 액세스 토큰 생성
 	        return createAccessToken(emp);
-	    } catch (Exception e) {
-	        System.out.println("리프레시 토큰 검증 실패: " + e.getMessage());
-	        e.printStackTrace(); // 스택 트레이스 출력
-	        throw new RuntimeException("Invalid refresh token: " + e.getMessage(), e);
-	    }
+	    } catch (TokenExpiredException e) {
+            System.out.println("리프레시 토큰이 만료되었습니다: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            System.out.println("리프레시 토큰 검증 실패: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Invalid refresh token: " + e.getMessage(), e);
+        }
+	}
+	
+	// 토큰에서 emp_no를 추출하는 메서드
+	// 토큰 순환 구현에 필요함
+	public int getEmpNoFromToken(String token) {
+		try {
+			JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secretKey)).build();
+			DecodedJWT decoded = verifier.verify(token);
+			return Integer.parseInt(decoded.getSubject());
+		} catch (Exception e) {
+			System.out.println("토큰에서 emp_no 추출 실패: " + e.getMessage());
+            throw new RuntimeException("Failed to extract emp_no from token", e);
+		}
 	}
 
 }

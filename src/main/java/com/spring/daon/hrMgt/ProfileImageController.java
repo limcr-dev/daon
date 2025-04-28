@@ -19,7 +19,6 @@ public class ProfileImageController {
     @GetMapping("/{filename:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable String filename) {
         try {
-            // 저장된 이미지 경로
             Path imagePath = Paths.get("src/main/resources/static/profileImages").resolve(filename);
             Resource resource = new UrlResource(imagePath.toUri());
 

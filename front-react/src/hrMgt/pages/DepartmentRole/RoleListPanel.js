@@ -13,7 +13,7 @@ const RoleListPanel = ({ deptNo }) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleteRoleId, setDeleteRoleId] = useState(null);
 
-  // ✅ 부서 선택 시 목록 불러오기
+  // 부서 선택 시 목록 불러오기
   useEffect(() => {
     if (!deptNo) {
       setRoles([]);
@@ -31,7 +31,7 @@ const RoleListPanel = ({ deptNo }) => {
       .then((data) => setRoles(data));
   };
 
-  // ✅ 직책 추가
+  // 직책 추가
   const handleAddRole = () => {
     if (!newRoleName.trim()) {
       toaster.push(
@@ -69,13 +69,13 @@ const RoleListPanel = ({ deptNo }) => {
       });
   };
 
-  // ✅ 수정 시작
+  // 수정 시작
   const handleEdit = (role) => {
     setEditRole(role);
     setEditName(role.role_name);
   };
 
-  // ✅ 수정 완료
+  // 수정 완료
   const handleEditSubmit = () => {
     if (!editName.trim()) {
       toaster.push(
@@ -114,13 +114,13 @@ const RoleListPanel = ({ deptNo }) => {
       });
   };
 
-  // ✅ 삭제 요청
+  // 제 요청
   const handleDelete = (roleId) => {
     setDeleteRoleId(roleId);
     setShowConfirm(true);
   };
 
-  // ✅ 삭제 확인
+  // 삭제 확인
   const confirmDelete = () => {
     fetch(`http://localhost:8081/api/roles/${deleteRoleId}`, {
       method: "DELETE"
@@ -147,10 +147,11 @@ const RoleListPanel = ({ deptNo }) => {
   };
 
   return (
-    <Card style={{ padding: 20, width: "100%" }}>
+    <Card style={{ orderRadius: "15px",
+      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+      padding: 20, }}>
       <h4>🧩 직책 목록</h4>
       <Divider />
-
       {/* 등록 */}
       <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
         <Input
@@ -161,7 +162,6 @@ const RoleListPanel = ({ deptNo }) => {
         />
         <Button appearance="primary" onClick={handleAddRole}>추가</Button>
       </div>
-
       {/* 목록 */}
       <Table height={400} data={roles} autoHeight>
         <Column flexGrow={1} align="center">
@@ -194,7 +194,6 @@ const RoleListPanel = ({ deptNo }) => {
           </Cell>
         </Column>
       </Table>
-
       {/* 삭제 확인 모달 */}
       <Modal open={showConfirm} onClose={() => setShowConfirm(false)}>
         <Modal.Header>

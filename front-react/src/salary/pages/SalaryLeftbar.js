@@ -9,8 +9,6 @@ import SalaryMenu from '../components/SalaryMenu';
 
 const SalaryLeftbar = () => {
 
-
-
   return (
     <Sidebar style={{ backgroundColor: '#f0f0f0', width: '150px' }} >
       <Sidenav.Header
@@ -20,11 +18,7 @@ const SalaryLeftbar = () => {
           alignItems: 'center',
           flexDirection: 'column',
         }}>
-        {/* leftmenu - title */}
         <Text size={25} weight={'bold'} style={{ marginTop: '35px' }}>급여관리</Text>
-
-        
-
       </Sidenav.Header>
       <Divider />
       <Sidenav style={{ marginTop: '20px' }}>
@@ -32,10 +26,6 @@ const SalaryLeftbar = () => {
           <SalaryMenu />
         </Sidenav.Body>
       </Sidenav>
-
-      
-      
-      
     </Sidebar>
   );
 };

@@ -3,7 +3,8 @@ import { Button, Tree } from 'rsuite';
 import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
 import { useUser } from '../../common/contexts/UserContext';
 import '../css/approve.css'
-import { getApprStatusText } from '../components/ApprCodeToText';
+import { getApprStatusText } from './ApprCodeToText';
+import { request } from '../../common/components/helpers/axios_helper';
 
 const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
 
@@ -21,25 +22,28 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
     };
 
     const [deptTree, setDeptTree] = useState([]); // 조직도 정보
-    const [searchTerm, setSearchTerm] = useState('');   // 실시간 검색을 위한 변수
-    const handleInputChange = (e) => {
-        const newSearchTerm = e.target.value;
-        setSearchTerm(newSearchTerm);
-    }
+    // const [searchTerm, setSearchTerm] = useState('');   // 실시간 검색을 위한 변수
+    // const handleInputChange = (e) => {
+    //     const newSearchTerm = e.target.value;
+    //     setSearchTerm(newSearchTerm);
+    // }
 
     // 조직도 불러오기
     useEffect(() => {
-        fetch("http://localhost:8081/api/organization")
-            .then((res) => res.json())
-            .then((data) => setDeptTree(transformToTree(data)))
-            .catch((error) => console.error("조직도 불러오기 에러:", error));
+        const fetchOrganization = async () => {
+            try {
+                const response = await request('get', '/api/organization');
+                setDeptTree(transformToTree(response.data));
+            } catch (error) {
+                console.error("조직도 불러오기 에러:", error);
+            }
+        };
+        
+        fetchOrganization();
     }, []);
 
     // 신청자 결재선 제일 첫번째에 넣기
     useEffect(() => {
-        console.log("컴포넌트 마운트 - 초기 line 상태:", line);
-        console.log("컴포넌트 마운트 - 초기 user 상태:", user);
-
         // 이미 approveLine이 있으면 그대로 사용
         if (approveLine && approveLine.length > 0) {
             console.log("props로 받은 결재선 사용");
@@ -52,7 +56,7 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
             console.log("신청자 정보 추가:", applicant);
             setLine([applicant]);
         }
-    }, []);
+    }, [approveLine, user]);
 
     const transformToTree = (departments) => {
         const deptMap = {};
@@ -171,7 +175,7 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
             <div style={{ display: 'flex', flex: 1}}>
                 {/* 왼쪽 패널 - 조직도/나의 결재선 */}
                 <div style={{ width: '30%', display: 'flex', flexDirection: 'column', borderRight: '1px solid #e0e0e0', overflow: 'hidden' }}>
-                    <div style={{ padding: '10px' }}>
+                    {/* <div style={{ padding: '10px' }}>
                         <input
                             type="text"
                             placeholder="이름으로 검색하세요"
@@ -179,12 +183,13 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
                             onChange={handleInputChange}
                             style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
                         />
-                    </div>
+                    </div> */}
                     <div style={{ flex: 1, overflow: 'hidden' }}>
                         <Tree
                             data={deptTree}
                             showIndentLine
                             defaultExpandAll
+                            
                             onSelect={handleSelect}
                             style={{ overflow: 'hidden' }}
                         />

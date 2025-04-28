@@ -18,7 +18,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import lombok.RequiredArgsConstructor;
 
-// 2. 백엔드로 요청이 들어오면 이 클래스에서 모든 요청을 가로챔
+// 백엔드로 요청이 들어오면 이 클래스에서 모든 요청을 가로챔
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity   // SpringConfig 클래스에 있는 어노테이션으로, Spring Security의 자동 구성을 활성화시킴
@@ -28,33 +28,8 @@ public class SecurityConfig {
    private final UserAuthenticationEntryPoint userAuthenticationEntryPoint;
    private final UserAuthProvider userAuthProvider;
 
-
    // JwtAuthFilter 빈 정의
    // new로 저장해서 웹소켓 반응x -> 추가
-   
-   // 웹소켓 때문에 추가
-   @Bean
-   public CorsConfigurationSource corsConfigurationSource() {
-       CorsConfiguration config = new CorsConfiguration();
-       config.setAllowedOriginPatterns(List.of("*")); // 모든 Origin 허용
-       config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-       config.setAllowedHeaders(List.of("*"));
-       config.setAllowCredentials(true); // 쿠키 전송 허용
-
-
-       UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-       source.registerCorsConfiguration("/**", config);
-       return source;
-   }
-   
-   // % 등의 기호 허용
-   @Bean
-   public HttpFirewall allowUrlEncodedPercentHttpFirewall() {
-	   StrictHttpFirewall firewall = new StrictHttpFirewall();
-       firewall.setAllowUrlEncodedPercent(true);  // 핵심 설정!
-       return firewall;
-    }
-   
    @Bean
     public JwtAuthFilter jwtAuthFilter() {
         System.out.println(">>> JwtAuthFilter Bean 등록됨");
@@ -70,26 +45,44 @@ public class SecurityConfig {
 		
 		http
 			.exceptionHandling(handling ->handling.authenticationEntryPoint(userAuthenticationEntryPoint))
-			.addFilterBefore(new JwtAuthFilter(userAuthProvider), BasicAuthenticationFilter.class)  // Spring Security의 인증필터 앞에 JWT 필터를 추가
-																									// JwtAuthFilter 실행 -> JWT 토큰 검증
-			.csrf(csrf -> csrf.disable())  // csrf 설정 비활성화
+			.addFilterBefore(jwtAuthFilter(), BasicAuthenticationFilter.class)  // Spring Security의 인증필터 앞에 JWT 필터를 추가
+																				// JwtAuthFilter 실행 -> JWT 토큰 검증
+			.csrf(csrf -> csrf.disable())  // REST API이므로 CSRF 보호 비활성화
 			.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.authorizeHttpRequests((requests) -> requests	// 접근 권한 설정
-					.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-					.antMatchers("/uploads/**").permitAll()
-					.antMatchers(HttpMethod.POST, "/login" ,"/home", "/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**", "/ws-chat/**").permitAll() // 인증이 필요하지 않은 유일한 엔드포인트(모두에게 회원 가입, 로그인은 시도할 수 있도록 허용)
-					.antMatchers(HttpMethod.GET,"/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**", "/ws-chat/**").permitAll()
-					.antMatchers(HttpMethod.PUT,"/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**", "/ws-chat/**").permitAll()
-					.antMatchers(HttpMethod.DELETE,"/api/**", "/attend/**", "/board/**", "/performMgt/**", "/messenger/**", "/ws-chat/**").permitAll()
-					.anyRequest().authenticated()
-		);			
+			.cors(cors -> cors.configurationSource(corsConfigurationSource()))	// CORS 설정 추가
+			.authorizeHttpRequests((requests) -> requests
+				    .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				    .antMatchers("/uploads/**").permitAll()
+				    .antMatchers("/api/login").permitAll()  // 로그인은 누구나
+				    .antMatchers("/api/token/refresh").permitAll()
+				    .antMatchers("/api/s3/library/download/**").permitAll() // 파일 다운로드 경로 추가
+				    .anyRequest().authenticated()       // 나머지 전부 로그인 필요!!			
+		);
 		
 		return http.build();
 	}
 	
-}
+	@Bean
+	public HttpFirewall allowUrlEncodedPercentHttpFirewall() {
+		StrictHttpFirewall firewall = new StrictHttpFirewall();
+		firewall.setAllowUrlEncodedPercent(true);  // 핵심 설정!
+		return firewall;
+    }
+	
+	// 웹소켓 때문에 추가
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+	    CorsConfiguration config = new CorsConfiguration();
+	    
+	    // config.setAllowedOriginPatterns(List.of("http://localhost:3000")); // 프론트엔드 도메인 지정
+	    config.setAllowedOriginPatterns(List.of("*")); // 모든 Origin 허용(배포 후 변경 필요)
+	    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+	    config.setAllowedHeaders(List.of("*"));
+	    config.setAllowCredentials(true); // 쿠키 전송 허용
+	    config.setExposedHeaders(List.of("Authorization", "Set-Cookie")); // 클라이언트가 접근할 수 있는 헤더
 
-// 작성
-// UserAuthenticationEntryPoint
-// UserAuthProvider
-// JwtAuthFilter
+	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	    source.registerCorsConfiguration("/**", config);
+	    return source;
+	}
+}

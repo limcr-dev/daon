@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Card, Col, Container, Content, Divider, Row } from 'rsuite';
+import { Button, Card, Col, Container, Content, Row } from 'rsuite';
 import Leftbar from '../../common/pages/Leftbar';
 import BoardLeftbar from './BoardLeftbar';
 import Header from '../../common/pages/Header';
 import '../css/board.css'
 import { request } from '../../common/components/helpers/axios_helper';
-
-const formatDate = (timestamp) => {
-    const date = new Date(timestamp);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-};
+import { useUser } from '../../common/contexts/UserContext';
+import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
 
 const LibraryDetail = () => {
 
+    const { user } = useUser();
     const propsParam = useParams();
     const navigate = useNavigate();
     const library_no = propsParam.library_no; // 링크로 전달된 library_no를 받아서 변수에 저장
@@ -53,21 +48,23 @@ const LibraryDetail = () => {
 
     // 삭제 버튼 누르면 실행되는 함수(arrow function 활용)
 
-    const deleteLibrary = () => {
-        fetch("http://localhost:8081/board/library/" + library_no, {
-            method: "DELETE"
-        })
-            .then((res) => res.text())  // 응답 값을 text형식으로 받음
-            .then((res) => {
-                if (res == 'ok') {
-                    navigate('/board/libraryList');  // 삭제 성공 시, 자료 목록 페이지로 이동
-                    alert('자료를 삭제하였습니다.'); // 삭제 성공 시, alert창 띄움
-                } else {
-                    alert('자료 삭제에 실패하였습니다.'); // 삭제 실패 시, alert창 띄움
-                }
-            });
+    const deleteLibrary = async () => {
+        try {
+            const response = await request('delete', `/board/library/${library_no}`);
+
+            // response.data로 접근하되, 서버가 text로 반환한다면 response.data가 텍스트일 것임
+            if (response.data === 'ok') {
+                alert('자료를 삭제하였습니다.');
+                navigate('/board/libraryList');  // 삭제 성공 시, 자료 목록 페이지로 이동
+            } else {
+                alert('자료 삭제에 실패하였습니다.');
+            }
+        } catch (error) {
+            console.error('자료 삭제 에러:', error);
+            alert('자료 삭제 중 오류가 발생했습니다.');
+        }
     }
-    
+
     const libraryList = () => {
         navigate('/board/libraryList');
     }
@@ -77,9 +74,8 @@ const LibraryDetail = () => {
             <Leftbar />
             <Container>
                 < BoardLeftbar />
-                <Content style={{ marginLeft: '15px', marginTop: '15px' }}>
+                <Content>
                     <Header />
-                    <Divider />
                     <Row gutter={20} style={{ display: 'flex', flexDirection: 'column' }}>
 
                         <Col style={{ marginBottom: '20px' }}>
@@ -89,17 +85,27 @@ const LibraryDetail = () => {
                                     <Button appearance="link" onClick={libraryList}>목록</Button>
                                 </Card.Header>
                                 <table className='board-table'>
-                                    <tbody>
+                                    <thead>
                                         <tr>
                                             <th style={{ width: '20%' }}>제목</th>
                                             <td colSpan={3}>{library.library_title}</td>
                                         </tr>
                                         <tr>
                                             <th style={{ width: '20%' }}>작성자</th>
-                                            <td>{library.emp_no}</td>
-                                            <th style={{ width: '20%' }}>첨부 파일 : { /* 파일명에서 UUID 제거한 원래 파일명만 표시 */ }
+                                            <td style={{ width: '30%' }}>{library.emp_name}({getPositionName(library.position_id)})</td>
+                                            <th style={{ width: '20%' }}>부서</th>
+                                            <td style={{ width: '30%' }}>{getDeptName(library.dept_no)}</td>
+                                        </tr>
+                                        <tr>
+                                            <th style={{ width: '20%' }}>작성일</th>
+                                            <td style={{ width: '30%' }}>{library.library_reg_date}</td>
+                                            <th style={{ width: '20%' }} >조회수</th>
+                                            <td style={{ width: '30%' }}>{library.library_views}</td>
+                                        </tr>
+                                        <tr>
+                                            <th style={{ width: '20%' }}>첨부 파일 { /* 파일명에서 UUID 제거한 원래 파일명만 표시 */}
                                             </th>
-                                            <td>
+                                            <td colSpan={3}>
                                                 {library.library_filename ? (
                                                     <>
                                                         <Button
@@ -116,19 +122,15 @@ const LibraryDetail = () => {
                                                         &nbsp;&nbsp;&nbsp; 파일명 &nbsp;:&nbsp;&nbsp;
                                                         {library.library_filename && library.library_filename.includes('_')
                                                             ? decodeURIComponent(library.library_filename.substring(library.library_filename.indexOf('_') + 1))
-                                                            : '첨부 없음'}                                                        
+                                                            : '첨부 없음'}
                                                     </>
                                                 ) : (
                                                     <span>첨부 없음</span>
                                                 )}
-                                            </td>                                            
+                                            </td>
                                         </tr>
-                                        <tr>
-                                            <th style={{ width: '20%' }}>작성일</th>
-                                            <td>{formatDate(library.library_reg_date)}</td>
-                                            <th style={{ width: '20%' }} >조회수</th>
-                                            <td>{library.library_views}</td>
-                                        </tr>
+                                    </thead>
+                                    <tbody>
                                         <tr>
                                             <th colSpan={4}>내용</th>
                                         </tr>
@@ -138,11 +140,14 @@ const LibraryDetail = () => {
                                     </tbody>
                                 </table>
                                 <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', padding: '15px' }}>
-
                                     <div style={{ marginTop: '10px' }}>
                                         {/* 버튼 클릭 시 onClick에 지정되어있는 함수 실행됨 */}
-                                        <Button appearance="primary" color="blue" onClick={updateLibrary}>수정</Button> &nbsp;&nbsp;&nbsp;
-                                        <Button appearance="ghost" color="cyan"  onClick={deleteLibrary}>삭제</Button>
+                                        {library.emp_no === user.emp_no &&
+                                            <>
+                                                <Button appearance="primary" color="blue" onClick={updateLibrary}>수정</Button>
+                                                <Button style={{marginLeft:'10px'}} appearance="ghost" color="blue" onClick={deleteLibrary}>삭제</Button>
+                                            </>
+                                        }
                                     </div>
                                 </Card.Footer>
                             </Card>
@@ -151,7 +156,7 @@ const LibraryDetail = () => {
                     </Row>
                 </Content>
             </Container>
-        </Container>
+        </Container >
 
 
     );

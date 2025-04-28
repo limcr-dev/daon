@@ -1,11 +1,10 @@
-// 📁 Registration.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Modal, Button, toaster, Notification } from "rsuite";  // ✅ 추가
 import "../css/Registration.css";
 import { request } from "../../common/components/helpers/axios_helper";
 
-// ✅ 부서 계층 구조
+// 부서 계층 구조
 const departmentData = {
   1: {
     name: "회사",
@@ -71,14 +70,14 @@ const Registration = ({ open, onClose }) => {
     setImageFile(e.target.files[0]);
   };
 
-  // 📌 등록 처리
+  // 등록 처리
   const submitEmployee = (e) => {
     e.preventDefault();
 
     const fullPhone = `010-${phone2}-${phone3}`;
     const fullExt = (ext1 && ext2) ? `${ext1}-${ext2}` : '';
 
-    // 📌 유효성 검사
+    // 유효성 검사
     if (phone2.length !== 4 || phone3.length !== 4) {
       toaster.push(
         <Notification type="warning" header="휴대폰 번호 오류" closable>
@@ -360,5 +359,4 @@ const Registration = ({ open, onClose }) => {
     </Modal>
   );
 };
-
 export default Registration;

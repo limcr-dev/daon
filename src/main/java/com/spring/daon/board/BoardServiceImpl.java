@@ -27,9 +27,10 @@ public class BoardServiceImpl{
 	}
 
 	// 공지사항 상세 페이지
-	@Transactional(readOnly=true)
+	@Transactional
 	public Notice noticeDetail(int notice_no) {
 		System.out.println("<<< BoardServiceImpl - noticeDetail >>>");
+		boardMapper.updateViews(notice_no);
 		return boardMapper.noticeDetail(notice_no);
 	}
 	
@@ -73,6 +74,7 @@ public class BoardServiceImpl{
 	@Transactional(readOnly=true)
 	public Library libraryDetail(int library_no) {
 		System.out.println("<<< BoardServiceImpl - libraryDetail >>>");
+		boardMapper.libraryViews(library_no);
 		return boardMapper.libraryDetail(library_no);
 	}
 	

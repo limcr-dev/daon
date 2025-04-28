@@ -40,19 +40,19 @@ public interface HRMgtMapper {
     //  퇴사 처리
     int resignEmployee(@Param("empNo") int empNo);
 
-    //  총 사원 수 1
+    //  총 사원 수 
     int countAllEmployees();
 
-    //  이번달 입사자 수 1
+    //  이번달 입사자 수 
     int countNewHiresThisMonth();
 
-    //  이번달 퇴사자 수 1
+    //  이번달 퇴사자 수 
     int countResignedThisMonth();
 
-    //  이번달 계약 만료 예정자 수 1
+    //  이번달 계약 만료 예정자 수 
     int countContractExpiringThisMonth();
 
-    //  이번달 생일자 수 1
+    //  이번달 생일자 수 
     int countBirthdaysThisMonth();
 
     // 부서별 사원 수 통계

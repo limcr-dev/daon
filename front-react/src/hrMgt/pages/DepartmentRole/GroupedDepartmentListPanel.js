@@ -74,10 +74,10 @@ const GroupedDepartmentListPanel = ({ onSelectDept }) => {
         backgroundColor: "#ffffff",
         borderRadius: 12,
         boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
-        padding: 16,
+        padding: 20,
       }}
     >
-      {/* ✅ 상단 제목 및 버튼 */}
+      {/* 상단 제목 및 버튼 */}
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
         <h3 style={{ margin: 0, fontSize: "20px", fontWeight: "bold" }}>📂 부서 목록</h3>
         <div style={{ display: "flex", gap: 8 }}>
@@ -93,7 +93,7 @@ const GroupedDepartmentListPanel = ({ onSelectDept }) => {
         </div>
       </div>
 
-      {/* ✅ 부서 목록 */}
+      {/* 부서 목록 */}
       {topDepartments.map((top) => {
         const children = departments.filter((d) => d.dept_parent === top.dept_no);
         return (

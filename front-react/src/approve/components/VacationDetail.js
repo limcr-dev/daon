@@ -3,8 +3,7 @@ import '../css/vacationForm.css';
 import { getDeptName } from '../../hrMgt/components/getEmployeeInfo';
 import { getVacationTypeText } from './ApprCodeToText';
 import { request } from '../../common/components/helpers/axios_helper';
-import { getExpireDate } from '../../attendMgt/components/VacationUtil';
-import { MdDomainVerification } from 'react-icons/md';
+import { getCurrentVacationCycle, getExpireDate, getUsedVacation } from '../../attendMgt/components/VacationUtil';
 
 const VacationDetail = ({ approveLine, formData, docData }) => {
   const [line, setLine] = useState(approveLine || []);
@@ -17,7 +16,13 @@ const VacationDetail = ({ approveLine, formData, docData }) => {
   const [vacationHistoryList, setVacationHistoryList] = useState([]);
 
   // 잔여 연차
-  const { remainVacation } = getExpireDate(vacation_occurList);
+  const { createVacation } = getExpireDate(vacation_occurList);
+
+  // 입사일 기준 이번 주기 시작,끝 날짜 불러오기
+  const { start, end } = getCurrentVacationCycle(employees.hire_date);
+
+  // 사용연차 수 불러오기
+  const { useVacation } = getUsedVacation(vacationHistoryList, start, end);
 
   useEffect(() => {
 
@@ -63,7 +68,7 @@ const VacationDetail = ({ approveLine, formData, docData }) => {
 
   }, [approveLine, formData, docData]);
 
- 
+
   // 로딩 중이면 로딩 표시
   if (isLoading || !line.length) {
     return <div>데이터를 불러오는 중입니다...</div>;
@@ -197,7 +202,7 @@ const VacationDetail = ({ approveLine, formData, docData }) => {
                 <span style={{ marginLeft: '30px' }}>
                   <span> 신청일수 : {vacationForm.used_days}</span>
                   <span style={{ marginLeft: '10px' }}>
-                    {vacationForm.used_days > remainVacation && (<span className="usage-message">신청가능일을 초과하였습니다.</span>)}
+                    {vacationForm.used_days > createVacation - useVacation && (<span className="usage-message">신청가능일을 초과하였습니다.</span>)}
                   </span>
                 </span>
               </td>
@@ -205,9 +210,9 @@ const VacationDetail = ({ approveLine, formData, docData }) => {
             <tr>
               <td className="label-cell">연차 일수</td>
               <td>
-                <span>잔여일수 : {remainVacation} </span>
+                <span>잔여일수 : {createVacation - useVacation} </span>
                 <span style={{ marginLeft: '30px' }}>신청일수 : {vacationForm.vacation_type === 1 ? vacationForm.used_days : 0} </span>
-                <span style={{ marginLeft: '30px' }}>신청 후 잔여일수 : {vacationForm.vacation_type === 1 ? remainVacation - formData.used_days : remainVacation}</span>
+                <span style={{ marginLeft: '30px' }}>신청 후 잔여일수 : {vacationForm.vacation_type === 1 ? createVacation - useVacation - formData.used_days : createVacation - useVacation}</span>
               </td>
             </tr>
             <tr>
@@ -227,16 +232,6 @@ const VacationDetail = ({ approveLine, formData, docData }) => {
           </tbody>
         </table>
 
-        <div className="form-footer">
-          <div className="attachment-section">
-            <h3>파일첨부</h3>
-            <div className="attachment-box">
-              <div className="attachment-placeholder">
-                <span>이 곳에 파일을 드래그 하세요. 또는 파일첨부</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

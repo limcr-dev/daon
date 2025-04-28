@@ -5,35 +5,33 @@
 
 <mapper namespace="com.spring.daon.salary.deduction.DedutionItemMapper">
 
-  <!-- 전체 공제 항목 조회 -->
-  <select id="findAll" resultType="com.spring.daon.salary.deduction.DedutionItem">
-    SELECT * FROM deduction_items
-    ORDER BY id
-  </select>
+  	<!-- 전체 공제 항목 조회 -->
+	<select id="findAll" resultType="com.spring.daon.salary.deduction.DedutionItem">
+		SELECT * FROM deduction_items
+		 ORDER BY id
+	</select>
 
-  <!-- 공제 항목 등록 -->
-  <insert id="insert" parameterType="com.spring.daon.salary.deduction.DedutionItem">
-    INSERT INTO deduction_items
-    (name, rate, fixed_amount, is_tax, is_active)
-    VALUES
-    (#{name}, #{rate}, #{fixed_amount}, #{is_tax}, #{is_active})
-  </insert>
+	<!-- 공제 항목 등록 -->
+	<insert id="insert" parameterType="com.spring.daon.salary.deduction.DedutionItem">
+		INSERT INTO deduction_items (name, rate, fixed_amount, is_tax, is_active)
+	    VALUES (#{name}, #{rate}, #{fixed_amount}, #{is_tax}, #{is_active})
+	</insert>
 
-  <!-- 공제 항목 수정 -->
-  <update id="update" parameterType="com.spring.daon.salary.deduction.DedutionItem">
-    UPDATE deduction_items
-    SET name = #{name},
-        rate = #{rate},
-        fixed_amount = #{fixed_amount},
-        is_tax = #{is_tax},
-        is_active = #{is_active}
-    WHERE id = #{id}
-  </update>
+	<!-- 공제 항목 수정 -->
+	<update id="update" parameterType="com.spring.daon.salary.deduction.DedutionItem">
+	UPDATE deduction_items
+	   SET name = #{name}
+	     , rate = #{rate}
+	     , fixed_amount = #{fixed_amount}
+	     , is_tax = #{is_tax}
+	     , is_active = #{is_active}
+	 WHERE id = #{id}
+	</update>
 
-  <!-- 공제 항목 삭제 -->
-  <delete id="delete" parameterType="int">
-    DELETE FROM deduction_items
-    WHERE id = #{id}
-  </delete>
+	<!-- 공제 항목 삭제 -->
+	<delete id="delete" parameterType="int">
+	DELETE FROM deduction_items
+	 WHERE id = #{id}
+	</delete>
 
 </mapper>

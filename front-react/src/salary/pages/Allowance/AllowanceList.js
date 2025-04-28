@@ -87,7 +87,7 @@ const AllowanceList = () => {
         <SalaryLeftbar />
         <Content>
           <Header />
-          <div style={{ marginTop: "50px" }}>
+          <div style={{ marginTop: "50px", marginLeft: "30px", marginRight: "30px" }}>
             <Card
               style={{
                 borderRadius: "15px",

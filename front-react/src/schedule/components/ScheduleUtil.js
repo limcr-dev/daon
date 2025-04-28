@@ -30,9 +30,11 @@ export const formatDate = (date, time) => {
 // 캘린더 데이터 변환
 export const formatData = (list, allList, checked) => {
   const merged = [...list, ...allList];
-  return merged
-    .filter((item) => checked.includes(Number(item.c_sch_no)))
-    .flatMap(item => {
+  const filtered = checked !== undefined
+    ? merged.filter((item) => checked.includes(Number(item.c_sch_no)))
+    : merged;
+
+  return filtered.flatMap(item => {
       let events = [];
       
       // 기본 일정 추가

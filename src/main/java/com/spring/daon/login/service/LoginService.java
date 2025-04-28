@@ -35,13 +35,17 @@ public class LoginService {
 		// emp_email과 일치하는 사원 정보 조회
 		Employees emp = loginMapper.findByEmp_email(credentialsDTO.getEmp_email());
 		
+		if (emp == null) {
+		    throw new AppException("Invalid email", HttpStatus.UNAUTHORIZED);
+		}
+		
 		// 입력받은 비밀번호를 CharBuffer로 변환하여 db에 저장된 암호화된 비밀번호와 비교함
 		// import java.nio.CharBuffer; // 주의 -> 입력받은 비밀번호를 CharBuffer로 변환하여 db에 저장된 암호화된 비밀번호와 비교함
 		if(passwordEncoder.matches(CharBuffer.wrap(credentialsDTO.getEmp_pwd()), emp.getEmp_pwd())) {
 			return emp;
 		}
 		
-		throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
+		throw new AppException("Invalid password", HttpStatus.UNAUTHORIZED);
 	}
 	
 	public Employees findByEmp_no(int emp_no) {

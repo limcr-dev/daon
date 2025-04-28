@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button } from "rsuite";
-import { request } from "../../../common/components/helpers/axios_helper"; // ✅ 실제 경로에 맞게 수정
+import { request } from "../../../common/components/helpers/axios_helper";
 
 const SalaryItemFormModal = ({ open, onClose, empNo, salaryMonth, type, item, onSuccess }) => {
   const [itemList, setItemList] = useState([]);
@@ -9,7 +9,7 @@ const SalaryItemFormModal = ({ open, onClose, empNo, salaryMonth, type, item, on
     amount: "",
   });
 
-  // ✅ 수당 or 공제 항목 목록 불러오기
+  // 수당 or 공제 항목 목록 불러오기
   useEffect(() => {
     const endpoint = type === "ALLOWANCE" ? "allowances" : "deductions";
     request("get", `/api/${endpoint}`)
@@ -20,7 +20,7 @@ const SalaryItemFormModal = ({ open, onClose, empNo, salaryMonth, type, item, on
       });
   }, [type]);
 
-  // ✅ 수정 모드 시 초기값 세팅
+  // 수정 모드 시 초기값 세팅
   useEffect(() => {
     if (item) {
       setFormValue({
@@ -35,7 +35,7 @@ const SalaryItemFormModal = ({ open, onClose, empNo, salaryMonth, type, item, on
     }
   }, [item]);
 
-  // ✅ 공제 자동 계산: 기본급 × 비율
+  // 공제 자동 계산: 기본급 × 비율
   useEffect(() => {
     if (type === "DEDUCTION" && formValue.item_id && !item) {
       const selected = itemList.find(i => i.id === parseInt(formValue.item_id));
@@ -54,7 +54,7 @@ const SalaryItemFormModal = ({ open, onClose, empNo, salaryMonth, type, item, on
     }
   }, [formValue.item_id, itemList, type, empNo, item]);
 
-  // ✅ 고정 수당 자동 입력
+  // 고정 수당 자동 입력
   useEffect(() => {
     if (type === "ALLOWANCE" && formValue.item_id && !item) {
       const selected = itemList.find(i => i.id === parseInt(formValue.item_id));
@@ -64,7 +64,7 @@ const SalaryItemFormModal = ({ open, onClose, empNo, salaryMonth, type, item, on
     }
   }, [formValue.item_id, itemList, type, item]);
 
-  // ✅ 입력값 변경
+  // 입력값 변경
   const changeValue = (e) => {
     const { name, value } = e.target;
     setFormValue({
@@ -73,7 +73,7 @@ const SalaryItemFormModal = ({ open, onClose, empNo, salaryMonth, type, item, on
     });
   };
 
-  // ✅ 저장 요청
+  // 저장 요청
   const handleSubmit = () => {
     const method = item ? "put" : "post";
     const url = item ? `/api/salaryItem/${item.id}` : `/api/salaryItem`;
