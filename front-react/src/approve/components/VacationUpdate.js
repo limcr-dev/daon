@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import '../css/vacationForm.css';
 import { getDeptName } from '../../hrMgt/components/getEmployeeInfo';
 import { request } from '../../common/components/helpers/axios_helper';
-import { getCurrentVacationCycle, getExpireDate } from '../../attendMgt/components/VacationUtil';
+import { getCurrentVacationCycle, getExpireDate, getUsedVacation } from '../../attendMgt/components/VacationUtil';
 import { useUser } from '../../common/contexts/UserContext';
 
 const VacationUpdate = ({ approveLine, onFormDataChange, formData, docData }) => {
@@ -22,11 +22,14 @@ const VacationUpdate = ({ approveLine, onFormDataChange, formData, docData }) =>
   const [vacation_occurList, setVacation_occurList] = useState([]);
   const [vacationHistoryList, setVacationHistoryList] = useState([]);
 
-  // 입사일 기준 이번 주기 시작,끝 날짜 불러오기
-  const { start, end } = getCurrentVacationCycle(employees.hire_date);
-
-  // 잔여 연차
-  const { remainVacation } = getExpireDate(vacation_occurList);
+    // 잔여 연차
+    const { createVacation } = getExpireDate(vacation_occurList);
+  
+    // 입사일 기준 이번 주기 시작,끝 날짜 불러오기
+    const { start, end } = getCurrentVacationCycle(employees.hire_date);
+  
+    // 사용연차 수 불러오기
+    const { useVacation } = getUsedVacation(vacationHistoryList, start, end);
 
   useEffect(() => {
 
@@ -81,7 +84,7 @@ const VacationUpdate = ({ approveLine, onFormDataChange, formData, docData }) =>
     if (onFormDataChange) {
       onFormDataChange({
         ...vacationForm,
-        remaining_days: remainVacation
+        remaining_days: createVacation - useVacation
       }, line);
     }
   }, [
@@ -294,7 +297,7 @@ const VacationUpdate = ({ approveLine, onFormDataChange, formData, docData }) =>
                 <span style={{ marginLeft: '10px' }}>
                   <span> 신청일수 : </span>
                   <input type="number" className="day-input" name='used_days' value={vacationForm.used_days} readOnly />
-                  {usedDays > remainVacation && (<span className="usage-message">신청가능일을 초과하였습니다.</span>)}
+                  {usedDays > createVacation - useVacation && (<span className="usage-message">신청가능일을 초과하였습니다.</span>)}
                 </span>
               </td>
             </tr>
@@ -302,11 +305,11 @@ const VacationUpdate = ({ approveLine, onFormDataChange, formData, docData }) =>
               <td className="label-cell">연차 일수</td>
               <td>
                 <span>잔여일수 : </span>
-                <input type="number" className="day-input" value={remainVacation} readOnly />
+                <input type="number" className="day-input" value={createVacation - useVacation} readOnly />
                 <span style={{ marginLeft: '10px' }}>신청일수 : </span>
                 <input type="number" className="day-input" value={vacationForm.vacation_type === 1 ? vacationForm.used_days : 0} readOnly />
                 <span style={{ marginLeft: '10px' }}>신청 후 잔여일수 : </span>
-                <input type="number" className="day-input" value={vacationForm.vacation_type === 1 ? remainVacation - vacationForm.used_days : remainVacation} readOnly />
+                <input type="number" className="day-input" value={vacationForm.vacation_type === 1 ? createVacation - useVacation - vacationForm.used_days : createVacation - useVacation} readOnly />
               </td>
             </tr>
             <tr>

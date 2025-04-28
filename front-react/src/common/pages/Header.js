@@ -14,7 +14,7 @@ const Header = ({ onProfileUpdated }) => {
   const [empName, setEmpName] = useState(user?.emp_name || '');
   const [showModal, setShowModal] = useState(false);
 
-  // 사원이름 + 이미지 로딩
+  // ✅ 사원이름 + 이미지 로딩
   const loadEmployeeInfo = useCallback(() => {
     if (user?.emp_no) {
       request("get", `/api/employee/${user.emp_no}`)
