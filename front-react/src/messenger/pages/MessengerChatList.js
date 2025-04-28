@@ -21,10 +21,9 @@ const MessengerChatList = () => {
 	const { user } = useUser();
 	const [rooms, setRooms] = useState([]);
 	const [targetUsers, setTargetUsers] = useState({});
-	const [chatRooms, setChatRooms] = useState([]);
 	const navigate = useNavigate();
 
-	useEffect(() => {
+	const fetchRooms = () => {
 		if (!user?.emp_no) return;
 		// 1:1 채팅방 가져오기
 		const fetchPrivateRooms = request("GET", `/messenger/chat/rooms?userId=${user.emp_no}`);
@@ -51,7 +50,22 @@ const MessengerChatList = () => {
 				});
 			})
 			.catch(err => console.error("채팅방 목록 호출 실패:", err));
+	};
+
+	useEffect(() => {
+		fetchRooms();
 	}, [user]);
+
+	useEffect(() => {
+		const handleStorage = (event) => {
+			if (event.key === 'messenger-refresh') {
+				console.log("📩 메시지 보냈다 신호 감지! 방 목록 다시 로드");
+				fetchRooms();
+			}
+		};
+		window.addEventListener('storage', handleStorage);
+		return () => window.removeEventListener('storage', handleStorage);
+	}, []);
 
 	const goHome = () => navigate('/messenger/messengerRun');
 	const goChattingList = () => navigate('/messenger/messengerChatList');
