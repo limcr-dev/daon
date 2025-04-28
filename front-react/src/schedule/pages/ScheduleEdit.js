@@ -121,7 +121,6 @@ const ScheduleEdit = ({ user, pickEvent, closeEditModal }) => {
       return false;
     }
     e.preventDefault(); // 폼 제출 기본 동작을 막음
-    alert(eventInfo);
     // 입력칸 제대로 작성되었는지 확인
     if (
       // title 필수

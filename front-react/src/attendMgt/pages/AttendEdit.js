@@ -112,19 +112,19 @@ const AttendEdit = ({ open, onClose, attendance_no, user }) => {
         <form onSubmit={submitAttendEdit} style={{ padding: "20px" }}>
 
           {/* 이름, 날짜 보여주기 위한 영역 */}
-          <div className="form-row">
-            <div className="form-group">
+          <div className="schedule-form-row">
+            <div className="schedule-form-group">
               <label>이름:</label>
               <input type="text" name="emp_name" value={attendance.emp_name} disabled />
             </div>
-            <div className="form-group">
+            <div className="schedule-form-group">
               <label>날짜:</label>
               <input type="text" name="date" value={attendance.date} disabled />
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
+          <div className="schedule-form-row">
+            <div className="schedule-form-group">
               <label>출근 시간:</label>
               <input type="time" step="1" name="check_in_time"
                 // 결근 또는 휴가기록이 있을 시 '' , 출근 시간이 없을 시 '' 
@@ -136,7 +136,7 @@ const AttendEdit = ({ open, onClose, attendance_no, user }) => {
                 // 퇴근시간을 넘지 못하게 설정
                 max={attendance.check_out_time || undefined} />
             </div>
-            <div className="form-group">
+            <div className="schedule-form-group">
               <label>퇴근 시간:</label>
               <input type="time" step="1" name="check_out_time"
                 // 결근 또는 휴가기록이 있을 시 '' , 퇴근 시간이 없을 시 ''
@@ -150,8 +150,8 @@ const AttendEdit = ({ open, onClose, attendance_no, user }) => {
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
+          <div className="schedule-form-row">
+            <div className="schedule-form-group">
               지각여부<br></br>
               <RadioGroup name="late"
                 // 결근 또는 휴가기록이 있을 시 0 
@@ -164,7 +164,7 @@ const AttendEdit = ({ open, onClose, attendance_no, user }) => {
                 <Radio value={1}>지각</Radio>
               </RadioGroup>
             </div>
-            <div className="form-group">
+            <div className="schedule-form-group">
               조퇴여부<br></br>
               <RadioGroup name="early_leave"
                 // 결근 또는 휴가기록이 있을 시 0 
@@ -179,8 +179,8 @@ const AttendEdit = ({ open, onClose, attendance_no, user }) => {
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
+          <div className="schedule-form-row">
+            <div className="schedule-form-group">
               결근여부<br></br>
               <RadioGroup name="absent"
                 // 휴가기록이 있을 시 0 
@@ -193,7 +193,7 @@ const AttendEdit = ({ open, onClose, attendance_no, user }) => {
                 <Radio value={1}>결근</Radio>
               </RadioGroup>
             </div>
-            <div className="form-group">
+            <div className="schedule-form-group">
               휴가여부<Whisper
                 placement="right"
                 trigger="click"
@@ -210,8 +210,8 @@ const AttendEdit = ({ open, onClose, attendance_no, user }) => {
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
+          <div className="schedule-form-row">
+            <div className="schedule-form-group">
               <label>수정 메시지:</label>
               <input type='text' name='message' value={attendance.message} onChange={changeValue} required></input>
             </div>
