@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Stack, Button, Form, Panel } from 'rsuite';
 import 'rsuite/dist/rsuite.min.css';
-
 import { request } from '../../common/components/helpers/axios_helper';
 import { useUser } from '../../common/contexts/UserContext';
 

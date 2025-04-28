@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Card, Col, Container, Content, Divider, Row } from 'rsuite';
+import { Button, Card, Col, Container, Content, Row } from 'rsuite';
 import Leftbar from '../../common/pages/Leftbar';
 import BoardLeftbar from './BoardLeftbar';
 import Header from '../../common/pages/Header';
