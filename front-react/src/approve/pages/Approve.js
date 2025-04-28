@@ -191,7 +191,7 @@ const Approve = () => {
             <Col style={{ marginBottom: '20px' }}>
               <Card style={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
                 <Card.Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', backgroundColor: '#f5f5f5', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
-                  <span style={{ fontWeight: '600', fontSize: '16px' }}>완료 문서</span>
+                  <span style={{ fontWeight: '600', fontSize: '16px' }}>결재 승인 문서</span>
                   <Button appearance="link">더보기</Button>
                 </Card.Header>
 

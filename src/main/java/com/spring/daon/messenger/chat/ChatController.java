@@ -74,11 +74,11 @@ public class ChatController {
     public ResponseEntity<Map<String, Object>> enterChatRoom(@RequestBody ChatRequest request) {
         System.out.println("<<< ChatController - enterChatRoom >>>");
 
-        String roomCode = chatServiceImpl.enterChatRoom(request.getUserId(), request.getTargetId());
+        Map<String, Object> enterResult = chatServiceImpl.enterChatRoom(request.getUserId(), request.getTargetId());
         Employees targetUser = chatServiceImpl.getTargetUserInfo(request.getTargetId());
 
         Map<String, Object> result = new HashMap<>();
-        result.put("roomCode", roomCode);
+        result.putAll(enterResult); // roomCode + newRoom 둘 다 포함
         result.put("targetUser", targetUser);
         return ResponseEntity.ok(result);
     }

@@ -108,7 +108,9 @@ const Registration = ({ open, onClose }) => {
       formData.append("image", imageFile);
     }
 
-    request("post", "/api/insertEmployee", formData, {})
+    request("post", "/api/insertEmployee", formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
       .then((res) => {
         if (res.status === 201 || res.data) {
           toaster.push(
@@ -360,3 +362,5 @@ const Registration = ({ open, onClose }) => {
   );
 };
 export default Registration;
+
+

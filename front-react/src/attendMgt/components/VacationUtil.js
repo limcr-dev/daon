@@ -40,7 +40,6 @@ export const getCurrentVacationCycle = (hireDate) => {
 // 가장 빠른 만료 예정일, 잔여 연차 계산
 export const getExpireDate = (vacation_occurList) => {
   let maxExpireDate = "";
-  let remainVacation = "";
   let createVacation = "";
 
   // 연차 생성 기록이 있을 때만 
@@ -55,12 +54,10 @@ export const getExpireDate = (vacation_occurList) => {
     // 만료예정일 형식 변환
     maxExpireDate = new Date(maxExpire).toISOString().slice(0, 10);
 
-    // 잔여 연차 합산
-    remainVacation = futureVacations.map(v => v.available_days).reduce((sum, available_days) => sum + available_days, 0);
     // 총 연차 수 합산 (사용연차 반영X)
     createVacation = futureVacations.map(v => v.earned_days).reduce((sum, earned_days) => sum + earned_days, 0);
   }
-  return { maxExpireDate, remainVacation, createVacation };
+  return { maxExpireDate, createVacation };
 }
 
 // 사용연차 수 계산

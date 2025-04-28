@@ -28,6 +28,7 @@ import co.elastic.clients.elasticsearch.nodes.Http;
 
 import com.spring.daon.login.config.UserAuthProvider;
 import com.spring.daon.login.dto.CredentialsDTO;
+import com.spring.daon.login.exception.AppException;
 
 @RestController
 @RequestMapping("/api")
@@ -60,28 +61,35 @@ public class LoginController {
 	@PostMapping("/login")
 	public ResponseEntity<?> logincheckIdPwd(@RequestBody CredentialsDTO credentialsDTO, HttpServletResponse response) {
 		System.out.println("<<< logincheckIdPwd >>>");
+		try {
+			// LoginService를 통해 사용자 인증
+			Employees emp = loginService.login(credentialsDTO);
+			
+			// 액세스 토큰 생성
+			String accessToken = userAuthProvider.createAccessToken(emp);
+			
+			// 리프레시 토큰 생성
+			String refreshToken = userAuthProvider.createRefreshToken(emp);
+			
+			// 리프레시 토큰 저장(만료 시간 계산)
+			Date expiryDate = new Date(System.currentTimeMillis() + refreshTokenValidity); 
+			refreshTokenService.createRefreshToken(emp.getEmp_no(), refreshToken, expiryDate);
+			
+			// 리프레시 토큰을 쿠키에 설정
+			addRefreshTokenCookie(response, refreshToken);
+			
+			Map<String, String> tokenMap = new HashMap<>();
+			tokenMap.put("accessToken", accessToken);
+			
+			// res로 토큰과 사용자 정보 반환
+			return ResponseEntity.ok(tokenMap);  // 크롬브라우저 F12 > Headers : 200 OK  : 새로운 JWT를 반환
+		}catch (AppException e) {
+	        return ResponseEntity.status(e.getCode()).body(Map.of("error", e.getMessage()));
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "서버 내부 오류"));
+	    }
 		
-		// LoginService를 통해 사용자 인증
-		Employees emp = loginService.login(credentialsDTO);
-		
-		// 액세스 토큰 생성
-		String accessToken = userAuthProvider.createAccessToken(emp);
-		
-		// 리프레시 토큰 생성
-		String refreshToken = userAuthProvider.createRefreshToken(emp);
-		
-		// 리프레시 토큰 저장(만료 시간 계산)
-		Date expiryDate = new Date(System.currentTimeMillis() + refreshTokenValidity); 
-		refreshTokenService.createRefreshToken(emp.getEmp_no(), refreshToken, expiryDate);
-		
-		// 리프레시 토큰을 쿠키에 설정
-		addRefreshTokenCookie(response, refreshToken);
-		
-		Map<String, String> tokenMap = new HashMap<>();
-		tokenMap.put("accessToken", accessToken);
-		
-		// res로 토큰과 사용자 정보 반환
-		return ResponseEntity.ok(tokenMap);  // 크롬브라우저 F12 > Headers : 200 OK  : 새로운 JWT를 반환
 	}	
 	
 	// 로그아웃 시 쿠키 삭제
