@@ -4,7 +4,7 @@ import Leftbar from "../../../common/pages/Leftbar";
 import SalaryLeftbar from "../SalaryLeftbar";
 import { request } from "../../../common/components/helpers/axios_helper";
 import Header from "../../../common/pages/Header";
-import Paging from "../../../common/components/paging.js"; // ✅ 페이징 import
+import Paging from "../../../common/components/paging.js"; 
 import DeductionModal from "./DeductionModal";
 import "../../css/DeductionList.css";
 import PlusIcon from "@rsuite/icons/Plus";
@@ -16,9 +16,9 @@ const DeductionList = () => {
   const [list, setList] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [page, setPage] = useState(1);    // ✅ 현재 페이지
-  const size = 10;             // ✅ 한 페이지당 보여줄 개수
-  const [searchKeyword, setSearchKeyword] = useState(""); // ✅ 검색어 추가
+  const [page, setPage] = useState(1);    
+  const size = 10;             
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   const fetchList = () => {
     request("get", "/api/deductions")
@@ -59,19 +59,19 @@ const DeductionList = () => {
     setOpen(true);
   };
 
-  // ✅ 이름 검색 필터
+  // 이름 검색 필터
   const filteredList = list.filter((row) =>
     row.name.toLowerCase().includes(searchKeyword.toLowerCase())
   );
 
-  // ✅ 현재 페이지 slice
+  // 현재 페이지 slice
   const startIndex = (page - 1) * size;
   const endIndex = startIndex + size;
   const paginatedList = filteredList.slice(startIndex, endIndex);
 
   const handleSearchChange = (value) => {
     setSearchKeyword(value);
-    setPage(1); // 검색하면 페이지 1로 초기화
+    setPage(1);
   };
 
   return (
@@ -81,7 +81,7 @@ const DeductionList = () => {
         <SalaryLeftbar />
         <Content>
           <Header />
-          <div style={{ marginTop: "50px" }}>
+          <div style={{ marginTop: "50px", marginLeft: "30px", marginRight: "30px" }}>
             <Card
               style={{
                 borderRadius: "15px",
@@ -91,7 +91,7 @@ const DeductionList = () => {
             >
               <h3 style={{ marginBottom: 20 }}>공제 요약 목록</h3>
 
-              {/* ✅ 검색창 + 등록버튼 */}
+              {/* 검색창 + 등록버튼 */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
                 <Input
                   placeholder="공제명 검색"
@@ -112,7 +112,7 @@ const DeductionList = () => {
                 </IconButton>
               </div>
 
-              {/* ✅ 테이블 */}
+              {/* 테이블 */}
               <table className="deduction-summary-table">
                 <thead>
                   <tr>
@@ -155,7 +155,7 @@ const DeductionList = () => {
                 </tbody>
               </table>
 
-              {/* ✅ 페이징 */}
+              {/* 페이징 */}
               <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
                 <Paging
                   paging={{
@@ -167,7 +167,7 @@ const DeductionList = () => {
                 />
               </div>
 
-              {/* ✅ 수정/등록 모달 */}
+              {/* 수정/등록 모달 */}
               {open && (
                 <DeductionModal
                   open={open}

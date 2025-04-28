@@ -7,7 +7,7 @@ const DepartmentAddModal = ({ open, onClose, onSuccess }) => {
   const [parentOptions, setParentOptions] = useState([]);
   const [parentDept, setParentDept] = useState(null);
 
-  // ✅ 상위 부서 옵션 조회
+  // 상위 부서 옵션 조회
   const fetchParentDepartments = useCallback(() => {
     request("get", "/api/departments")
       .then((res) => {
@@ -32,7 +32,7 @@ const DepartmentAddModal = ({ open, onClose, onSuccess }) => {
     }
   }, [open, fetchParentDepartments]);
 
-  // ✅ 부서 등록
+  // 부서 등록
   const handleSubmit = () => {
     if (!deptName) return;
 

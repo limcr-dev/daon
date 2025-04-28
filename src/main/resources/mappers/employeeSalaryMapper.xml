@@ -5,70 +5,68 @@
 
 <mapper namespace="com.spring.daon.salary.EmployeeSalaryMapper">
 
-  <!-- 급여 요약 목록 조회 -->
-  <select id="findSalarySummaryByMonth" resultType="com.spring.daon.salary.EmployeeSalaryList">
-    SELECT 
-      e.emp_no,
-      e.emp_name,
-      e.dept_no,
-      e.position_id,
-      e.emp_status,
-      e.hire_date,
-      s.base_pay,
-      s.total_allowance,
-      s.total_deduction,
-      s.total_pay,        
-      s.actual_pay
-    FROM employee_salary_summary s
-    JOIN employees e ON s.emp_no = e.emp_no
-    WHERE s.salary_month = #{salaryMonth}
-    ORDER BY e.emp_no
-  </select>
+	<!-- 급여 요약 목록 조회 -->
+	<select id="findSalarySummaryByMonth" resultType="com.spring.daon.salary.EmployeeSalaryList">
+		SELECT e.emp_no
+	    	 , e.emp_name
+	    	 , e.dept_no
+	    	 , e.position_id
+	    	 , e.emp_status
+	    	 , e.hire_date
+	         , s.base_pay
+	         , s.total_allowance
+	         , s.total_deduction
+	         , s.total_pay   
+	         , s.actual_pay
+	      FROM employee_salary_summary s
+	      JOIN employees e ON s.emp_no = e.emp_no
+	     WHERE s.salary_month = #{salaryMonth}
+	     ORDER BY e.emp_no
+	</select>
   
 	<select id="findSummaryDetail" resultType="com.spring.daon.salary.SalaryDetail">
-	  SELECT 
-	    e.emp_no,
-	    e.emp_name,
-	    d.dept_name,
-	    p.position_name,
-	    s.base_pay,
-	    s.total_allowance,
-	    s.total_deduction,
-	    s.income_tax,         -- ✅ 추가
-	    s.local_tax,          -- ✅ 추가
-	    s.actual_pay
-	  FROM employee_salary_summary s
-	  JOIN employees e ON s.emp_no = e.emp_no
-	  JOIN departments d ON e.dept_no = d.dept_no
-	  JOIN positions p ON e.position_id = p.position_id
-	  WHERE s.emp_no = #{empNo}
-	    AND s.salary_month = #{salaryMonth}
+		SELECT e.emp_no
+	         , e.emp_name
+	         , d.dept_name
+	         , p.position_name
+	    	 , s.base_pay
+	    	 , s.total_allowance
+	    	 , s.total_deduction
+	   	     , s.income_tax     
+	    	 , s.local_tax      
+	    	 , s.actual_pay
+	  	 FROM employee_salary_summary s
+	  	 JOIN employees e ON s.emp_no = e.emp_no
+	  	 JOIN departments d ON e.dept_no = d.dept_no
+	  	 JOIN positions p ON e.position_id = p.position_id
+	  	WHERE s.emp_no = #{empNo}
+	      AND s.salary_month = #{salaryMonth}
 	</select>
 	
-
 	<select id="findAllowances" resultType="com.spring.daon.salary.SalaryItem">
-	  SELECT a.name, esi.amount
-	  FROM employee_salary_items esi
-	  JOIN allowance_items a ON esi.item_id = a.id
-	  WHERE esi.emp_no = #{empNo}
-	    AND esi.salary_month = #{salaryMonth}
-	    AND esi.item_type = 'ALLOWANCE'
+		SELECT a.name, esi.amount
+	      FROM employee_salary_items esi
+	      JOIN allowance_items a ON esi.item_id = a.id
+	     WHERE esi.emp_no = #{empNo}
+	       AND esi.salary_month = #{salaryMonth}
+	       AND esi.item_type = 'ALLOWANCE'
 	</select>
 
 	<select id="findDeductions" resultType="com.spring.daon.salary.SalaryItem">
-	  SELECT d.name, esi.amount
-	  FROM employee_salary_items esi
-	  JOIN deduction_items d ON esi.item_id = d.id
-	  WHERE esi.emp_no = #{empNo}
-	    AND esi.salary_month = #{salaryMonth}
-	    AND esi.item_type = 'DEDUCTION'
+		SELECT d.name, esi.amount
+	      FROM employee_salary_items esi
+	  	  JOIN deduction_items d ON esi.item_id = d.id
+	  	 WHERE esi.emp_no = #{empNo}
+	       AND esi.salary_month = #{salaryMonth}
+	       AND esi.item_type = 'DEDUCTION'
 	</select>
   
 
 	<!-- 특정 급여월의 전체 사원의 실수령액 총합 조회 -->
 	<select id="getTotalActualPayByMonth" resultType="java.math.BigDecimal">
-	  SELECT COALESCE(SUM(actual_pay), 0) 
-	  FROM employee_salary_summary 
-	  WHERE salary_month = #{salaryMonth}
+		SELECT COALESCE(SUM(actual_pay), 0) 
+	  	  FROM employee_salary_summary 
+	  	 WHERE salary_month = #{salaryMonth}
 	</select>
+	
 </mapper>

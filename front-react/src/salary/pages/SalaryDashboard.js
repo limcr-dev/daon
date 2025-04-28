@@ -72,7 +72,7 @@ const SalaryDashboard = () => {
           value={salaryMonth}
           onChange={(e) => {
             setSalaryMonth(e.target.value);
-            setPage(1); // ✅ 월 바뀔 때 1페이지로 초기화
+            setPage(1);
           }}
         />
       </div>

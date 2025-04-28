@@ -1,4 +1,4 @@
-import { Button, Container, Content, Card, Input } from "rsuite";
+import { Button, Container, Content, Card, Input, IconButton } from "rsuite";
 import Leftbar from "../../../common/pages/Leftbar";
 import SalaryLeftbar from "../SalaryLeftbar";
 import { useEffect, useState, useCallback } from "react";
@@ -6,8 +6,10 @@ import SalaryItemFormModal from "./SalaryItemFormModal";
 import { getPositionName, getDeptName } from "../../../hrMgt/components/getEmployeeInfo";
 import { request } from "../../../common/components/helpers/axios_helper";
 import Header from '../../../common/pages/Header';
-import Paging from "../../../common/components/paging.js"; // ✅ 페이징 추가
-import "../../css/EmployeeItemConfig.css";
+import Paging from "../../../common/components/paging.js";
+import EditIcon from '@rsuite/icons/Edit';
+import TrashIcon from '@rsuite/icons/Trash';
+import "../../css/EmployeeItemConfig.css"
 
 const EmployeeItemConfig = () => {
   const [employees, setEmployees] = useState([]);
@@ -23,8 +25,8 @@ const EmployeeItemConfig = () => {
   const [modalType, setModalType] = useState();
   const [editItem, setEditItem] = useState(null);
 
-  const [page, setPage] = useState(1);    // ✅ 현재 페이지
-  const size = 10;             // ✅ 한 페이지당 보여줄 개수
+  const [page, setPage] = useState(1);
+  const size = 10;
 
   const fetchEmployees = useCallback(() => {
     request("get", "/api/employeeList")
@@ -95,14 +97,13 @@ const EmployeeItemConfig = () => {
     emp.emp_name.toLowerCase().includes(searchKeyword.toLowerCase())
   );
 
-  // ✅ 현재 페이지 데이터 slice
   const startIndex = (page - 1) * size;
   const endIndex = startIndex + size;
   const paginatedList = filteredEmployees.slice(startIndex, endIndex);
 
   const handleSearchChange = (value) => {
     setSearchKeyword(value);
-    setPage(1); // 검색 시 페이지 초기화
+    setPage(1);
   };
 
   return (
@@ -112,14 +113,8 @@ const EmployeeItemConfig = () => {
         <SalaryLeftbar />
         <Content>
           <Header />
-          <div style={{ marginTop: "50px" }}>
-            <Card
-              style={{
-                borderRadius: "15px",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                padding: 20,
-              }}
-            >
+          <div style={{ marginTop: "50px", marginLeft: "30px", marginRight: "30px" }}>
+            <Card style={{ borderRadius: "15px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", padding: 20 }}>
               <h3 style={{ marginBottom: 20 }}>사원별 수당/공제 설정</h3>
 
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: 20 }}>
@@ -136,19 +131,13 @@ const EmployeeItemConfig = () => {
                   onChange={(e) => setSalaryMonth(e.target.value)}
                   style={{ height: 34, marginRight: 20 }}
                 />
-                <Button appearance="primary" onClick={() => handleAdd("ALLOWANCE")} style={{ marginRight: 10 }}>
-                  수당 추가
-                </Button>
-                <Button appearance="primary" onClick={() => handleAdd("DEDUCTION")}>
-                  공제 추가
-                </Button>
-                <Button appearance="primary" color="green" onClick={handleCalculateSalary} style={{ marginLeft: 10 }}>
-                  급여 계산
-                </Button>
+                <Button appearance="primary" onClick={() => handleAdd("ALLOWANCE")} style={{ marginRight: 10 }}>수당 추가</Button>
+                <Button appearance="primary" onClick={() => handleAdd("DEDUCTION")}>공제 추가</Button>
+                <Button appearance="primary" color="green" onClick={handleCalculateSalary} style={{ marginLeft: 10 }}>급여 계산</Button>
               </div>
 
               <div style={{ display: "flex", gap: 20 }}>
-                {/* ✅ 사원 목록 */}
+                {/* 사원 목록 */}
                 <Card style={{ flex: 1, padding: 15 }}>
                   <table className="employee-item-config-table">
                     <thead>
@@ -173,27 +162,20 @@ const EmployeeItemConfig = () => {
                     </tbody>
                   </table>
 
-                  {/* ✅ 페이징 */}
                   <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
                     <Paging
-                      paging={{
-                        page: page,
-                        size: size,
-                        totalCount: filteredEmployees.length
-                      }}
+                      paging={{ page: page, size: size, totalCount: filteredEmployees.length }}
                       onPageChange={(newPage) => setPage(newPage)}
                     />
                   </div>
                 </Card>
 
-                {/* ✅ 선택된 사원 급여 항목 */}
+                {/* 선택된 사원 급여 항목 */}
                 <Card style={{ flex: 2, padding: 15 }}>
                   {selectedEmp ? (
                     <>
-                      <h5>
-                        선택된 사원: {selectedEmp.emp_name} ({salaryMonth})
-                      </h5>
-
+                      <h5>선택된 사원: {selectedEmp.emp_name} ({salaryMonth})</h5>
+                      <div style={{ marginTop: 20}}>
                       <table className="employee-item-config-table">
                         <thead>
                           <tr>
@@ -211,16 +193,15 @@ const EmployeeItemConfig = () => {
                               <td>{row.amount.toLocaleString()} 원</td>
                               <td>
                                 <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                                  <Button size="xs" onClick={() => handleEdit(row)}>수정</Button>
-                                  <Button size="xs" color="red" appearance="ghost" onClick={() => handleDelete(row.id)}>
-                                    삭제
-                                  </Button>
+                                  <IconButton icon={<EditIcon />} size="sm" onClick={() => handleEdit(row)} />
+                                  <IconButton icon={<TrashIcon />} size="sm" color="red" onClick={() => handleDelete(row.id)} />
                                 </div>
                               </td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
+                      </div>
                     </>
                   ) : (
                     <p>사원을 선택해주세요.</p>
@@ -228,7 +209,6 @@ const EmployeeItemConfig = () => {
                 </Card>
               </div>
 
-              {/* ✅ 수당/공제 등록/수정 모달 */}
               {showModal && selectedEmp && (
                 <SalaryItemFormModal
                   open={showModal}

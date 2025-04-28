@@ -4,6 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recha
 import { request } from "../../common/components/helpers/axios_helper";
 
 const EmployeeDashboard = () => {
+  
   const [stats, setStats] = useState({
     totalEmployees: 0,
     newThisMonth: 0,
@@ -14,7 +15,7 @@ const EmployeeDashboard = () => {
 
   const [deptCounts, setDeptCounts] = useState([]);
 
-  // 📌 인사 통계 조회
+  // 인사 통계 조회
   const fetchEmployeeStats = useCallback(() => {
     request("get", "/api/stats")
       .then((res) => setStats(res.data))
@@ -23,8 +24,7 @@ const EmployeeDashboard = () => {
         alert("인사 통계를 불러오지 못했습니다.");
       });
   }, []);
-
-  // 📌 부서별 사원 수 조회
+  // 부서별 사원 수 조회
   const fetchDeptCounts = useCallback(() => {
     request("get", "/api/employees/departmentCount")
       .then((res) => setDeptCounts(res.data))
@@ -39,17 +39,16 @@ const EmployeeDashboard = () => {
     fetchDeptCounts();
   }, [fetchEmployeeStats, fetchDeptCounts]);
 
-  // ✅ 부서명 들여쓰기 포맷 (상위는 그대로, 하위만 └ 붙이기)
+  // 부서명 들여쓰기 포맷 (상위는 그대로, 하위만 └ 붙이기)
   const formatDeptName = (dept) => {
-    const topLevelDeptNos = [1, 10, 20, 30]; // ✅ 회사(1) 포함
+    const topLevelDeptNos = [1, 10, 20, 30]; 
     return topLevelDeptNos.includes(dept.dept_no)
       ? dept.dept_name
       : `└ ${dept.dept_name}`;
   };
-
-  // ✅ 부서 정렬: 최상위 → 상위 → 하위 순서 유지
+  // 부서 정렬: 최상위 → 상위 → 하위 순서 유지
   const sortDeptHierarchy = (list) => {
-    const topLevels = list.filter(d => [1, 10, 20, 30].includes(d.dept_no)); // ✅ 회사 포함
+    const topLevels = list.filter(d => [1, 10, 20, 30].includes(d.dept_no)); 
     const children = list.filter(d => ![1, 10, 20, 30].includes(d.dept_no));
     const result = [];
 
@@ -73,7 +72,7 @@ const EmployeeDashboard = () => {
     >
       <h3 style={{ marginBottom: 20 }}>👤 인사관리 대시보드</h3>
 
-      {/* 📌 요약 통계 카드 */}
+      {/* 요약 통계 카드 */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 20, marginBottom: 24 }}>
         {[
           { title: "👥 총 사원 수", value: stats.totalEmployees },
@@ -91,8 +90,7 @@ const EmployeeDashboard = () => {
           </Card>
         ))}
       </div>
-
-      {/* 📊 부서별 사원 수 그래프 */}
+      {/* 부서별 사원 수 그래프 */}
       <div style={{ marginTop: 40 }}>
         <h4 style={{ marginBottom: 20 }}>📊 부서별 재직 사원 수 (그래프)</h4>
         <ResponsiveContainer width="100%" height={300}>

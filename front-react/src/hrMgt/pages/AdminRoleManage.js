@@ -107,7 +107,7 @@ const AdminRoleManage = () => {
         <EmployeeLeftbar />
         <Content>
           <Header />
-          <div style={{ marginTop: "50px" }}>
+          <div style={{ marginTop: "50px", marginLeft: "30px", marginRight: "30px" }}>
             <Card
               style={{
                 borderRadius: "12px",
@@ -118,7 +118,6 @@ const AdminRoleManage = () => {
               <h3 style={{ margin: 0, fontSize: "20px", fontWeight: "bold", marginBottom: 10 }}>
                 🔑 권한 설정
               </h3>
-
               <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 20 }}>
                 <Input
                   placeholder="이름 검색"
@@ -127,7 +126,6 @@ const AdminRoleManage = () => {
                   style={{ width: 180 }}
                 />
               </div>
-
               <Table
                 className="admin-role-table"
                 data={paginatedList}
@@ -166,8 +164,7 @@ const AdminRoleManage = () => {
                   </Cell>
                 </Column>
               </Table>
-
-              {/* ✅ 페이징 */}
+              {/* 페이징 */}
               <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
                 <Paging
                   paging={{
@@ -178,7 +175,6 @@ const AdminRoleManage = () => {
                   onPageChange={(newPage) => setPage(newPage)}
                 />
               </div>
-
             </Card>
           </div>
         </Content>

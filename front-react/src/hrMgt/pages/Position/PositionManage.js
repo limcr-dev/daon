@@ -21,7 +21,7 @@ const PositionManage = () => {
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [page, setPage] = useState(1);
-  const size = 14; // 한 페이지당 보여줄 개수
+  const size = 14; 
 
   const fetchPositions = useCallback(() => {
     request("get", "/api/positions")
@@ -85,7 +85,7 @@ const PositionManage = () => {
         <EmployeeLeftbar />
         <Content>
           <Header />
-          <div style={{ marginTop: "50px" }}>
+          <div style={{ marginTop: "50px", marginLeft: "30px", marginRight: "30px" }}>
             <Card
               style={{
                 borderRadius: "15px",
@@ -95,8 +95,7 @@ const PositionManage = () => {
               }}
             >
               <h3 style={{ margin: 0, fontSize: "20px", fontWeight: "bold" }}>📌 직급 관리</h3>
-
-              {/* 🔍 검색창 + 등록 버튼 */}
+              {/* 검색창 + 등록 버튼 */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
                 <Input
                   placeholder="직급명 검색"
@@ -113,8 +112,7 @@ const PositionManage = () => {
                   직급 등록
                 </IconButton>
               </div>
-
-              {/* 📋 테이블 */}
+              {/* 테이블 */}
               <table className="position-list">
                 <thead>
                   <tr>
@@ -151,8 +149,7 @@ const PositionManage = () => {
                   ))}
                 </tbody>
               </table>
-
-              {/* 📄 페이징 */}
+              {/* 페이징 */}
               <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
                 <Paging
                   paging={{
@@ -163,10 +160,9 @@ const PositionManage = () => {
                   onPageChange={(newPage) => setPage(newPage)}
                 />
               </div>
-
             </Card>
           </div>
-          {/* 📄 등록/수정 모달 */}
+          {/* 등록/수정 모달 */}
           {open && (
             <PositionModal
               open={open}

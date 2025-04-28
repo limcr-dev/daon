@@ -172,7 +172,7 @@ public class HRMgtController {
     @PutMapping("/employee/{empNo}/extendContract")
     public ResponseEntity<?> extendContractDate(@PathVariable int empNo, @RequestParam String newDate) {
         try {
-            // ✅ 문자열 → java.sql.Date로 변환
+            // 문자열 → java.sql.Date로 변환
             Date parsedDate = Date.valueOf(newDate);
 
             int result = service.extendContract(empNo, parsedDate);
@@ -185,7 +185,7 @@ public class HRMgtController {
         }
     }
 
-    // 정직원 전환 처리 (emp_type → 1, contract_end_date → NULL)
+    // 정직원 전환 처리
     @PutMapping("/employee/{empNo}/convertToRegular")
     public ResponseEntity<?> convertToRegular(@PathVariable int empNo) {
         int result = service.convertToRegular(empNo);

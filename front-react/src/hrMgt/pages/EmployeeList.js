@@ -10,7 +10,7 @@ import { getPositionName, getRoleName, getDeptName, getEmpType } from "../compon
 import Leftbar from "../../common/pages/Leftbar.js";
 import EmployeeLeftbar from "./EmployeeLeftbar.js";
 import { request } from "../../common/components/helpers/axios_helper";
-import Paging from "../../common/components/paging.js"; // ✅ Paging 컴포넌트 import
+import Paging from "../../common/components/paging.js";
 
 import "../css/EmployeeList.css";
 
@@ -18,12 +18,12 @@ const EmployeeList = () => {
   const [employeelist, setEmployeelist] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [registrationModal, setRegistrationModal] = useState(false);
-  const [page, setPage] = useState(1); // ✅ 현재 페이지
-  const size = 10; // ✅ 한 페이지당 보여줄 개수
+  const [page, setPage] = useState(1);
+  const size = 10;
 
   const navigate = useNavigate();
 
-  // ✅ 사원 목록 불러오기
+  // 사원 목록 불러오기
   const fetchEmployeeList = useCallback(() => {
     request("get", "/api/employeeList")
       .then((res) => setEmployeelist(res.data))
@@ -42,22 +42,22 @@ const EmployeeList = () => {
     fetchEmployeeList();
   }, [fetchEmployeeList]);
 
-  // ✅ 사원 등록 모달 열기/닫기
+  // 사원 등록 모달 열기/닫기
   const openRegistrationModal = () => setRegistrationModal(true);
   const closeRegistrationModal = () => setRegistrationModal(false);
-
-  // ✅ 사원 상세페이지로 이동
+  
+  // 사원 상세페이지로 이동
   const openDetailPage = (emp_no) => {
     navigate("/employee/" + emp_no);
   };
-
-  // ✅ 검색어 변경 핸들러
+  
+  // 검색어 변경 핸들러
   const handleSearchChange = (value) => {
     setSearchKeyword(value);
     setPage(1); // 검색어 바뀌면 1페이지로 돌아감
   };
-
-  // ✅ 사원 삭제
+  
+  // 사원 삭제
   const deleteEmployee = (emp_no) => {
     if (window.confirm("정말 이 사원을 삭제하시겠습니까?")) {
       request("delete", `/api/deleteEmployee/${emp_no}`)
@@ -82,12 +82,11 @@ const EmployeeList = () => {
     }
   };
 
-  // ✅ 필터링된 사원 목록
+  // 필터링된 사원 목록
   const filteredList = employeelist.filter((a) =>
     a.emp_name.includes(searchKeyword)
   );
-
-  // ✅ 현재 페이지에 맞는 데이터
+  // 현재 페이지에 맞는 데이터
   const startIndex = (page - 1) * size;
   const endIndex = startIndex + size;
   const paginatedList = filteredList.slice(startIndex, endIndex);
@@ -99,7 +98,7 @@ const EmployeeList = () => {
         <EmployeeLeftbar />
         <Content>
           <Header />
-          <div style={{ marginTop: "50px" }}>
+          <div style={{ marginTop: "50px", marginLeft: "30px", marginRight: "30px" }}>
             <Card
               style={{
                 borderRadius: "15px",
@@ -109,8 +108,7 @@ const EmployeeList = () => {
               }}
             >
               <h3 style={{ margin: 0, fontSize: "20px", fontWeight: "bold" }}>👥 사원 목록</h3>
-
-              {/* 🔍 검색창 + 등록 버튼 */}
+              {/* 검색창 + 등록 버튼 */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
                 <Input
                   placeholder="이름으로 검색"
@@ -127,8 +125,7 @@ const EmployeeList = () => {
                   사원 등록
                 </IconButton>
               </div>
-
-              {/* 📋 사원 목록 테이블 */}
+              {/* 사원 목록 테이블 */}
               <table className="employee-list">
                 <thead>
                   <tr>
@@ -166,8 +163,7 @@ const EmployeeList = () => {
                   ))}
                 </tbody>
               </table>
-
-              {/* 📄 페이징 */}
+              {/* 페이징 */}
               <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
                 <Paging
                   paging={{
@@ -181,10 +177,8 @@ const EmployeeList = () => {
             </Card>
           </div>
         </Content>
-
-        {/* 📄 사원 등록 모달 */}
+        {/* 사원 등록 모달 */}
         <Registration open={registrationModal} onClose={closeRegistrationModal} />
-
       </Container>
     </Container>
   );

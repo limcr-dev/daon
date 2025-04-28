@@ -5,7 +5,7 @@ import { addNotoSansKR } from "../../font/NotoSansKR";
 export const generateSalaryPdf = (data, salaryMonth) => {
   const doc = new jsPDF();
 
-  // ✅ 한글 폰트 등록 및 설정
+  // 한글 폰트 등록 및 설정
   addNotoSansKR(doc);
   doc.setFont("NotoSansKR");
 
@@ -23,7 +23,7 @@ export const generateSalaryPdf = (data, salaryMonth) => {
   doc.text(`직급: ${data.position_name}`, 14, 44);
   doc.text(`기본급: ${data.base_pay.toLocaleString()} 원`, 14, 51);
 
-  // ✅ 수당 항목 테이블
+  // 수당 항목 테이블
   const allowanceRows = data.allowances.map(a => [a.name, `${a.amount.toLocaleString()} 원`]);
   autoTable(doc, {
     head: [["수당 항목", "금액"]],
@@ -33,19 +33,19 @@ export const generateSalaryPdf = (data, salaryMonth) => {
       font: "NotoSansKR",
       fontStyle: "normal",
       fontSize: 10,
-      halign: "center", // ✅ 본문 가운데 정렬 추가
+      halign: "center", 
     },
     headStyles: {
       font: "NotoSansKR",
       fontStyle: "normal",
       fontSize: 10,
       halign: "center",
-      fillColor: [0, 112, 192],  // 파란 배경
-      textColor: 255             // 흰색 글자
+      fillColor: [0, 112, 192],  
+      textColor: 255          
     },
   });
 
-  // ✅ 공제 항목 테이블
+  // 공제 항목 테이블
   const deductionRows = data.deductions.map(d => [d.name, `${d.amount.toLocaleString()} 원`]);
   const deductionStartY = doc.lastAutoTable.finalY + 10;
   autoTable(doc, {
@@ -56,7 +56,7 @@ export const generateSalaryPdf = (data, salaryMonth) => {
       font: "NotoSansKR",
       fontStyle: "normal",
       fontSize: 10,
-      halign: "center", // ✅ 본문 가운데 정렬 추가
+      halign: "center", 
     },
     headStyles: {
       font: "NotoSansKR",
@@ -70,7 +70,7 @@ export const generateSalaryPdf = (data, salaryMonth) => {
 
   
   
-  // ✅ 총계 2열 테이블로 출력
+  // 총계 2열 테이블로 출력
 const summaryRows = [
   ["총 수당", `${data.total_allowance.toLocaleString()} 원`],
   ["총 공제", `${data.total_deduction.toLocaleString()} 원`],
@@ -101,9 +101,6 @@ autoTable(doc, {
 });
 const totalStartY = doc.lastAutoTable.finalY + 10;
 doc.text(`실수령액: ${data.actual_pay.toLocaleString()} 원`, 14, totalStartY + 30);
-
-
-
 
   // 저장
   doc.save(`급여명세서_${data.emp_name}_${salaryMonth}.pdf`);

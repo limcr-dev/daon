@@ -1,5 +1,3 @@
-// 📁 src/pages/hrMgt/DepartmentEditModal.jsx
-
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Input, toaster, Notification } from "rsuite";
 import { request } from "../../../common/components/helpers/axios_helper";
@@ -24,14 +22,12 @@ const DepartmentEditModal = ({ open, onClose, dept, onSuccess }) => {
       return;
     }
 
-    // ✅ 수정된 부분: payload 전체를 보냄
     const payload = {
       dept_no: dept.dept_no,
       dept_name: deptName,
       dept_parent: dept.dept_parent // 기존 상위 부서 정보 유지
     };
 
-    // ✅ 수정된 부분: URL 경로 수정
     request("put", `/api/departments`, payload)
       .then(() => {
         toaster.push(

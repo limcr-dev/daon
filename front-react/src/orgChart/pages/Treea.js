@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Tree } from "rsuite";
 import "rsuite/dist/rsuite.min.css";
 import { getPositionName } from "../../hrMgt/components/getEmployeeInfo.js";
+import { request } from "../../common/components/helpers/axios_helper"; 
 
 const Treea = ({ onEmployeeSelect }) => {
   const [treeData, setTreeData] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8081/api/organization")
-      .then((response) => response.json())
-      .then((data) => setTreeData(transformToTree(data)))
+    request("get", "/api/organization") 
+      .then((res) => setTreeData(transformToTree(res.data)))
       .catch((error) => console.error("조직도 불러오기 실패:", error));
   }, []);
 
