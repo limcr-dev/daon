@@ -5,7 +5,9 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +73,8 @@ public class ChatServiceImpl {
             // 1대1 채팅방일 경우
         	Integer receiverId = chatMapper.getReceiverId(roomCode, message.getSenderId());
         	if (receiverId != null) {
+        		System.out.println("📨 알림용 메시지 내용: " + message);
+        		System.out.println(">>> 알림 보내는 채널: /topic/alert/" + receiverId);
         	    messagingTemplate.convertAndSend("/topic/alert/" + receiverId, message);
         	} else {
         	    System.out.println("receiverId를 찾을 수 없습니다 (1:1 채팅방에서 상대방 없음)");
@@ -87,12 +91,16 @@ public class ChatServiceImpl {
 	
 	// 1대1 채팅방 입장
 	@Transactional
-    public String enterChatRoom(int userId, int targetId) {
+    public Map<String, Object> enterChatRoom(int userId, int targetId) {
         System.out.println("<<< ChatServiceImpl - enterChatRoom >>>");
+        Map<String, Object> result = new HashMap<>();
+        
         // 기존 방 조회
         String existingRoomCode = chatMapper.findRoomCodeByUsers(userId, targetId);
         if (existingRoomCode != null) {
-            return existingRoomCode;
+            result.put("roomCode", existingRoomCode);
+            result.put("newRoom", false);
+            return result;
         }
 
         // 새 방 생성
@@ -102,8 +110,11 @@ public class ChatServiceImpl {
         // 두 유저 모두 참여 등록
         chatMapper.insertRoomUser(newRoomCode, userId);
         chatMapper.insertRoomUser(newRoomCode, targetId);
+        
+        result.put("roomCode", newRoomCode);
+        result.put("newRoom", true);
 
-        return newRoomCode;
+        return result;
     }
 	
 	// 유저정보 가져오기
