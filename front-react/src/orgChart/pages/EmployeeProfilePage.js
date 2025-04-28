@@ -27,7 +27,6 @@ const EmployeeProfilePage = ({ empNo, onClose }) => {
     ? `http://localhost:8081/api/images/${encodeURIComponent(emp.emp_img)}`
     : '/default-profile.jpg';
 
-  // 👉 커스텀 Header JSX
   const HeaderWithCloseButton = (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
       <span>사원 상세 정보</span> {/* 왼쪽: 제목 */}

@@ -13,7 +13,7 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
     is_active: true,
   });
 
-  // ✅ 수정 모드인 경우 기존 데이터를 세팅
+  // 수정 모드인 경우 기존 데이터를 세팅
   useEffect(() => {
     if (item) {
       setForm({
@@ -38,7 +38,7 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
     }
   }, [item]);
 
-  // ✅ 입력 핸들러
+  // 입력 핸들러
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm({
@@ -47,7 +47,7 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
     });
   };
 
-  // ✅ 저장 처리
+  // 저장 처리
   const handleSubmit = async () => {
     const method = item ? "put" : "post";
     const url = item ? `/api/allowance/${item.id}` : `/api/allowance`;
@@ -78,7 +78,6 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
       <Modal.Header>
         <h4>{item ? "수당 항목 수정" : "수당 항목 등록"}</h4>
       </Modal.Header>
-
       <Modal.Body>
         <label>항목명</label>
         <input
@@ -119,7 +118,7 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
           비과세 여부
         </label>
 
-        {/* ✅ 비과세 항목만 노출 */}
+        {/* 비과세 항목만 노출 */}
         {form.is_tax_free && (
           <>
             <label>비과세 유형</label>
@@ -151,7 +150,6 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
           사용 여부
         </label>
       </Modal.Body>
-
       <Modal.Footer>
         <Button appearance="primary" onClick={handleSubmit}>
           {item ? "수정" : "등록"}

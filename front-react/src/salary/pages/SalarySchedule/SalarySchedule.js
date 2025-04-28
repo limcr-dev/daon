@@ -3,7 +3,7 @@ import { Container, Content, Card, Input, Button } from "rsuite";
 import Leftbar from "../../../common/pages/Leftbar";
 import SalaryLeftbar from "../SalaryLeftbar";
 import Header from '../../../common/pages/Header';
-import Paging from "../../../common/components/paging.js"; // ✅ 페이징 추가
+import Paging from "../../../common/components/paging.js";
 import "../../css/SalarySchedule.css";
 import { request } from "../../../common/components/helpers/axios_helper";
 
@@ -15,8 +15,8 @@ const SalarySchedule = () => {
   const [showClosedOnly, setShowClosedOnly] = useState(false);
   const [showCalculatedOnly, setShowCalculatedOnly] = useState(false);
   const [searchMonth, setSearchMonth] = useState("");
-  const [page, setPage] = useState(1);    // ✅ 현재 페이지
-  const [size] = useState(13);             // ✅ 한 페이지당 보여줄 개수
+  const [page, setPage] = useState(1); 
+  const [size] = useState(13);
 
   const fetchSchedules = () => {
     request("get", "/api/schedule")
@@ -104,7 +104,7 @@ const SalarySchedule = () => {
     }
   };
 
-  // ✅ 정렬 + 필터링
+  // 정렬 + 필터링
   const sortedSchedules = [...schedules].sort((a, b) => b.salary_month.localeCompare(a.salary_month));
   const filteredSchedules = sortedSchedules.filter((row) => {
     if (showClosedOnly && !row.is_closed) return false;
@@ -113,7 +113,7 @@ const SalarySchedule = () => {
     return true;
   });
 
-  // ✅ 현재 페이지 slice
+  // 현재 페이지 slice
   const startIndex = (page - 1) * size;
   const endIndex = startIndex + size;
   const paginatedList = filteredSchedules.slice(startIndex, endIndex);
@@ -125,8 +125,10 @@ const SalarySchedule = () => {
         <SalaryLeftbar />
         <Content>
           <Header />
-          <div style={{ marginTop: "50px" }}>
-            <Card style={{ borderRadius: 15, padding: 20 }}>
+          <div style={{ marginTop: "50px", marginLeft: "30px", marginRight: "30px" }}>
+            <Card style={{ orderRadius: "15px",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                padding: 20, }}>
               <h3 style={{ marginBottom: 20 }}>급여 대장 관리</h3>
 
               {/* 컨트롤 영역 */}
@@ -186,7 +188,7 @@ const SalarySchedule = () => {
                 </tbody>
               </table>
 
-              {/* ✅ 페이징 */}
+              {/* 페이징 */}
               <div style={{ marginTop: 20, display: 'flex', justifyContent: 'center' }}>
                 <Paging
                   paging={{

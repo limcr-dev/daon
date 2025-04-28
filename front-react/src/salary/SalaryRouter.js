@@ -7,11 +7,6 @@ import EmployeeItemConfig from './pages/EmployeeItem/EmployeeItemConfig';
 import EmployeeSalaryList from './pages/EmployeeSalaryList/EmployeeSalaryList ';
 import SalarySchedule from './pages/SalarySchedule/SalarySchedule';
 
-
-
-
-
-
 const SalaryRouter = () => {
     return (
         <Routes>
@@ -21,9 +16,6 @@ const SalaryRouter = () => {
             <Route path="/employeeItemConfig" element={<EmployeeItemConfig/>} />
             <Route path="/employeeSalaryList" element={<EmployeeSalaryList/>} />
             <Route path="/salarySchedule" element={<SalarySchedule/>} />
-            
-            
-            {/* <Route path="/organizationChart" element={<OrganizationChart/>}/> */}
         </Routes>
     );
 };

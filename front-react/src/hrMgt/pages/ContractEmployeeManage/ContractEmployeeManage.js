@@ -115,7 +115,7 @@ const ContractEmployeeManage = () => {
         <EmployeeLeftbar />
         <Content>
           <Header />
-          <div style={{ marginTop: "50px" }}>
+          <div style={{ marginTop: "50px", marginLeft: "30px", marginRight: "30px" }}>
             <Card
               style={{
                 borderRadius: "15px",
@@ -144,7 +144,7 @@ const ContractEmployeeManage = () => {
                 <p>로딩 중...</p>
               ) : (
                 <>
-                  {/* ✅ 테이블 */}
+                  {/* 테이블 */}
                   <table className="contract-employee-list">
                     <thead>
                       <tr>
@@ -193,7 +193,7 @@ const ContractEmployeeManage = () => {
                     </tbody>
                   </table>
 
-                  {/* ✅ 페이징 */}
+                  {/* 페이징 */}
                   <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
                     <Paging
                       paging={{
@@ -208,7 +208,7 @@ const ContractEmployeeManage = () => {
               )}
             </Card>
           </div>
-          {/* ✅ 연장 모달 */}
+          {/* 연장 모달 */}
           <Modal open={extendModalOpen} onClose={() => setExtendModalOpen(false)} size="xs">
             <Modal.Header>
               <Modal.Title>📅 계약 연장</Modal.Title>
@@ -227,7 +227,6 @@ const ContractEmployeeManage = () => {
               <Button appearance="subtle" onClick={() => setExtendModalOpen(false)}>취소</Button>
             </Modal.Footer>
           </Modal>
-
         </Content>
       </Container>
     </Container>

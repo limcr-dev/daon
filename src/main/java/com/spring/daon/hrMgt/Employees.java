@@ -22,7 +22,7 @@ import lombok.ToString;
 @Entity   
 @Table(name="employees")
 public class Employees {
-	// employees table
+	
 	@Id
 	private int emp_no;				// 사원번호
 	private String emp_name;		// 이름

@@ -22,10 +22,6 @@ public class OrgChartController {
     @GetMapping
     public List<Department> getOrganization() {
         List<Department> organization = service.getOrganization();
-        
-        // 로그 출력해서 데이터 확인 (서버 콘솔에서 확인 가능)
-        System.out.println("조직도 데이터: " + organization);
-        
         return organization;
     }
 }

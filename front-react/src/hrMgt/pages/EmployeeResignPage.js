@@ -95,7 +95,7 @@ const EmployeeResignPage = () => {
         <EmployeeLeftbar />
         <Content>
           <Header />
-          <div style={{ marginTop: "50px" }}>
+          <div style={{ marginTop: "50px", marginLeft: "30px", marginRight: "30px" }}>
             <Card
               style={{
                 borderRadius: "12px",
@@ -170,7 +170,7 @@ const EmployeeResignPage = () => {
               </div>
             </Card>
           </div>
-          {/* ✅ 퇴사 확인 모달 */}
+          {/* 퇴사 확인 모달 */}
           <Modal open={!!resignTarget} onClose={() => setResignTarget(null)} size="xs">
             <Modal.Header>
               <Modal.Title>퇴사 확인</Modal.Title>

@@ -1,6 +1,5 @@
-// 📁 src/pages/hrMgt/PositionModal.js
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Input, toaster, Notification } from "rsuite"; // ✅ toaster, Notification 추가
+import { Modal, Button, Input, toaster, Notification } from "rsuite";
 import { request } from "../../../common/components/helpers/axios_helper";
 
 const PositionModal = ({ open, onClose, item, onSuccess }) => {
@@ -29,7 +28,7 @@ const PositionModal = ({ open, onClose, item, onSuccess }) => {
 
   const handleSubmit = () => {
     const method = item ? "put" : "post";
-    const url = `/api/positions`; // ✅ 둘 다 /api/positions로 유지
+    const url = `/api/positions`; 
 
     const payload = item
       ? { ...item, ...form }

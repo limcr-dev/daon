@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Container, Content, Card, Button, Input } from "rsuite"; // ✅ Input 추가
+import { Container, Content, Card, Button, Input } from "rsuite";
 import Leftbar from "../../../common/pages/Leftbar";
 import SalaryLeftbar from "../SalaryLeftbar";
 import SalaryDetailModal from "./SalaryDetailModal";
@@ -8,7 +8,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { request } from "../../../common/components/helpers/axios_helper";
 import Header from '../../../common/pages/Header';
-import Paging from "../../../common/components/paging.js"; // ✅ 페이징 추가
+import Paging from "../../../common/components/paging.js";
 import "../../css/EmployeeSalaryList.css";
 
 const EmployeeSalaryList = () => {
@@ -19,9 +19,9 @@ const EmployeeSalaryList = () => {
   const [salaryList, setSalaryList] = useState([]);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [selectedEmpNo, setSelectedEmpNo] = useState(null);
-  const [page, setPage] = useState(1);    // ✅ 현재 페이지
-  const size = 14;           // ✅ 한 페이지당 보여줄 개수
-  const [searchKeyword, setSearchKeyword] = useState(""); // ✅ 검색어
+  const [page, setPage] = useState(1);
+  const size = 14;           
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   const fetchSalaryList = useCallback(() => {
     request("get", `/api/salaries/summary?salaryMonth=${salaryMonth}`)
@@ -63,12 +63,12 @@ const EmployeeSalaryList = () => {
     saveAs(file, `급여요약_${salaryMonth}.xlsx`);
   };
 
-  // ✅ 이름으로 검색
+  // 이름으로 검색
   const filteredList = salaryList.filter(item =>
     item.emp_name.toLowerCase().includes(searchKeyword.toLowerCase())
   );
 
-  // ✅ 현재 페이지 데이터 slice
+  // 현재 페이지 데이터 slice
   const startIndex = (page - 1) * size;
   const endIndex = startIndex + size;
   const paginatedList = filteredList.slice(startIndex, endIndex);
@@ -85,7 +85,7 @@ const EmployeeSalaryList = () => {
         <SalaryLeftbar />
         <Content>
           <Header />
-          <div style={{ marginTop: "50px" }}>
+          <div style={{ marginTop: "50px", marginLeft: "30px", marginRight: "30px" }}>
             <Card
               style={{
                 borderRadius: "15px",
@@ -95,7 +95,7 @@ const EmployeeSalaryList = () => {
             >
               <h3 style={{ marginBottom: 20 }}>급여 요약 목록</h3>
 
-              {/* ✅ 검색 + 월 선택 + 엑셀 다운로드 */}
+              {/* 검색 + 월 선택 + 엑셀 다운로드 */}
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
                 <div style={{ display: "flex", gap: 10 }}>
                   <label style={{ alignSelf: "center" }}>급여 월:</label>
@@ -116,7 +116,7 @@ const EmployeeSalaryList = () => {
                 />
               </div>
 
-              {/* ✅ 테이블 */}
+              {/* 테이블 */}
               <table className="salary-summary-table">
                 <thead>
                   <tr>
@@ -150,7 +150,7 @@ const EmployeeSalaryList = () => {
                 </tbody>
               </table>
 
-              {/* ✅ 페이징 */}
+              {/* 페이징 */}
               <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
                 <Paging
                   paging={{
@@ -163,7 +163,7 @@ const EmployeeSalaryList = () => {
               </div>
             </Card>
           </div>
-          {/* ✅ 상세 모달 */}
+          {/* 상세 모달 */}
           <SalaryDetailModal
             open={detailModalOpen}
             onClose={() => setDetailModalOpen(false)}
