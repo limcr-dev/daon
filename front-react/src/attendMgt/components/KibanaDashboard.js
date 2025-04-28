@@ -1,7 +1,8 @@
 import React from "react";
 import { Card, Placeholder, Tabs } from "rsuite";
-// import rison from "rison-node";
+
 const departmentUrls = {
+  // 1 = 정상근무, 2 = 지각, 3 = 조퇴, 4 = 결근, 5 = 모아보기
   "1": {
     1: "3bca72ddea9344763938381ebddec0a2",
     2: "933d14308567cb184d7324f779fb4ffb",
@@ -9,11 +10,19 @@ const departmentUrls = {
     4: "ac7f342601e2b611536c928bb8be62a6",
     5: "844dde791e1decd139862d565c8cf0bf"
   },
-  "20": {
-    1: "url_1_for_dept_20",
-    2: "url_2_for_dept_20",
-    3: "url_3_for_dept_20",
-    4: "url_4_for_dept_20"
+  "2": {
+    1: "3bca72ddea9344763938381ebddec0a2",
+    2: "933d14308567cb184d7324f779fb4ffb",
+    3: "2f2d96bab7c69fe1adf3a42161edba70",
+    4: "ac7f342601e2b611536c928bb8be62a6",
+    5: "844dde791e1decd139862d565c8cf0bf"
+  },
+  "3": {
+    1: "3bca72ddea9344763938381ebddec0a2",
+    2: "933d14308567cb184d7324f779fb4ffb",
+    3: "2f2d96bab7c69fe1adf3a42161edba70",
+    4: "ac7f342601e2b611536c928bb8be62a6",
+    5: "844dde791e1decd139862d565c8cf0bf"
   },
   // 다른 부서들도 같은 형태로 추가...
 };
