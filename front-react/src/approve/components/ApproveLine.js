@@ -4,6 +4,7 @@ import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployee
 import { useUser } from '../../common/contexts/UserContext';
 import '../css/approve.css'
 import { getApprStatusText } from './ApprCodeToText';
+import { request } from '../../common/components/helpers/axios_helper';
 
 const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
 
@@ -29,10 +30,16 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
 
     // 조직도 불러오기
     useEffect(() => {
-        fetch("http://localhost:8081/api/organization")
-            .then((res) => res.json())
-            .then((data) => setDeptTree(transformToTree(data)))
-            .catch((error) => console.error("조직도 불러오기 에러:", error));
+        const fetchOrganization = async () => {
+            try {
+                const response = await request('get', '/api/organization');
+                setDeptTree(transformToTree(response.data));
+            } catch (error) {
+                console.error("조직도 불러오기 에러:", error);
+            }
+        };
+        
+        fetchOrganization();
     }, []);
 
     // 신청자 결재선 제일 첫번째에 넣기
@@ -49,7 +56,7 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
             console.log("신청자 정보 추가:", applicant);
             setLine([applicant]);
         }
-    }, []);
+    }, [approveLine, user]);
 
     const transformToTree = (departments) => {
         const deptMap = {};
@@ -168,7 +175,7 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
             <div style={{ display: 'flex', flex: 1}}>
                 {/* 왼쪽 패널 - 조직도/나의 결재선 */}
                 <div style={{ width: '30%', display: 'flex', flexDirection: 'column', borderRight: '1px solid #e0e0e0', overflow: 'hidden' }}>
-                    {/* <div style={{ padding: '10px' }}>
+                    <div style={{ padding: '10px' }}>
                         <input
                             type="text"
                             placeholder="이름으로 검색하세요"
@@ -176,7 +183,7 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
                             onChange={handleInputChange}
                             style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
                         />
-                    </div> */}
+                    </div>
                     <div style={{ flex: 1, overflow: 'hidden' }}>
                         <Tree
                             data={deptTree}
