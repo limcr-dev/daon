@@ -32,6 +32,7 @@ const MessengerChat = () => {
 	const [onlineStatus, setOnlineStatus] = useState(false);
 	const [participants, setParticipants] = useState([]);
 	const [showParticipants, setShowParticipants] = useState(false);
+	const [empImg, setEmpImg] = useState(null);
 	const chatEndRef = useRef(null);
 	const stompClientRef = useRef(null);
 	const typingTimeoutRef = useRef(null);
@@ -112,6 +113,7 @@ const MessengerChat = () => {
 				body: JSON.stringify(message)
 			});
 			setInput('');
+			localStorage.setItem('messenger-refresh', Date.now());
 		} else {
 			console.warn("STOMP 연결이 아직 완료되지 않았습니다.");
 		}
@@ -256,15 +258,40 @@ const MessengerChat = () => {
 		setShowParticipants(prev => !prev);
 	};
 
+	const imageUrl = empImg
+		? `http://${window.location.hostname}:8081/api/images/${encodeURIComponent(empImg)}`
+		: '/default-profile.png';
+
 	return (
 		<div style={{ padding: '20px', height: '100vh', display: 'flex', flexDirection: 'column' }}>
 			{targetUser ? (
 				<>
-					<h4><img src={`/images/profiles/${targetUser.emp_img}`} alt="프로필" style={{ width: '50px', borderRadius: '50%' }} />{targetUser.emp_name} [{targetUser.emp_no}]</h4>
-					<p>{departmentNames[targetUser.dept_no]} / {positionNames[targetUser.position_id]}</p>
-					<p style={{ color: onlineStatus ? 'green' : 'gray' }}>
-						● {onlineStatus ? '온라인' : '오프라인'}
-					</p>
+					<div style={{ display: 'flex', alignItems: 'center' }}>
+						<img
+							src={imageUrl}
+							alt="프로필"
+							style={{
+								width: '50px',
+								height: '50px',
+								borderRadius: '50%',
+								marginRight: '10px',
+								objectFit: 'cover'
+							}}
+						/>
+						<div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+							<div style={{ fontWeight: 'bold', fontSize: '1.1em', lineHeight: '1.2' }}>
+								{targetUser.emp_name} [{targetUser.emp_no}]
+							</div>
+							<div style={{ fontSize: '0.85em', color: 'gray', marginTop: '2px', lineHeight: '1.2' }}>
+								{departmentNames[targetUser.dept_no]} / {positionNames[targetUser.position_id]}
+							</div>
+							<div style={{ fontSize: '0.85em', marginTop: '2px', lineHeight: '1.2', color: onlineStatus ? 'green' : 'gray', marginTop: '5px' }}>
+								● {onlineStatus ? '온라인' : '오프라인'}
+							</div>
+						</div>
+					</div>
+
+
 				</>
 			) : (
 				<>

@@ -25,8 +25,11 @@ public class WebSocketEventListener {
             presenceTracker.setOnline(userId);
 
             // 여기 추가!
-            if (headerAccessor.getSessionAttributes() != null) {
-                headerAccessor.getSessionAttributes().put("emp_no", userId);
+            if (empNo != null) {
+                presenceTracker.setOnline(Integer.parseInt(empNo));
+                System.out.println("✅ PresenceTracker 등록 성공: " + empNo);
+            } else {
+                System.out.println("⚠️ PresenceTracker 등록 실패: emp_no 없음");
             }
         }
     }
