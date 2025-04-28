@@ -7,6 +7,7 @@ import BoardLeftbar from './BoardLeftbar';
 import { Link, useNavigate } from 'react-router-dom';
 import { MdAttachFile } from "react-icons/md";
 import OverlayTrigger from 'rsuite/esm/internals/Overlay/OverlayTrigger';
+import { request } from '../../common/components/helpers/axios_helper';
 
 
 const formatDate = (timestamp) => {
@@ -25,36 +26,38 @@ const Board = () => {
   const [libraryList, setLibraryList] = useState([]);
 
   // noticeList 링크로 들어왔을 때 처음 실행되는 부분
-  // dependency가 빈 배열[]이기 때문에 처음 한 번만 실행됨
   useEffect(() => {
-    fetch("http://localhost:8081/board/notice", { // DB에 들림
-      method: "GET"   // @GetMapping 사용
-    }).then(res => res.json())  // 응답 값을 json형식으로 변환
-      .then(res => {
-        console.log(1, res);
-        setNoticeList(res); // 응답 값을 setNoticeList를 통해서 noticeList 변수에 저장함
-      })
-  }, []); // [] : dependency, 페이지가 처음 로딩될 때 한 번만 실행되도록 사용하는 것
+    const fetchNoticeData = async () => {
+      try {
+        const response = await request('get', '/board/notice');
+        console.log(1, response.data);
+        setNoticeList(response.data);
+      } catch (error) {
+        console.error('공지사항 불러오기 에러:', error);
+      }
+    };
+
+    fetchNoticeData();
+  }, []); // 페이지가 처음 로딩될 때 한 번만 실행
 
   const notice = () => {
     navigate('/board/noticeList');
   }
 
-
   // libraryList 링크로 들어왔을 때 처음 실행되는 부분
-  // dependency가 빈 배열[]이기 때문에 처음 한 번만 실행됨
   useEffect(() => {
-    fetch("http://localhost:8081/board/library", { // DB에 들림
-      method: "GET"   // @GetMapping 사용
-    }).then(res => res.json())  // 응답 값을 json형식으로 변환
-      .then(res => {
-        console.log(1, res);
-        // if (res == null){
-        //   setLibraryList=([])}
-        setLibraryList(res); // 응답 값을 setLibraryList를 통해서 libraryList 변수에 저장함
-      })
-  }, []); // [] : dependency, 페이지가 처음 로딩될 때 한 번만 실행되도록 사용하는 것
+    const fetchLibraryData = async () => {
+      try {
+        const response = await request('get', '/board/library');
+        console.log(1, response.data);
+        setLibraryList(response.data || []); // 응답이 null이면 빈 배열 설정
+      } catch (error) {
+        console.error('자료실 불러오기 에러:', error);
+      }
+    };
 
+    fetchLibraryData();
+  }, []); // 페이지가 처음 로딩될 때 한 번만 실행
   const library = () => {
     navigate('/board/libraryList');
   }

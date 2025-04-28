@@ -55,6 +55,7 @@ public class SecurityConfig {
 				    .antMatchers("/uploads/**").permitAll()
 				    .antMatchers("/api/login").permitAll()  // 로그인은 누구나
 				    .antMatchers("/api/token/refresh").permitAll()
+				    .antMatchers("/api/s3/library/download/**").permitAll() // 파일 다운로드 경로 추가
 				    .anyRequest().authenticated()       // 나머지 전부 로그인 필요!!			
 		);
 		

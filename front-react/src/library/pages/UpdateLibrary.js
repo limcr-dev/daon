@@ -18,12 +18,16 @@ const Updatelibrary = () => {
     const [library, setLibrary] = useState({})
 
     useEffect(() => {
-        fetch("http://localhost:8081/board/library/" + library_no, { // DB에 들림
-            method: "GET"
-        }).then((res) => res.json())
-            .then((res) => {
-                setLibrary(res)
-            });
+        const fetchLibraryDetail = async () => {
+            try {
+                const response = await request('get', `/board/library/${library_no}`);
+                setLibrary(response.data);
+            } catch (error) {
+                console.error('자료 상세 정보 불러오기 에러:', error);
+            }
+        };
+
+        fetchLibraryDetail();
     }, []);
 
     const changeValue = (e) => {
@@ -38,8 +42,7 @@ const Updatelibrary = () => {
         setLibrary({ ...library, library_filename: savedFileName });
     };
 
-    const submitlibrary = (e) => {
-
+    const submitlibrary = async (e) => {
         e.preventDefault(); // submit이 action을 안 타고 자기 할 일을 그만함
 
         // 필수 입력값 체크
@@ -53,35 +56,21 @@ const Updatelibrary = () => {
             return;
         }
 
-        fetch("http://localhost:8081/board/library/" + library_no, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json;charset=utf-8"
-            },
-            body: JSON.stringify(library)
-            // javascript object를 json으로 변경해서 넘김. 데이터를 스프링부트에서 insert하고 201을 리턴한다.
-        })
-            .then((res) => {
-                console.log(1, res);
-                if (res.status === 200) {
-                    return res.json();
-                } else {
-                    return null;
-                }
-            })
-            .then((res) => {    // catch는 여기에서 오류가 발생해야 실행됨.
-                console.log('정상', res);
-                if (res !== null) {
-                    alert("게시글을 수정 하였습니다.");
-                    navigate('/board/libraryList/'); // old  버전 : props.history.push()
-                } else {
-                    alert("게시글 수정에 실패하였습니다.");
-                }
-            })
-            .catch((error) => {
-                console.log('실패', error);
-            });
-    }
+        try {
+            const response = await request(
+                'put',
+                `/board/library/${library_no}`,
+                library
+            );
+
+            console.log('정상', response.data);
+            alert("게시글을 수정하였습니다.");
+            navigate('/board/libraryList/');
+        } catch (error) {
+            console.log('실패', error);
+            alert("게시글 수정에 실패하였습니다.");
+        }
+    };
 
     return (
         <Container style={{ minHeight: '100vh', width: '100%' }}>

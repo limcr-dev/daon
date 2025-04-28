@@ -48,19 +48,21 @@ const LibraryDetail = () => {
 
     // 삭제 버튼 누르면 실행되는 함수(arrow function 활용)
 
-    const deleteLibrary = () => {
-        fetch("http://localhost:8081/board/library/" + library_no, {
-            method: "DELETE"
-        })
-            .then((res) => res.text())  // 응답 값을 text형식으로 받음
-            .then((res) => {
-                if (res == 'ok') {
-                    navigate('/board/libraryList');  // 삭제 성공 시, 자료 목록 페이지로 이동
-                    alert('자료를 삭제하였습니다.'); // 삭제 성공 시, alert창 띄움
-                } else {
-                    alert('자료 삭제에 실패하였습니다.'); // 삭제 실패 시, alert창 띄움
-                }
-            });
+    const deleteLibrary = async () => {
+        try {
+            const response = await request('delete', `/board/library/${library_no}`);
+
+            // response.data로 접근하되, 서버가 text로 반환한다면 response.data가 텍스트일 것임
+            if (response.data === 'ok') {
+                alert('자료를 삭제하였습니다.');
+                navigate('/board/libraryList');  // 삭제 성공 시, 자료 목록 페이지로 이동
+            } else {
+                alert('자료 삭제에 실패하였습니다.');
+            }
+        } catch (error) {
+            console.error('자료 삭제 에러:', error);
+            alert('자료 삭제 중 오류가 발생했습니다.');
+        }
     }
 
     const libraryList = () => {
@@ -143,7 +145,7 @@ const LibraryDetail = () => {
                                         {library.emp_no === user.emp_no &&
                                             <>
                                                 <Button appearance="primary" color="blue" onClick={updateLibrary}>수정</Button>
-                                                <Button appearance="ghost" color="blue" onClick={deleteLibrary}>삭제</Button>
+                                                <Button style={{marginLeft:'10px'}} appearance="ghost" color="blue" onClick={deleteLibrary}>삭제</Button>
                                             </>
                                         }
                                     </div>
