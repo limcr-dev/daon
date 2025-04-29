@@ -1,0 +1,8 @@
+---
+## Default Logstash configuration from Logstash base image.
+## https://github.com/elastic/logstash/blob/master/docker/data/logstash/config/logstash-full.yml
+#
+http.host: "0.0.0.0"
+xpack.monitoring.elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+# cluster.initial_master_nodes: node-1
+# path.data: 'jdbc:mariadb://database-1.cz064myac0cs.ap-northeast-2.rds.amazonaws.com:3306/daon'
