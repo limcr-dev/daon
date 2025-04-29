@@ -1,10 +1,13 @@
 package com.spring.daon.performMgt;
 
 
+import java.sql.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +33,8 @@ public class Goal {
     private String title;
     private String description;
     private int completed;
-    private String created_at;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" , timezone = "Asia/Seoul")
+    private Date created_at;
     private int emp_id;
     
 		

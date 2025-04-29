@@ -18,7 +18,7 @@ const EvalTree = () => {
       children: [
         { label: '평가 조회', value: 'evalSelect' },  // 전체다봐
         !noLook1 &&{ label: '나의 현황', value: 'perEvalStatus'}, // 관리자 빼고
-      ],
+      ].filter(Boolean),
     },
     !noLook1 &&{  // 관리자 빼고 모두 볼수 있다
       label: '인사 평가',
@@ -27,13 +27,12 @@ const EvalTree = () => {
         { label: '자기 평가', value: 'selfQues'},
         { label: '동료 평가', value: 'peerQues'},
         { label: '달성 평가', value: 'goalForm' }, 
-      ],
+      ].filter(Boolean),
     },
     {
       label: '평가 관리',
       value: 'evaluation3',
       children: [
-        
         !noLook4 && { label: '평가 리스트', value: 'evalList' }, //사용자는 못봐 관리자만 봐
         noLook2 && { label: '평가 관리', value: 'checkComp' }, // 인사관리자만
       ].filter(Boolean),

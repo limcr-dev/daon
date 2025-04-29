@@ -260,11 +260,18 @@ public class PerformMgtController {
 	return new ResponseEntity<>(service.addGoal(goal), HttpStatus.CREATED); 
 	}
 	
-	// 목표 목록
+	// 목표 목록  / 월별 달성
 	@GetMapping("/getAllGoals/{emp_no}")
 	public ResponseEntity<?> getAllGoals(@PathVariable int emp_no) {
 		System.out.println("<<< 목표 설정 >>>");
 		return new ResponseEntity<>(service.getAllGoals(emp_no), HttpStatus.OK);	// 200
+	}
+	
+	// 목표 리스트 (개인)
+	@GetMapping("/goalsList/{emp_no}")
+	public ResponseEntity<?> goalsList(@PathVariable int emp_no) {
+		System.out.println("<<< 목표 설정 >>>");
+		return new ResponseEntity<>(service.goalsList(emp_no), HttpStatus.OK);	// 200
 	}
 	
 	// 목표달성

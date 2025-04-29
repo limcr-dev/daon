@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import Header from "../common/pages/Header";
 import { getDeptName, getPositionName } from "../hrMgt/components/getEmployeeInfo";
 import GoalpieOneChart from "./GoalpieOneChart";
+import "../performMgt/css/EvalList.css"
 
 const EvalSelect = () => {
     const [evalList, setEvalList] = useState([]);
@@ -73,7 +74,7 @@ const EvalSelect = () => {
             })
             .catch((error) =>
                 console.error("데이터 가져오기 오류 : ", error));
-    }, []);
+    },[]);
 
     const getGrade = (avg) => {
         if (avg >= 93 && avg <= 100) {
@@ -118,7 +119,7 @@ const EvalSelect = () => {
                 <Content>
                     <Header />
                     <Card align="center">
-                        <h5 className="line"> 통계 </h5>
+                        <h5 className="line"> 전체 통계 </h5>
                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "stretch" }}>
 
                             <Card className='eval-card' style={{ flex: "1" }}>
@@ -134,7 +135,7 @@ const EvalSelect = () => {
                             </Card>
 
                             <Card className='eval-card' style={{ flex: "1" }}>
-                                <Card.Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', backgroundColor: '#f5f5f5', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
+                                <Card.Header className="eval-tab">
                                   
                                     <h6>전체 진행 현황</h6>
                                 </Card.Header>
@@ -151,7 +152,7 @@ const EvalSelect = () => {
                                 </Card.Body>
                             </Card>
                         </div>
-                    </Card>
+                    
 
 
                     <Card className='eval-card' style={{ flex: "1" }}>
@@ -192,7 +193,7 @@ const EvalSelect = () => {
                             </tbody>
                         </table>
                     </Card>
-
+                    </Card>
                 </Content>
             </Container>
         </Container >

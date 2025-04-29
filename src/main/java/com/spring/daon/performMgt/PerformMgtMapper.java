@@ -100,8 +100,11 @@ public interface PerformMgtMapper {
 	// 목표설정
 	public int addGoal(Goal goal);
 	
-	// 목표 목록
+	// 목표 목록  / 월별 달성
 	public List<Goal> getAllGoals(int emp_no); 
+	
+	// 목표 리스트 (개인)
+	public List<Goal> goalsList(int emp_no);
 	
 	// 목표 달성
 	public int completeGoal(Long id);
