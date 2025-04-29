@@ -219,11 +219,18 @@ public class PerformMgtServiceImpl {
 		return perMapper.addGoal(goal);
 	}
 	
-	// 목표 목록
+	// 목표 목록  / 월별 달성
 	public List<Goal> getAllGoals(int emp_no){
-		System.out.println("<< 목표 목록 리스트  >>");
+		System.out.println("<< 목표 목록 리스트(월별달성)  >>");
 		
 		return perMapper.getAllGoals(emp_no);
+	}
+	
+	// 목표 리스트 (개인) 
+	public List<Goal> goalsList(int emp_no){
+		System.out.println("<< 목표 목록 리스트  >>");
+		
+		return perMapper.goalsList(emp_no);
 	}
 	
 	// 목표 달성

@@ -17,7 +17,7 @@ const GoalForm = () => {
 
   // 목표 리스트 가져오기
   useEffect(() => {
-    request('GET', `/performMgt/getAllGoals/${user.emp_no}`)
+    request('GET', `/performMgt/goalsList/${user.emp_no}`)
       .then(res => {
         console.log("목표 리스트:", res.data);   // 추가
         setGoals(res.data);
@@ -25,7 +25,7 @@ const GoalForm = () => {
       .catch((error) => {
         console.error("목표리스트 가져오기 오류 : ", error);
       });
-  }, []);
+  }, [user]);
 
   // 목표 추가하는 함수
   const handleAddGoal = () => {
@@ -120,7 +120,8 @@ const GoalForm = () => {
                       <span style={{ textDecoration: goal.completed ? 'line-through' : 'none' }}>
                         {goal.title}<br />
                       </span>
-                      내용 :{goal.description}
+                      내용 :{goal.description}<br />
+                      {goal.created_at}
                       {!goal.completed && (
                         <button
                           style={{ marginLeft: "10px" }}
@@ -135,7 +136,7 @@ const GoalForm = () => {
                 </ul>
               </Card.Body>
               <Card.Footer>
-                <h5>달성률: {completionRate}%</h5>
+                <h5> 총 달성률: {completionRate}%</h5>
               </Card.Footer>
             </Card>
           </div>
