@@ -178,7 +178,7 @@ const MessengerChat = () => {
 			.catch(console.error);
 
 		// 소켓 연결
-		const socket = new SockJS(`http://${window.location.hostname}:8081/ws-chat`);
+		const socket = new SockJS(`${API_URL}/ws-chat`);
 		const client = new Client({
 			webSocketFactory: () => socket,
 			connectHeaders: {
@@ -273,7 +273,7 @@ const MessengerChat = () => {
 	};
 
 	const imageUrl = empImg
-		? `http://${window.location.hostname}:8081/api/images/${encodeURIComponent(empImg)}`
+		? `${API_URL}/api/images/${encodeURIComponent(empImg)}`
 		: '/default-profile.png';
 
 	return (
@@ -334,13 +334,13 @@ const MessengerChat = () => {
 							<b>{msg.senderId === user.emp_no ? '나' : `👤${msg.senderName || '알 수 없음'}`}</b>
 							{msg.type === 'IMAGE' ? (
 								<img
-									src={`http://${window.location.hostname}:8081${msg.content}`}
+									src={`${API_URL}${msg.content}`}
 									alt={msg.originalName}
 									style={{ maxWidth: '200px', borderRadius: '10px' }}
 								/>
 							) : msg.type === 'FILE' ? (
 								<a
-									href={`http://${window.location.hostname}:8081/messenger/file/uploads/download/${msg.content.split('/').pop()}`}
+									href={`${API_URL}/messenger/file/uploads/download/${msg.content.split('/').pop()}`}
 									download
 									target="_blank"
 									rel="noopener noreferrer"
