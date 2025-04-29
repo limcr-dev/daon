@@ -1,51 +1,57 @@
 import { useEffect, useState } from "react";
 import Loading from './loading';
+import './css/news.css'; // 같은 스타일 사용
 
 function News() {
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetch("http://127.0.0.1:5000/crawl")
-            .then((res) => res.json())
-            .then((data) => {
-                setTimeout(() => {
-                    console.log('데이터 :', data.news)
-                    setData(data.news);
-                    setLoading(false);
-                }, 2000);
-            })
-            .catch((err) => {
-                console.error(err);
-                setTimeout(() => setLoading(false), 2000);
-            });
-    }, []);
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/crawl")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('데이터 :', data.news);
+        setData(data.news || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
+  }, []);
 
-    return (
-        <div>
-            {loading ? <Loading /> : (
-                data && data.length > 0 ? (
-                    (() => {
-                        const firstCategory = data[0]?.rankingnews_name || "뉴스";
-                        const newsList = data.filter(item => item.rankingnews_name === firstCategory).slice(0, 3);
+  if (loading) return <Loading />;
 
-                        return (
-                            <div>
-                                <strong>[{firstCategory}]</strong>
-                                <ul>
-                                    {newsList.map((item, index) => (
-                                        <li key={index}>
-                                            {index + 1}. <a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        );
-                    })()
-                ) : <p>데이터 없음</p>
-            )}
+  const firstCategory = data.length > 0 ? data[0].rankingnews_name : "뉴스";
+
+  return (
+    <div style={{ padding: '10px' }}>
+      <div style={{ fontWeight: 'bold', marginBottom: '10px', borderBottom: '2px solid #3498db', paddingBottom: '5px', fontSize: '16px' }}>
+        {firstCategory}
+      </div>
+      {data.slice(0, 5).map((item, index) => (
+        <div key={index} style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <span style={{ fontWeight: '600', fontSize: '14px' }}>{index + 1}.</span>
+          <a
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              textDecoration: 'none',
+              color: '#2980b9',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxWidth: '400px',
+              fontSize: '14px'
+            }}
+          >
+            {item.title}
+          </a>
         </div>
-    );
+      ))}
+    </div>
+  );
 }
 
 export default News;

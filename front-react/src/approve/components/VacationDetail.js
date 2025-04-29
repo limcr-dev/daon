@@ -207,14 +207,16 @@ const VacationDetail = ({ approveLine, formData, docData }) => {
                 </span>
               </td>
             </tr>
-            <tr>
-              <td className="label-cell">연차 일수</td>
-              <td>
-                <span>잔여일수 : {createVacation - useVacation} </span>
-                <span style={{ marginLeft: '30px' }}>신청일수 : {vacationForm.vacation_type === 1 ? vacationForm.used_days : 0} </span>
-                <span style={{ marginLeft: '30px' }}>신청 후 잔여일수 : {vacationForm.vacation_type === 1 ? createVacation - useVacation - formData.used_days : createVacation - useVacation}</span>
-              </td>
-            </tr>
+            {document.doc_status !== 3 && document.doc_status !== 4 &&
+              <tr>
+                <td className="label-cell">연차 일수</td>
+                <td>
+                  <span>잔여일수 : {createVacation - useVacation} </span>
+                  <span style={{ marginLeft: '30px' }}>신청일수 : {vacationForm.vacation_type === 1 ? vacationForm.used_days : 0} </span>
+                  <span style={{ marginLeft: '30px' }}>신청 후 잔여일수 : {vacationForm.vacation_type === 1 ? createVacation - useVacation - formData.used_days : createVacation - useVacation}</span>
+                </td>
+              </tr>
+            }
             <tr>
               <td className="label-cell">제목</td>
               <td colSpan="3">

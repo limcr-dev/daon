@@ -20,7 +20,7 @@ const EmployeeSalaryList = () => {
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [selectedEmpNo, setSelectedEmpNo] = useState(null);
   const [page, setPage] = useState(1);
-  const size = 14;           
+  const size = 12;           
   const [searchKeyword, setSearchKeyword] = useState("");
 
   const fetchSalaryList = useCallback(() => {
