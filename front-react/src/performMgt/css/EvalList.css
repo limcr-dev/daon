@@ -1,57 +1,70 @@
-.height_change .rs-tree-view{
-    overflow: visible;
+.height_change .rs-tree-view {
+  overflow: visible;
 }
 
 body {
-    font-family: "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-    background-color: #f4f4f5;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .eval-list {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-  }
-  
-  .eval-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-  }
-  
-  .eval-table th,
-  .eval-table td {
-    padding: 12px 16px;
-    border-bottom: 1px solid #e0e0e0;
-    
-  }
-  
-  .eval-table th {
-    background-color: #f7f7f7;
-    color: #333;
-    font-weight: 600;
-    font-size: 15px;
-  }
-  
-  .eval-table td {
-    color: #666;
-  }
-  
-  .eval-table tr:hover {
-    background-color: #f0f0f0;
-    cursor: pointer;
-  }
+  font-family: "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  background-color: #f4f4f5;
+  margin: 0;
+  padding: 0;
+}
 
-  .eval-card{
-    margin: 0px 20px 20px 20px;
-    border-radius: 15px ;
-    /* margin-bottom: 20px; */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
+.eval-list {
+  max-width: 1200px;
+  margin: 15px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
 
-  
+.eval-table {
+  border-radius: '15px';
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  border-top-right-radius: '15px' !important;
+  border-top-left-radius: '15px' !important;
+
+}
+
+.eval-table th,
+.eval-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+
+}
+
+.eval-table th {
+  background-color: #f7f7f7;
+  color: #333;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.eval-table td {
+  color: #666;
+}
+
+.eval-table tr:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.eval-card {
+  margin: 0px 15px 20px 15px;
+  /* border-radius: 15px; */
+  border-top-right-radius: '15px';
+  border-top-left-radius: '15px';
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.eval-tab{
+  display: 'flex'; 
+  justify-content:'space-between'!important ;
+  align-items:"center" !important;
+  padding: '15px'!important;
+  background-color: 'f5f5f5'!important;
+  border-top-left-radius: '15px'!important;
+  border-top-right-radius: '15px'!important;
+}

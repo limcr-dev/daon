@@ -140,38 +140,7 @@
 			 select eval_num5 from eval_test where eval_order_num = #{eval_order_num}
 		 )
 	</select>
-	<!-- 테스트용 -->
-	<!-- <select id="selectTest" resultType="com.spring.daon.performMgt.EvalQuesComp"> -->
-	<!-- (
-	SELECT * FROM eval_quescomp
-	WHERE eval_comp_id = (SELECT eval_num1 FROM eval_test WHERE eval_order_num = #{eval_order_num})
-	LIMIT 2
-	)
-	UNION ALL
-	(
-	SELECT * FROM eval_quescomp
-	WHERE eval_comp_id = (SELECT eval_num2 FROM eval_test WHERE eval_order_num = #{eval_order_num})
-	LIMIT 2
-	)
-	UNION ALL
-	(
-	SELECT * FROM eval_quescomp
-	WHERE eval_comp_id = (SELECT eval_num3 FROM eval_test WHERE eval_order_num = #{eval_order_num})
-	LIMIT 2
-	)
-	UNION ALL
-	(
-	SELECT * FROM eval_quescomp
-	WHERE eval_comp_id = (SELECT eval_num4 FROM eval_test WHERE eval_order_num = #{eval_order_num})
-	LIMIT 2
-	)
-	UNION ALL
-	(
-	SELECT * FROM eval_quescomp
-	WHERE eval_comp_id = (SELECT eval_num5 FROM eval_test WHERE eval_order_num = #{eval_order_num})
-	LIMIT 2
-	) -->
-<!-- </select> -->
+
 	
 	<!-- 평가 직원 리스트 : 수정-->
 	<select id="evalList" resultType="com.spring.daon.performMgt.Test"> 
@@ -457,7 +426,7 @@
         VALUES (#{title}, #{description},#{emp_id})
     </insert>
     
-	<!-- 목표 목록 (개인)-->
+	<!-- 목표 목록 (개인) / 월별 달성 -->
     <select id="getAllGoals" parameterType="int" resultType="com.spring.daon.performMgt.Goal">
         select id
         	 , title
@@ -471,7 +440,20 @@
 		emp_id, DATE_FORMAT(created_at, '%Y-%m')
     </select>
     
-    <!-- 목표 달성률 (개인)-->
+     <!-- 목표 리스트 (개인) -->
+    <select id="goalsList" parameterType="int" resultType="com.spring.daon.performMgt.Goal">
+    	  select id
+        	 , title
+			 , description
+			 , created_at
+			 , completed
+			 , DATE_FORMAT(created_at, '%Y-%m') as month
+		FROM eval_goals
+		where emp_id = #{emp_no}
+		ORDER BY created_at
+    </select>
+    
+    <!-- 목표 달성률 (개인) -->
     <select id="totalGoalsScore" parameterType="int" resultType="com.spring.daon.performMgt.Goal">
     	SELECT
 		    emp_id,
@@ -483,6 +465,8 @@
 		GROUP BY
 		    emp_id, DATE_FORMAT(created_at, '%Y-%m')
     </select>
+    
+   
     
     <!-- 목표 달성률 (전체)-->
     <select id="totalAllGoalsScore" resultType="com.spring.daon.performMgt.Goal">
