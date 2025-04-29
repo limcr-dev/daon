@@ -16,7 +16,6 @@ const data = [
     value: "teamattendanceMgt",
     children: [
       { label: "팀 근태 현황", value: "teamstatus/1" },
-      { label: "팀 근태 통계", value: "teamstats/1" },
     ],
   },
   {
@@ -24,12 +23,12 @@ const data = [
     value: "deptattendanceMgt",
     children: [
       { label: "부서 근태 현황", value: "deptStatus/1" },
+      { label: "부서 근태 통계", value: "deptStats/1" },
       {
         label: "팀명",
         value: "teamattendanceMgt/1",
         children: [
           { label: "팀 근태현황", value: "teamstatus/1" },
-          { label: "팀 근태통계", value: "teamstats/1" },
         ],
       },
       {
@@ -37,7 +36,6 @@ const data = [
         value: "teamattendanceMgt/1",
         children: [
           { label: "팀 근태현황", value: "teamstatus/1" },
-          { label: "팀 근태통계", value: "teamstats/1" },
         ],
       },
       {
@@ -45,7 +43,6 @@ const data = [
         value: "teamattendanceMgt/1",
         children: [
           { label: "팀 근태현황", value: "teamstatus/1" },
-          { label: "팀 근태통계", value: "teamstats/1" },
         ],
       },
     ],
@@ -158,7 +155,7 @@ export const updateLabels = (data, admin_type, dept_no) => {
       if (admin_type === 5 && item.label === "부서 근태관리") {
         const editChildren = item.children?.map((child, index) => {
           // 처음 2개 children 요소에 부서별 근태관리,현황 replace
-          if (index === 0) {
+          if (index === 0 || index === 1) {
             return {
               ...child,
               label: child.label.replace('부서', `${deptName}`),
@@ -169,14 +166,14 @@ export const updateLabels = (data, admin_type, dept_no) => {
           const editChildren2 = child.children?.map((child) => {
             return {
               ...child,
-              label: child.label.replace('팀', `${teamNames[index - 1]}`),
-              value: child.value.replace('1', `${teamNo[index - 1]}`)
+              label: child.label.replace('팀', `${teamNames[index - 2]}`),
+              value: child.value.replace('1', `${teamNo[index - 2]}`)
             }
           })
           return {
             ...child,
-            label: child.label.replace('팀명', `${teamNames[index - 1]}`),
-            value: child.value.replace('1', `${teamNo[index - 1]}`),
+            label: child.label.replace('팀명', `${teamNames[index - 2]}`),
+            value: child.value.replace('1', `${teamNo[index - 2]}`),
             children: editChildren2
           }
         })
