@@ -1,16 +1,13 @@
 import { request } from "../../common/components/helpers/axios_helper"
-
 import { useUser } from "../../common/contexts/UserContext";
 import React, { useEffect, useState } from "react";
-
 import { Card } from 'react-bootstrap';
-
 import Leftbar from "../../common/pages/Leftbar";
 import LeftbarDEvaluation from "../components/LeftbarDEvaluation";
-
-import { Container, Content, Button } from "rsuite";
+import { Container, Content, Button} from "rsuite";
 import QuesList from "./sub/QuesList";
 import { useNavigate } from "react-router-dom";
+import Header from "../../common/pages/Header";
 
 // 자기 평가 문제 불러오기
 const EvalSelQue = () => {
@@ -141,6 +138,7 @@ const EvalSelQue = () => {
             <Container>
                 <LeftbarDEvaluation />
                 <Content>
+                    <Header />
                     <div className="main-content p-4">
 
                         <h2 className="mb-4">✏️ 자기 평가</h2>

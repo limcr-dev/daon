@@ -30,6 +30,7 @@ public class Documents {
     private int emp_no;
     private int dept_no;
     private String doc_title;
+    private String doc_filename;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private Date doc_reg_date;
     private int doc_status;

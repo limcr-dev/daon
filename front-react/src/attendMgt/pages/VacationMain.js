@@ -40,7 +40,7 @@ const VacationMain = () => {
   const [vacationHistoryList, setVacationHistoryList] = useState([]);
 
   // 가장 빠른 만료 예정일, 잔여 연차, 총 연차 불러오기
-  const { maxExpireDate, remainVacation, createVacation } = getExpireDate(vacation_occurList);
+  const { maxExpireDate, createVacation } = getExpireDate(vacation_occurList);
 
   // 입사일 기준 이번 주기 시작,끝 날짜 불러오기
   const { start, end } = getCurrentVacationCycle(employees.hire_date);
@@ -100,7 +100,7 @@ const VacationMain = () => {
 
   return (
     <div>
-      <Container style={{ minHeight: '100vh', width: '100%' }}>
+      <Container style={{ height: '1050px', width: '100%' }}>
         <Leftbar />
         <Container>
 

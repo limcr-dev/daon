@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Card, Button, Input, Divider, Table, IconButton, Modal } from "rsuite";
+import React, { useEffect, useState, useCallback } from "react";
+import { Card, Button, Input, Divider, Table, IconButton, Modal, Notification, toaster } from "rsuite";
 import EditIcon from "@rsuite/icons/Edit";
 import TrashIcon from "@rsuite/icons/Trash";
+import { request } from "../../../common/components/helpers/axios_helper";
 
 const { Column, HeaderCell, Cell } = Table;
 
@@ -13,87 +14,139 @@ const RoleListPanel = ({ deptNo }) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleteRoleId, setDeleteRoleId] = useState(null);
 
-  // ✅ 부서 선택 시 목록 불러오기
-  useEffect(() => {
+  const fetchRoles = useCallback(() => {
     if (!deptNo) {
       setRoles([]);
       return;
     }
-
-    fetch(`http://localhost:8081/api/roles?deptNo=${deptNo}`)
-      .then((res) => res.json())
-      .then((data) => setRoles(data));
+    request("get", `/api/roles?deptNo=${deptNo}`)
+      .then((res) => setRoles(res.data))
+      .catch(() => {
+        toaster.push(
+          <Notification type="error" header="조회 실패" closable>
+            직책 목록 조회에 실패했습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
+      });
   }, [deptNo]);
 
-  // ✅ 직책 추가
-  const handleAddRole = () => {
-    if (!newRoleName.trim()) return;
+  useEffect(() => {
+    fetchRoles();
+  }, [fetchRoles]);
 
-    fetch("http://localhost:8081/api/roles", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ role_name: newRoleName, dept_no: deptNo })
+  const handleAddRole = () => {
+    if (!newRoleName.trim()) {
+      toaster.push(
+        <Notification type="warning" header="입력 필요" closable>
+          직책명을 입력해주세요.
+        </Notification>,
+        { placement: "topCenter" }
+      );
+      return;
+    }
+
+    request("post", "/api/roles", {
+      role_name: newRoleName,
+      dept_no: deptNo
     })
-      .then((res) => res.json())
       .then(() => {
         setNewRoleName("");
-        // 🔁 목록 다시 조회
-        fetch(`http://localhost:8081/api/roles?deptNo=${deptNo}`)
-          .then((res) => res.json())
-          .then((data) => setRoles(data));
+        toaster.push(
+          <Notification type="success" header="등록 완료" closable>
+            직책이 등록되었습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
+        fetchRoles();
+      })
+      .catch(() => {
+        toaster.push(
+          <Notification type="error" header="등록 실패" closable>
+            직책 등록에 실패했습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
       });
   };
 
-  // ✅ 수정 시작
   const handleEdit = (role) => {
     setEditRole(role);
     setEditName(role.role_name);
   };
 
-  // ✅ 수정 완료
   const handleEditSubmit = () => {
-    if (!editName.trim()) return;
+    if (!editName.trim()) {
+      toaster.push(
+        <Notification type="warning" header="입력 필요" closable>
+          직책명을 입력해주세요.
+        </Notification>,
+        { placement: "topCenter" }
+      );
+      return;
+    }
 
-    fetch("http://localhost:8081/api/roles", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...editRole, role_name: editName })
+    request("put", "/api/roles", {
+      ...editRole,
+      role_name: editName
     })
-      .then((res) => res.json())
       .then(() => {
         setEditRole(null);
         setEditName("");
-        fetch(`http://localhost:8081/api/roles?deptNo=${deptNo}`)
-          .then((res) => res.json())
-          .then((data) => setRoles(data));
+        toaster.push(
+          <Notification type="success" header="수정 완료" closable>
+            직책명이 수정되었습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
+        fetchRoles();
+      })
+      .catch(() => {
+        toaster.push(
+          <Notification type="error" header="수정 실패" closable>
+            직책 수정에 실패했습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
       });
   };
 
-  // ✅ 삭제 요청
   const handleDelete = (roleId) => {
     setDeleteRoleId(roleId);
     setShowConfirm(true);
   };
 
-  // ✅ 삭제 확인
   const confirmDelete = () => {
-    fetch(`http://localhost:8081/api/roles/${deleteRoleId}`, {
-      method: "DELETE"
-    })
+    request("delete", `/api/roles/${deleteRoleId}`)
       .then(() => {
         setShowConfirm(false);
         setDeleteRoleId(null);
-        fetch(`http://localhost:8081/api/roles?deptNo=${deptNo}`)
-          .then((res) => res.json())
-          .then((data) => setRoles(data));
+        toaster.push(
+          <Notification type="success" header="삭제 완료" closable>
+            직책이 삭제되었습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
+        fetchRoles();
+      })
+      .catch(() => {
+        toaster.push(
+          <Notification type="error" header="삭제 실패" closable>
+            직책 삭제에 실패했습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
       });
   };
 
   return (
-    <Card style={{ padding: 20, width: "100%" }}>
+    <Card style={{
+      borderRadius: "15px",
+      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+      padding: 20,
+    }}>
       <h4>🧩 직책 목록</h4>
       <Divider />
-
       {/* 등록 */}
       <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
         <Input
@@ -104,7 +157,6 @@ const RoleListPanel = ({ deptNo }) => {
         />
         <Button appearance="primary" onClick={handleAddRole}>추가</Button>
       </div>
-
       {/* 목록 */}
       <Table height={400} data={roles} autoHeight>
         <Column flexGrow={1} align="center">
@@ -131,13 +183,12 @@ const RoleListPanel = ({ deptNo }) => {
             {(rowData) => (
               <>
                 <IconButton icon={<EditIcon />} size="xs" onClick={() => handleEdit(rowData)} />
-                <IconButton icon={<TrashIcon />} size="xs" color="red" onClick={() => handleDelete(rowData.role_id)} style={{ marginLeft: 8 }} />
+                <IconButton icon={<TrashIcon />} size="xs" appearance="subtle" color="red" onClick={() => handleDelete(rowData.role_id)} style={{ marginLeft: 8 }} />
               </>
             )}
           </Cell>
         </Column>
       </Table>
-
       {/* 삭제 확인 모달 */}
       <Modal open={showConfirm} onClose={() => setShowConfirm(false)}>
         <Modal.Header>

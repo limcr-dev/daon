@@ -47,13 +47,12 @@ const ScheduleLeftbar = (user) => {
           flexDirection: "column",
         }}
       >
-        <Text size={24} style={{ marginTop: "20px" }}>
+        <Text size={25} weight={"bold"} style={{ marginTop: "35px" }}>
           일정
         </Text>
-        <Divider />
 
         {/* 일정 등록 버튼 시작 */}
-        <div style={{ gap: "10px", display: "flex" }}>
+        <div style={{ marginTop: '15px', gap: "10px", display: "flex" }}>
           <Button style={{ backgroundColor: "#CECEF2" }} onClick={openAddPage}>
             <FontAwesomeIcon icon={faCalendarPlus} />{" "}
             <p style={{ margin: "5px" }}>일정 등록</p>

@@ -33,7 +33,28 @@ const Header = ({ onProfileUpdated }) => {
 
   const imageUrl = empImg
     ? `http://localhost:8081/api/images/${encodeURIComponent(empImg)}`
-    : '/default-profile.jpg';
+    : '/default-profile.png';
+
+  //메신저 실행
+  const msgRun = () => {
+    const url = `/messenger/messengerRun`;
+    const features = 'width=500,height=600,resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no,location=no';
+    window.open(url, '_blank', features)
+  }
+
+  // 메일 실행
+  const emailRun = () => {
+    const url = 'https://mail.daon-ai.com';
+    const features = 'width=1024,height=768,resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no,location=no';
+    window.open(url, 'DaonWebmail', features);
+  }
+
+  // 챗봇 실행
+  const chatbotRun = () => {
+    const url = 'http://localhost:8501';  // ✨ 수정: 'http://' 붙여주고 포트번호 8501로!
+    const features = 'width=800,height=600,resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no,location=no';
+    window.open(url, 'Daoni', features);
+  }
 
   return (
     <>
@@ -44,7 +65,6 @@ const Header = ({ onProfileUpdated }) => {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '0 20px',
-          backgroundColor: '#f0f0f0',
           borderBottom: '1px solid #eee',
           position: 'sticky',
           top: 0,
@@ -54,9 +74,9 @@ const Header = ({ onProfileUpdated }) => {
         <div style={{ fontWeight: 'bold', fontSize: '18px' }}>Daon Groupware</div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: 'auto' }}>
-          <IconButton icon={<MessageIcon />} size="sm" appearance="subtle" title="메신저" />
-          <IconButton icon={<EmailIcon />} size="sm" appearance="subtle" title="이메일" />
-          <IconButton icon={<WechatOutlineIcon />} size="sm" appearance="subtle" title="챗봇" />
+          <IconButton icon={<MessageIcon />} onClick={msgRun} size="sm" appearance="subtle" title="메신저" />
+          <IconButton icon={<EmailIcon />} onClick={emailRun} size="sm" appearance="subtle" title="이메일" />
+          <IconButton icon={<WechatOutlineIcon />} onClick={chatbotRun} size="sm" appearance="subtle" title="챗봇" />
 
           <Avatar
             circle
@@ -65,7 +85,7 @@ const Header = ({ onProfileUpdated }) => {
             alt="프로필"
             onClick={() => setShowModal(true)}
             style={{ cursor: 'pointer' }}
-            onError={(e) => { e.target.src = '/default-profile.jpg'; }}
+            onError={(e) => { e.target.src = '/default-profile.png'; }}
           />
           <span
             style={{ fontSize: '14px', fontWeight: 500, cursor: 'pointer' }}

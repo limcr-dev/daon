@@ -5,32 +5,41 @@
      
 	<mapper namespace="com.spring.daon.salary.SalarySchedule.SalaryScheduleMapper">
      
-    <select id="findAll" resultType="com.spring.daon.salary.SalarySchedule.SalarySchedule">
-        SELECT * FROM salary_schedule ORDER BY salary_month DESC
-    </select>
-
-    <select id="findByMonth" resultType="com.spring.daon.salary.SalarySchedule.SalarySchedule">
-        SELECT * FROM salary_schedule WHERE salary_month = #{salary_month}
-    </select>
-
-    <insert id="insert" parameterType="com.spring.daon.salary.SalarySchedule.SalarySchedule">
-        INSERT INTO salary_schedule (salary_month, payday, is_closed)
-        VALUES (#{salary_month}, #{payday}, #{is_closed})
-    </insert>
+	<select id="findAll" resultType="com.spring.daon.salary.SalarySchedule.SalarySchedule">
+		SELECT * 
+		  FROM salary_schedule 
+		 ORDER BY salary_month DESC
+	</select>
 	
+	<select id="findByMonth" resultType="com.spring.daon.salary.SalarySchedule.SalarySchedule">
+	    SELECT * 
+	      FROM salary_schedule 
+	     WHERE salary_month = #{salary_month}
+	</select>
+	
+	<insert id="insert" parameterType="com.spring.daon.salary.SalarySchedule.SalarySchedule">
+	    INSERT INTO salary_schedule (salary_month, payday, is_closed)
+	    VALUES (#{salary_month}, #{payday}, #{is_closed})
+	</insert>
+
 	<!-- 지급일 수정 (마감 전만) -->
 	<update id="updatePayday" parameterType="com.spring.daon.salary.SalarySchedule.SalarySchedule">
-    UPDATE salary_schedule
-    SET payday = #{payday}
-    WHERE id = #{id} AND is_closed = FALSE
+	   UPDATE salary_schedule
+	      SET payday = #{payday}
+	    WHERE id = #{id} 
+	      AND is_closed = FALSE
+	</update>
+
+	<update id="updateCloseStatus" parameterType="int">
+		UPDATE salary_schedule 
+		   SET is_closed = TRUE
+		 WHERE id = #{id}
 	</update>
 	
-    <update id="updateCloseStatus" parameterType="int">
-        UPDATE salary_schedule SET is_closed = TRUE WHERE id = #{id}
-    </update>
-
-    <delete id="delete" parameterType="int">
-	  DELETE FROM salary_schedule
-	  WHERE id = #{id} AND is_closed = FALSE
+	<delete id="delete" parameterType="int">
+	  DELETE 
+	    FROM salary_schedule
+	   WHERE id = #{id} AND is_closed = FALSE
 	</delete>
-	</mapper>
+
+</mapper>

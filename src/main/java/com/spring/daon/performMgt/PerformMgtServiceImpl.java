@@ -1,14 +1,14 @@
 package com.spring.daon.performMgt;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.spring.daon.attendMgt.Attendance;
 import com.spring.daon.hrMgt.Employees;
 
 
@@ -133,11 +133,11 @@ public class PerformMgtServiceImpl {
 		return  perMapper.insertSelfEval(evalSelf);
 	}
 	
-	// 전체 직원 리스트 
-	public List<Employees> employees(){
+	// 전체 직원 리스트 정보 불러오기
+	public Employees employees(int emp_no){
 		System.out.println("<< 자기평가 불러오기 >>");
 		
-		return perMapper.employees();
+		return perMapper.employees(emp_no);
 	}
 	
 	//동료평가리스트
@@ -161,4 +161,101 @@ public class PerformMgtServiceImpl {
 		
 		return perMapper.evalStatus();
 	}
+	
+	// 자기평가 진행 현황(개인용)
+	public SelfTarget selfStatusEmp(int emp_no){
+		System.out.println("<< 자기평가 진행 현황 리스트  >>");
+		
+		return perMapper.selfStatusEmp(emp_no);
+	}
+		
+		
+	// 동료평가 진행 현황 (관리자용)
+	public List<PeerTarget> peerStatus(){
+		System.out.println("<< 동료평가 진행 현황 리스트 (관리자) >>");
+		
+		return perMapper.peerStatus();
+	}
+	
+	// 동료평가 진행 현황(개인용)
+	public PeerTarget peerStatusEmp(int emp_no){
+		System.out.println("<< 동료평가 진행 현황 리스트(개인)  >>");
+		
+		return perMapper.peerStatusEmp(emp_no);
+	}
+	
+	// 개인별 동료평가 점수
+	public List<EvalPeer> peerScore(int emp_no){
+		System.out.println("<< 개인별 동료평가 점수 리스트  >>");
+		
+		return perMapper.peerScore(emp_no);
+	}
+	
+	// 개인별 자기평가 점수
+	public List<EvalSelf> selfScore(int emp_no){
+		System.out.println("<< 개인별 자기평가 점수 리스트  >>");
+		
+		return perMapper.selfScore(emp_no);
+	}
+	
+	// 개인별 근태 점수
+	public List<EvalAttand> attandScore(int emp_no){
+		System.out.println("<< 개인별 근태 점수 리스트  >>");
+		
+		return perMapper.attandScore(emp_no);
+	}
+	
+	// total 근태 점수
+	public List<EvalAttand> attandTotalScore(){
+		System.out.println("<< total 근태 점수 리스트  >>");
+		
+		return perMapper.attandTotalScore();
+	}
+	
+	// 목표설정
+	public int addGoal(Goal goal){
+		System.out.println("<< 목표설정 하기  >>");
+		
+		return perMapper.addGoal(goal);
+	}
+	
+	// 목표 목록  / 월별 달성
+	public List<Goal> getAllGoals(int emp_no){
+		System.out.println("<< 목표 목록 리스트(월별달성)  >>");
+		
+		return perMapper.getAllGoals(emp_no);
+	}
+	
+	// 목표 리스트 (개인) 
+	public List<Goal> goalsList(int emp_no){
+		System.out.println("<< 목표 목록 리스트  >>");
+		
+		return perMapper.goalsList(emp_no);
+	}
+	
+	// 목표 달성
+	public int completeGoal(Long id){
+		System.out.println("<< 목표 달성 리스트  >>");
+		
+		return perMapper.completeGoal(id);
+	}
+	
+	// 목표 달성률 (개인)
+	public List<Goal> totalGoalsScore(int emp_no){
+		System.out.println("<< 목표 달성률 (개인) 리스트  >>");
+		
+		return perMapper.totalGoalsScore(emp_no);
+	}
+	
+	// 목표 달성률 (전체)
+	public List<Goal> totalAllGoalsScore(){
+		System.out.println("<< 목표 달성률 (전체) 리스트  >>");
+		
+		return perMapper.totalAllGoalsScore();
+	}	
+	
+	
+	
+	
+	
 }

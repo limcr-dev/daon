@@ -28,7 +28,7 @@ public class SalaryScheduleController {
         return new ResponseEntity<>(service.findAll(), HttpStatus.OK);
     }
 
-    @GetMapping("/{salary_month}")
+    @PutMapping("/{salary_month}")
     public ResponseEntity<SalarySchedule> getByMonth(@PathVariable String salary_month) {
     	 SalarySchedule dto = service.findByMonth(salary_month);
     	 

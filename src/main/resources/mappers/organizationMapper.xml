@@ -4,29 +4,32 @@
 
 <mapper namespace="com.spring.daon.orgChart.OrgChartMapper">
 
-    <!-- 전체 조직도 조회 (부서 + 직원 포함) -->
-    <select id="getOrganization" resultMap="OrganizationMap">
-        SELECT 
-            d.dept_no, d.dept_name, d.dept_parent,
-            e.emp_no, e.emp_name, e.position_id, e.role_id
-        FROM departments d
-        LEFT JOIN employees e ON d.dept_no = e.dept_no
-        ORDER BY d.dept_no, e.position_id
-    </select>
+	<!-- 전체 조직도 조회 (부서 + 직원 포함) -->
+	<select id="getOrganization" resultMap="OrganizationMap">
+		SELECT d.dept_no 
+			 , d.dept_name
+			 , d.dept_parent
+	    	 , e.emp_no
+	    	 , e.emp_name
+	    	 , e.position_id
+	    	 , e.role_id
+	      FROM departments d
+	      LEFT JOIN employees e ON d.dept_no = e.dept_no
+	     ORDER BY d.dept_no, e.position_id
+	</select>
 
-    <!-- resultMap을 활용하여 부서 + 직원 리스트 매핑 -->
-    <resultMap id="OrganizationMap" type="com.spring.daon.orgChart.Department">
-        <id property="dept_no" column="dept_no" />
-        <result property="dept_name" column="dept_name" />
-        <result property="dept_parent" column="dept_parent" />
-        
-        <!-- 직원 리스트 매핑 -->
-        <collection property="employees" ofType="com.spring.daon.hrMgt.Employees">
-            <id property="emp_no" column="emp_no" />
-            <result property="emp_name" column="emp_name" />
-            <result property="position_id" column="position_id" />
-            <result property="role_id" column="role_id" />
-        </collection>
-    </resultMap>
+	<!-- resultMap을 활용하여 부서 + 직원 리스트 매핑 -->
+	<resultMap id="OrganizationMap" type="com.spring.daon.orgChart.Department">
+		<id property="dept_no" column="dept_no" />
+	    <result property="dept_name" column="dept_name" />
+	    <result property="dept_parent" column="dept_parent" />
+	    <!-- 직원 리스트 매핑 -->
+	    <collection property="employees" ofType="com.spring.daon.hrMgt.Employees">
+	        <id property="emp_no" column="emp_no" />
+	        <result property="emp_name" column="emp_name" />
+	        <result property="position_id" column="position_id" />
+	        <result property="role_id" column="role_id" />
+	    </collection>
+	</resultMap>
 
 </mapper>

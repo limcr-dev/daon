@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface DepartmentMapper {
@@ -18,7 +17,7 @@ public interface DepartmentMapper {
     @Insert("INSERT INTO departments (dept_no, dept_name, dept_parent) VALUES (#{dept_no}, #{dept_name}, #{dept_parent})")
     int insertDepartment(Department dept);
 
-    @Update("UPDATE departments SET dept_name = #{dept_name}, dept_parent = #{dept_parent} WHERE dept_no = #{dept_no}")
+    // 수정
     int updateDepartment(Department dept);
 
     @Delete("DELETE FROM departments WHERE dept_no = #{dept_no}")

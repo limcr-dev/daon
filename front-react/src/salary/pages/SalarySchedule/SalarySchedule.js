@@ -3,8 +3,9 @@ import { Container, Content, Card, Input, Button } from "rsuite";
 import Leftbar from "../../../common/pages/Leftbar";
 import SalaryLeftbar from "../SalaryLeftbar";
 import Header from '../../../common/pages/Header';
+import Paging from "../../../common/components/paging.js";
 import "../../css/SalarySchedule.css";
-import { request } from "../../../common/components/helpers/axios_helper"; // ✅ 요청 헬퍼 사용
+import { request } from "../../../common/components/helpers/axios_helper";
 
 const SalarySchedule = () => {
   const [schedules, setSchedules] = useState([]);
@@ -14,8 +15,9 @@ const SalarySchedule = () => {
   const [showClosedOnly, setShowClosedOnly] = useState(false);
   const [showCalculatedOnly, setShowCalculatedOnly] = useState(false);
   const [searchMonth, setSearchMonth] = useState("");
+  const [page, setPage] = useState(1); 
+  const [size] = useState(13);
 
-  // ✅ 급여 대장 목록 조회
   const fetchSchedules = () => {
     request("get", "/api/schedule")
       .then((res) => setSchedules(res.data))
@@ -29,7 +31,6 @@ const SalarySchedule = () => {
     fetchSchedules();
   }, []);
 
-  // ✅ 대장 생성
   const handleCreate = () => {
     if (!newMonth) return alert("📅 급여 월을 선택해주세요.");
 
@@ -50,7 +51,6 @@ const SalarySchedule = () => {
       });
   };
 
-  // ✅ 전체 급여 계산
   const handleCalculateAll = () => {
     if (!newMonth) return alert("📅 먼저 급여 월을 선택해주세요.");
 
@@ -62,7 +62,6 @@ const SalarySchedule = () => {
       .catch(() => alert("❌ 서버 오류로 계산에 실패했습니다."));
   };
 
-  // ✅ 마감 처리
   const handleClose = (id, isCalculated) => {
     if (!isCalculated) return alert("⚠️ 전체 급여 계산 후 마감할 수 있습니다.");
     if (window.confirm("정말 마감 처리하시겠습니까?")) {
@@ -75,13 +74,11 @@ const SalarySchedule = () => {
     }
   };
 
-  // ✅ 지급일 수정 시작
   const startEdit = (row) => {
     setEditingId(row.id);
     setEditingPayday(row.payday?.substring(0, 10) || "");
   };
 
-  // ✅ 지급일 저장
   const saveEdit = () => {
     request("put", `/api/schedule/${editingId}`, {
       payday: editingPayday
@@ -95,7 +92,6 @@ const SalarySchedule = () => {
       .catch(() => alert("❌ 수정 실패 (마감된 대장은 수정 불가)"));
   };
 
-  // ✅ 대장 삭제
   const handleDelete = (id, isClosed) => {
     if (isClosed) return alert("❌ 마감된 급여 대장은 삭제할 수 없습니다.");
     if (window.confirm("정말 삭제하시겠습니까?")) {
@@ -108,7 +104,7 @@ const SalarySchedule = () => {
     }
   };
 
-  // ✅ 정렬 및 필터링
+  // 정렬 + 필터링
   const sortedSchedules = [...schedules].sort((a, b) => b.salary_month.localeCompare(a.salary_month));
   const filteredSchedules = sortedSchedules.filter((row) => {
     if (showClosedOnly && !row.is_closed) return false;
@@ -117,6 +113,11 @@ const SalarySchedule = () => {
     return true;
   });
 
+  // 현재 페이지 slice
+  const startIndex = (page - 1) * size;
+  const endIndex = startIndex + size;
+  const paginatedList = filteredSchedules.slice(startIndex, endIndex);
+
   return (
     <Container style={{ minHeight: "100vh", width: "100%" }}>
       <Leftbar />
@@ -124,66 +125,83 @@ const SalarySchedule = () => {
         <SalaryLeftbar />
         <Content>
           <Header />
-          <Card style={{ borderRadius: 15, padding: 20 }}>
-            <h3 style={{ marginBottom: 20 }}>급여 대장 관리</h3>
+          <div style={{ marginTop: "50px", marginLeft: "30px", marginRight: "30px" }}>
+            <Card style={{ orderRadius: "15px",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                padding: 20, }}>
+              <h3 style={{ marginBottom: 20 }}>급여 대장 관리</h3>
 
-            {/* 컨트롤 영역 */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <div style={{ display: 'flex', gap: 10 }}>
-                <Input type="month" value={newMonth} onChange={setNewMonth} style={{ width: 160 }} />
-                <Button onClick={handleCreate} appearance="primary">📌 대장 생성</Button>
-                <Button onClick={handleCalculateAll} appearance="ghost" color="green">💵 전체 급여 계산</Button>
+              {/* 컨트롤 영역 */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <Input type="month" value={newMonth} onChange={setNewMonth} style={{ width: 160 }} />
+                  <Button onClick={handleCreate} appearance="primary">📌 대장 생성</Button>
+                  <Button onClick={handleCalculateAll} appearance="ghost" color="green">💵 전체 급여 계산</Button>
+                </div>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <label><input type="checkbox" checked={showClosedOnly} onChange={() => setShowClosedOnly(!showClosedOnly)} /> 마감만</label>
+                  <label><input type="checkbox" checked={showCalculatedOnly} onChange={() => setShowCalculatedOnly(!showCalculatedOnly)} /> 계산됨만</label>
+                  <Input type="month" value={searchMonth} onChange={setSearchMonth} style={{ width: 160 }} />
+                </div>
               </div>
-              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                <label><input type="checkbox" checked={showClosedOnly} onChange={() => setShowClosedOnly(!showClosedOnly)} /> 마감만</label>
-                <label><input type="checkbox" checked={showCalculatedOnly} onChange={() => setShowCalculatedOnly(!showCalculatedOnly)} /> 계산됨만</label>
-                <Input type="month" value={searchMonth} onChange={setSearchMonth} style={{ width: 160 }} />
-              </div>
-            </div>
 
-            {/* 대장 테이블 */}
-            <table className="salary-schedule-table">
-              <thead>
-                <tr>
-                  <th>급여월</th>
-                  <th>지급일</th>
-                  <th>생성일</th>
-                  <th>마감</th>
-                  <th>계산</th>
-                  <th>관리</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredSchedules.map((row) => (
-                  <tr key={row.id}>
-                    <td>{row.salary_month}</td>
-                    <td>
-                      {editingId === row.id ? (
-                        <Input type="date" value={editingPayday} onChange={setEditingPayday} />
-                      ) : row.payday || "-"}
-                    </td>
-                    <td>{row.created_at}</td>
-                    <td>{row.is_closed ? "✅" : "❌"}</td>
-                    <td>{row.is_calculated ? "🟢" : "⚪"}</td>
-                    <td>
-                      {!row.is_closed && editingId === row.id ? (
-                        <>
-                          <Button size="xs" onClick={saveEdit}>저장</Button>
-                          <Button size="xs" onClick={() => setEditingId(null)}>취소</Button>
-                        </>
-                      ) : !row.is_closed && (
-                        <>
-                          <Button size="xs" onClick={() => startEdit(row)}>수정</Button>
-                          <Button size="xs" onClick={() => handleClose(row.id, row.is_calculated)}>마감</Button>
-                          <Button size="xs" color="red" appearance="ghost" onClick={() => handleDelete(row.id, row.is_closed)}>삭제</Button>
-                        </>
-                      )}
-                    </td>
+              {/* 급여 대장 테이블 */}
+              <table className="salary-schedule-table">
+                <thead>
+                  <tr>
+                    <th>급여월</th>
+                    <th>지급일</th>
+                    <th>생성일</th>
+                    <th>마감</th>
+                    <th>계산</th>
+                    <th>관리</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </Card>
+                </thead>
+                <tbody>
+                  {paginatedList.map((row) => (
+                    <tr key={row.id}>
+                      <td>{row.salary_month}</td>
+                      <td>
+                        {editingId === row.id ? (
+                          <Input type="date" value={editingPayday} onChange={setEditingPayday} />
+                        ) : row.payday || "-"}
+                      </td>
+                      <td>{row.created_at}</td>
+                      <td>{row.is_closed ? "✅" : "❌"}</td>
+                      <td>{row.is_calculated ? "🟢" : "⚪"}</td>
+                      <td>
+                        {!row.is_closed && editingId === row.id ? (
+                          <>
+                            <Button size="xs" onClick={saveEdit}>저장</Button>
+                            <Button size="xs" onClick={() => setEditingId(null)}>취소</Button>
+                          </>
+                        ) : !row.is_closed && (
+                          <>
+                            <Button size="xs" onClick={() => startEdit(row)}>수정</Button>
+                            <Button size="xs" onClick={() => handleClose(row.id, row.is_calculated)}>마감</Button>
+                            <Button size="xs" color="red" appearance="ghost" onClick={() => handleDelete(row.id, row.is_closed)}>삭제</Button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* 페이징 */}
+              <div style={{ marginTop: 20, display: 'flex', justifyContent: 'center' }}>
+                <Paging
+                  paging={{
+                    page: page,
+                    size: size,
+                    totalCount: filteredSchedules.length
+                  }}
+                  onPageChange={(newPage) => setPage(newPage)}
+                />
+              </div>
+
+            </Card>
+          </div>
         </Content>
       </Container>
     </Container>

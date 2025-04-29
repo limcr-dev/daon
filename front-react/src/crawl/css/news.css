@@ -1,0 +1,92 @@
+.news-container {
+  padding: 15px; /* 기존 20px → 15px로 살짝 줄임 */
+  max-width: 100%;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.news-scroll-container {
+  max-height: 180px; /* 너무 길어지지 않게 고정 */
+  overflow-y: auto;
+}
+
+.news-category {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 16px; /* 기존 20px → 16px로 줄임 */
+  font-weight: 700;
+  color: #2c3e50;
+  padding-bottom: 5px;
+  border-bottom: 2px solid #3498db;
+}
+
+.news-item {
+  margin-left: 10px; /* 들여쓰기 줄임 */
+  margin-bottom: 4px; /* 줄 간격 줄임 */
+  font-size: 14px; /* 본문 글씨 작게 */
+  color: #34495e;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.news-title {
+  color: #2980b9;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 500px; /* 길이 제한 */
+  font-size: 14px; /* 뉴스 제목도 글자 크기 작게 */
+}
+
+.news-title:hover {
+  text-decoration: underline;
+  color: #1abc9c;
+}
+
+.top5 {
+  color: gold;
+  font-size: 14px;
+}
+
+.rank {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.news-table {
+  padding: 10px 0;
+}
+
+.news-link {
+  color: #2980b9;
+  text-decoration: none;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 500px;
+  font-size: 14px;
+}
+
+.news-link:hover {
+  text-decoration: underline;
+  color: #1abc9c;
+}
+
+.board-table {
+  width: 100%;
+  border-collapse: collapse; /* ✨ 테이블 간격 없애기 */
+  border-spacing: 0; /* ✨ 남은 간격 완전 제거 */
+  margin: 0;
+  padding: 0;
+}
+
+.board-table th, .board-table td {
+  padding: 10px;
+  text-align: left;
+  font-size: 14px;
+  border-bottom: 1px solid #e5e5e5;
+}

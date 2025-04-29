@@ -10,21 +10,21 @@ public class SchedulerController {
 	 private SchedulerServiceImpl SchedulerService;
 	 
 	 // 결근 처리 스케쥴러
-	 @Scheduled(cron = "59 59 23 * * *")
+	 @Scheduled(cron = "00 59 23 * * *")
 	 public void mark_absent() {
 		System.out.println("<<< mark_absent >>>");
 		SchedulerService.mark_absent();
 	}
 	 
 	// 월차 자동 발생 스케쥴러
-	@Scheduled(cron = "15 46 17 * * *")
+	@Scheduled(cron = "00 59 23 * * *")
 	public void create_month_vacation() {
 		System.out.println("<<< create_month_vacation >>>");
 		SchedulerService.create_month_vacation();
 	}
 	
 	// 연차 자동 발생 스케쥴러
-	@Scheduled(cron = "15 46 17 * * *")
+	@Scheduled(cron = "00 59 23 * * *")
 	public void create_year_vacation() {
 		System.out.println("<<< create_year_vacation >>>");
 		SchedulerService.create_year_vacation();

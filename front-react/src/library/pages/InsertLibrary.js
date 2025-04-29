@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, Col, Container, Content, Divider, Row } from 'rsuite';
+import { Button, Card, Col, Container, Content, Row } from 'rsuite';
 import Leftbar from '../../common/pages/Leftbar';
 import BoardLeftbar from './BoardLeftbar';
 import Header from '../../common/pages/Header';
 import FileUpload from '../components/FileUpload';  // FileUpload 컴포넌트 추가
 import { request } from '../../common/components/helpers/axios_helper';
 import { useUser } from '../../common/contexts/UserContext';
+import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
 
 const InsertLibrary = () => {
     const { user } = useUser();
@@ -44,6 +45,7 @@ const InsertLibrary = () => {
             const res = await request("post", "/board/library", library);
 
             if (res.status === 201) {
+                alert('자료를 성공적으로 입력하였습니다.');
                 navigate('/board/libraryList');
             } else {
                 alert('자료 입력에 실패하였습니다.');
@@ -59,18 +61,18 @@ const InsertLibrary = () => {
     };
 
     // FileUpload 컴포넌트에서 전달된 파일 이름을 받아서 상태를 업데이트
-    const handleFileUpload = (filename) => {
-        setLibrary({ ...library, library_filename: filename });
+    const handleFileUpload = (savedFileName) => {
+        setLibrary({ ...library, library_filename: savedFileName });
     };
+
 
     return (
         <Container style={{ minHeight: '100vh', width: '100%' }}>
             <Leftbar />
             <Container>
                 <BoardLeftbar />
-                <Content style={{ marginLeft: '15px', marginTop: '15px' }}>
+                <Content>
                     <Header />
-                    <Divider />
                     <Row gutter={20} style={{ display: 'flex', flexDirection: 'column' }}>
                         <Col style={{ marginBottom: '20px' }}>
                             <Card style={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
@@ -91,52 +93,42 @@ const InsertLibrary = () => {
                                     </Button>
                                 </Card.Header>
                                 <table className="board-table">
-                                    <tr>
-                                        <th style={{ width: '20%' }}>자료명</th>
-                                        <td style={{ width: '80%' }} colSpan={3}>
-                                            <input
-                                                type="text"
-                                                name="library_title"
-                                                style={{ width: '100%' }}
-                                                onChange={changeValue}
-                                                placeholder="자료명을 입력하세요."
-                                            />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th style={{ width: '20%' }}>작성자</th>
-                                        <td>
-                                            <input
-                                                type="text"
-                                                name="emp_no"
-                                                value={user ? user.emp_name : '로그인 필요'}
-                                                style={{ width: '100%' }}
-                                                onChange={changeValue}
-                                                placeholder="자료 작성자를 입력하세요."
-                                            />
-                                        </td>
-
-                                    </tr>
-                                    <tr>
-                                        <th style={{ width: '20%' }}>첨부 파일</th>
-                                        <td>
-                                            {/* FileUpload 컴포넌트 추가 */}
-                                            <FileUpload onFileUpload={handleFileUpload} />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th colSpan={4}>자료 내용</th>
-                                    </tr>
-                                    <tr>
-                                        <td colSpan={4}>
-                                            <textarea
-                                                name="library_content"
-                                                style={{ width: '100%', height: '500px', verticalAlign: 'top' }}
-                                                placeholder="자료 내용을 입력하세요"
-                                                onChange={changeValue}
-                                            />
-                                        </td>
-                                    </tr>
+                                    <thead>
+                                        <tr>
+                                            <th style={{ width: '20%' }}>제목</th>
+                                            <td style={{ width: '80%' }} colSpan={3}>
+                                                <input type='text' name='library_title' style={{ width: '100%' }} onChange={changeValue} placeholder='제목을 입력하세요.' />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th style={{ width: '20%' }}>작성자</th>
+                                            <td style={{ width: '30%' }}>{user.emp_name}({getPositionName(user.position_id)})</td>
+                                            <th style={{ width: '20%' }}>부서</th>
+                                            <td style={{ width: '30%' }}>{getDeptName(user.dept_no)}</td>
+                                        </tr>
+                                        <tr>
+                                            <th style={{ width: '20%' }}>첨부 파일  </th>
+                                            <td colSpan={3}>
+                                                {/* FileUpload 컴포넌트 추가 */}
+                                                <FileUpload onFileUpload={handleFileUpload} />
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th colSpan={4}>자료 내용</th>
+                                        </tr>
+                                        <tr>
+                                            <td colSpan={4}>
+                                                <textarea
+                                                    name="library_content"
+                                                    style={{ width: '100%', height: '500px', verticalAlign: 'top' }}
+                                                    placeholder="자료 내용을 입력하세요"
+                                                    onChange={changeValue}
+                                                />
+                                            </td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                                 <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', padding: '15px' }}>
                                     <div style={{ marginTop: '10px' }}>

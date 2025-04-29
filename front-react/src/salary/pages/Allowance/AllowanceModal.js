@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button } from "rsuite";
+import { Modal, Button, Notification, toaster } from "rsuite";
 import { request } from "../../../common/components/helpers/axios_helper"; // ✅ request 함수 경로 확인 필요
 
 const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
@@ -10,10 +10,10 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
     is_tax_free: false,
     tax_free_type: "",
     tax_free_limit: "",
-    is_active: true
+    is_active: true,
   });
 
-  // ✅ 수정 모드인 경우 기존 데이터를 세팅
+  // 수정 모드인 경우 기존 데이터를 세팅
   useEffect(() => {
     if (item) {
       setForm({
@@ -23,7 +23,7 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
         tax_free_type: item.tax_free_type ?? "",
         is_fixed: item.is_fixed ?? true,
         is_tax_free: item.is_tax_free ?? false,
-        is_active: item.is_active ?? true
+        is_active: item.is_active ?? true,
       });
     } else {
       setForm({
@@ -33,21 +33,21 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
         is_tax_free: false,
         tax_free_type: "",
         tax_free_limit: "",
-        is_active: true
+        is_active: true,
       });
     }
   }, [item]);
 
-  // ✅ 입력 핸들러
+  // 입력 핸들러
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm({
       ...form,
-      [name]: type === "checkbox" ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
-  // ✅ 저장 처리
+  // 저장 처리
   const handleSubmit = async () => {
     const method = item ? "put" : "post";
     const url = item ? `/api/allowance/${item.id}` : `/api/allowance`;
@@ -56,9 +56,20 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
       await request(method, url, form);
       onSuccess();  // 목록 새로고침
       onClose();    // 모달 닫기
+      toaster.push(
+        <Notification type="success" header={item ? "수정 완료" : "등록 완료"} closable>
+          {item ? "수당 항목이 수정되었습니다." : "수당 항목이 등록되었습니다."}
+        </Notification>,
+        { placement: "topCenter" }
+      );
     } catch (err) {
       console.error("저장 실패:", err);
-      alert("저장에 실패했습니다.");
+      toaster.push(
+        <Notification type="error" header="저장 실패" closable>
+          저장에 실패했습니다.
+        </Notification>,
+        { placement: "topCenter" }
+      );
     }
   };
 
@@ -67,7 +78,6 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
       <Modal.Header>
         <h4>{item ? "수당 항목 수정" : "수당 항목 등록"}</h4>
       </Modal.Header>
-
       <Modal.Body>
         <label>항목명</label>
         <input
@@ -108,7 +118,7 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
           비과세 여부
         </label>
 
-        {/* ✅ 비과세 항목만 노출 */}
+        {/* 비과세 항목만 노출 */}
         {form.is_tax_free && (
           <>
             <label>비과세 유형</label>
@@ -140,7 +150,6 @@ const AllowanceModal = ({ open, onClose, item, onSuccess }) => {
           사용 여부
         </label>
       </Modal.Body>
-
       <Modal.Footer>
         <Button appearance="primary" onClick={handleSubmit}>
           {item ? "수정" : "등록"}

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Table, Button } from "rsuite";
 import { generateSalaryPdf } from "./generateSalaryPdf";
-import { request } from "../../../common/components/helpers/axios_helper"; // ✅ axios 헬퍼 추가
+import { request } from "../../../common/components/helpers/axios_helper"; 
 
 const { Column, HeaderCell, Cell } = Table;
 
 const SalaryDetailModal = ({ open, onClose, empNo, salaryMonth }) => {
   const [salaryDetails, setSalaryDetails] = useState(null);
 
-  // ✅ 상세 내역 불러오기 - request로 리팩토링
+  // 상세 내역 불러오기 - request로 리팩토링
   useEffect(() => {
     if (open && empNo && salaryMonth) {
       request("get", `/api/salaries/detail?empNo=${empNo}&salaryMonth=${salaryMonth}`)

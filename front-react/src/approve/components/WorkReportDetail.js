@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Form, DatePicker, Input, Button } from 'rsuite';
-//import ReactQuill from 'react-quill'; // 리치 텍스트 에디터
-//import 'react-quill/dist/quill.snow.css'; // 에디터 스타일
 import '../css/workReportForm.css';
 import { useUser } from '../../common/contexts/UserContext';
 import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
@@ -183,19 +180,6 @@ const WorkReportDetail = ({ approveLine, formData, docData }) => {
             </tr>
           </tbody>
         </table>
-
-        {/* 첨부파일 및 관련 문서 */}
-        <div className="form-footer">
-          <div className="attachment-section">
-            <h3>파일첨부</h3>
-            <div className="attachment-box">
-              <div className="attachment-placeholder">
-                <img src="/paperclip-icon.png" alt="첨부" className="attachment-icon" />
-                <span>이 곳에 파일을 드래그 하세요. 또는 파일첨부</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

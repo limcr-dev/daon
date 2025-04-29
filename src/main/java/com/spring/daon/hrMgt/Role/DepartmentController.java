@@ -15,32 +15,32 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/departments")  // ✅ 프론트에서 요청한 경로!
+@RequestMapping("/api/departments")
 @CrossOrigin
 public class DepartmentController {
 
     @Autowired
     private DepartmentServiceImpl departmentService;
 
-    // ✅ 부서 전체 조회
+    // 부서 전체 조회
     @GetMapping
     public ResponseEntity<List<Department>> getAllDepartments() {
         return ResponseEntity.ok(departmentService.getAllDepartments());
     }
 
-    // ✅ 부서 등록
+    // 부서 등록
     @PostMapping
     public ResponseEntity<Integer> insertDepartment(@RequestBody Department dept) {
         return ResponseEntity.ok(departmentService.insertDepartment(dept));
     }
 
-    // ✅ 부서 수정
+    // 부서 수정
     @PutMapping
     public ResponseEntity<Integer> updateDepartment(@RequestBody Department dept) {
         return ResponseEntity.ok(departmentService.updateDepartment(dept));
     }
 
-    // ✅ 부서 삭제
+    // 부서 삭제
     @DeleteMapping("/{deptNo}")
     public ResponseEntity<Integer> deleteDepartment(@PathVariable int deptNo) {
         return ResponseEntity.ok(departmentService.deleteDepartment(deptNo));

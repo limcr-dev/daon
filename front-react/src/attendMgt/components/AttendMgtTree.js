@@ -132,7 +132,6 @@ export const updateLabels = (data, admin_type, dept_no) => {
 
   return data
     .map((item) => {
-      // 예: 부서장(admin_type === 2)일 때 label 변경
       if (item.label === "근태관리") {
         return {
           ...item,

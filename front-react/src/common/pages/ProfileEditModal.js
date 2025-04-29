@@ -68,7 +68,7 @@ const ProfileEditModal = ({ show, onClose, empNo, onSuccess }) => {
       localStorage.setItem("emp_img", updatedForm.emp_img); // 새 이미지 캐시
 
       alert("프로필이 성공적으로 수정되었습니다.");
-      onSuccess?.(); // 헤더 등 리렌더링 트리거
+      onSuccess?.(); // 헤더 등 리렌더링 트리거  
       onClose();
     } catch (error) {
       console.error("프로필 수정 실패:", error);
@@ -81,7 +81,7 @@ const ProfileEditModal = ({ show, onClose, empNo, onSuccess }) => {
       <Modal.Header><Modal.Title>프로필 수정</Modal.Title></Modal.Header>
       <Modal.Body>
         <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-          <Avatar circle size="lg" src={preview || '/default-profile.jpg'} />
+          <Avatar circle size="lg" src={preview || '/default-profile.png'} />
         </div>
         <Form fluid>
           <Form.Group controlId="name">

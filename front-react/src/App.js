@@ -15,6 +15,8 @@ import BoardRouter from "./library/BoardRouter";
 import SalaryRouter from "./salary/SalaryRouter";
 
 import { UserProvider, useUser } from "./common/contexts/UserContext";
+import MesseangerPop from "./messenger/pages/MessengerPop";
+import AddressBook from "./messenger/pages/AddressBook";
 
 //  로그인하지 않은 경우 접근 막기
 const ProtectedRoute = ({ element, requiredAdminTypes }) => {
@@ -54,17 +56,17 @@ const AppRoutes = () => {
       <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
       <Route path="/approve/*" element={<ProtectedRoute element={<ApproveRouter />} />} />
       <Route path="/attendMgt/*" element={<ProtectedRoute element={<AttendRouter />} />} />
-      <Route path="/employee/*" element={<ProtectedRoute element={<HrMgtRouter />} requiredAdminTypes={[ 2, 3]}/>} />
+      <Route path="/employee/*" element={<ProtectedRoute element={<HrMgtRouter />} requiredAdminTypes={[2, 3]} />} />
       <Route path="/mail/*" element={<ProtectedRoute element={<MailRouter />} />} />
       <Route path="/messenger/*" element={<ProtectedRoute element={<MessengerRouter />} />} />
       <Route path="/performMgt/*" element={<ProtectedRoute element={<PerformMgtRouter />} />} />
       <Route path="/schedule/*" element={<ProtectedRoute element={<ScheduleRouter />} />} />
       <Route path="/board/*" element={<ProtectedRoute element={<BoardRouter />} />} />
-
+    
       {/*  급여 라우트는 admin_type === 4 (급여 관리자)만 접근 가능 */}
       <Route
         path="/salary/*"
-        element={<ProtectedRoute element={<SalaryRouter />} requiredAdminTypes={[ 2, 4]} />}
+        element={<ProtectedRoute element={<SalaryRouter />} requiredAdminTypes={[2, 4]} />}
       />
     </Routes>
   );
@@ -75,6 +77,7 @@ function App() {
   return (
     <BrowserRouter>
       <UserProvider>
+        <MesseangerPop />
         <AppRoutes />
       </UserProvider>
     </BrowserRouter>

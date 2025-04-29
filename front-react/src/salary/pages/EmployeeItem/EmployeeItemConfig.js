@@ -1,4 +1,4 @@
-import { Button, Container, Content, Card, Input } from "rsuite";
+import { Button, Container, Content, Card, Input, IconButton } from "rsuite";
 import Leftbar from "../../../common/pages/Leftbar";
 import SalaryLeftbar from "../SalaryLeftbar";
 import { useEffect, useState, useCallback } from "react";
@@ -6,7 +6,10 @@ import SalaryItemFormModal from "./SalaryItemFormModal";
 import { getPositionName, getDeptName } from "../../../hrMgt/components/getEmployeeInfo";
 import { request } from "../../../common/components/helpers/axios_helper";
 import Header from '../../../common/pages/Header';
-import "../../css/EmployeeItemConfig.css"; // ✅ 스타일 파일 import
+import Paging from "../../../common/components/paging.js";
+import EditIcon from '@rsuite/icons/Edit';
+import TrashIcon from '@rsuite/icons/Trash';
+import "../../css/EmployeeItemConfig.css"
 
 const EmployeeItemConfig = () => {
   const [employees, setEmployees] = useState([]);
@@ -21,6 +24,9 @@ const EmployeeItemConfig = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState();
   const [editItem, setEditItem] = useState(null);
+
+  const [page, setPage] = useState(1);
+  const size = 10;
 
   const fetchEmployees = useCallback(() => {
     request("get", "/api/employeeList")
@@ -91,6 +97,15 @@ const EmployeeItemConfig = () => {
     emp.emp_name.toLowerCase().includes(searchKeyword.toLowerCase())
   );
 
+  const startIndex = (page - 1) * size;
+  const endIndex = startIndex + size;
+  const paginatedList = filteredEmployees.slice(startIndex, endIndex);
+
+  const handleSearchChange = (value) => {
+    setSearchKeyword(value);
+    setPage(1);
+  };
+
   return (
     <Container style={{ minHeight: "100vh", width: "100%" }}>
       <Leftbar />
@@ -98,119 +113,115 @@ const EmployeeItemConfig = () => {
         <SalaryLeftbar />
         <Content>
           <Header />
-          <Card
-            style={{
-              borderRadius: "15px",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-              padding: 20,
-            }}
-          >
-            <h3 style={{ marginBottom: 20 }}>사원별 수당/공제 설정</h3>
+          <div style={{ marginTop: "50px", marginLeft: "30px", marginRight: "30px" }}>
+            <Card style={{ borderRadius: "15px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", padding: 20 }}>
+              <h3 style={{ marginBottom: 20 }}>사원별 수당/공제 설정</h3>
 
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 20 }}>
-              <Input
-                placeholder="사원 이름 검색"
-                value={searchKeyword}
-                onChange={setSearchKeyword}
-                style={{ width: 200, marginRight: 320 }}
-              />
-              <label style={{ marginRight: 10 }}>급여 월:</label>
-              <input
-                type="month"
-                value={salaryMonth}
-                onChange={(e) => setSalaryMonth(e.target.value)}
-                style={{ height: 34, marginRight: 20 }}
-              />
-              <Button appearance="primary" onClick={() => handleAdd("ALLOWANCE")} style={{ marginRight: 10 }}>
-                수당 추가
-              </Button>
-              <Button appearance="primary" onClick={() => handleAdd("DEDUCTION")}>
-                공제 추가
-              </Button>
-              <Button appearance="primary" color="green" onClick={handleCalculateSalary} style={{ marginLeft: 10 }}>
-                급여 계산
-              </Button>
-            </div>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: 20 }}>
+                <Input
+                  placeholder="사원 이름 검색"
+                  value={searchKeyword}
+                  onChange={handleSearchChange}
+                  style={{ width: 200, marginRight: 320 }}
+                />
+                <label style={{ marginRight: 10 }}>급여 월:</label>
+                <input
+                  type="month"
+                  value={salaryMonth}
+                  onChange={(e) => setSalaryMonth(e.target.value)}
+                  style={{ height: 34, marginRight: 20 }}
+                />
+                <Button appearance="primary" onClick={() => handleAdd("ALLOWANCE")} style={{ marginRight: 10 }}>수당 추가</Button>
+                <Button appearance="primary" onClick={() => handleAdd("DEDUCTION")}>공제 추가</Button>
+                <Button appearance="primary" color="green" onClick={handleCalculateSalary} style={{ marginLeft: 10 }}>급여 계산</Button>
+              </div>
 
-            <div style={{ display: "flex", gap: 20 }}>
-              <Card style={{ flex: 1, padding: 15 }}>
-                <table className="employee-item-config-table">
-                  <thead>
-                    <tr>
-                      <th>사원명</th>
-                      <th>부서</th>
-                      <th>직급</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredEmployees.map((emp) => (
-                      <tr
-                        key={emp.emp_no}
-                        className={selectedEmp?.emp_no === emp.emp_no ? "selected-row" : ""}
-                        onClick={() => setSelectedEmp(emp)}
-                      >
-                        <td>{emp.emp_name}</td>
-                        <td>{getDeptName(emp.dept_no)}</td>
-                        <td>{getPositionName(emp.position_id)}</td>
+              <div style={{ display: "flex", gap: 20 }}>
+                {/* 사원 목록 */}
+                <Card style={{ flex: 1, padding: 15 }}>
+                  <table className="employee-item-config-table">
+                    <thead>
+                      <tr>
+                        <th>사원명</th>
+                        <th>부서</th>
+                        <th>직급</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </Card>
-
-              <Card style={{ flex: 2, padding: 15 }}>
-                {selectedEmp ? (
-                  <>
-                    <h5>
-                      선택된 사원: {selectedEmp.emp_name} ({salaryMonth})
-                    </h5>
-
-                    <table className="employee-item-config-table">
-                      <thead>
-                        <tr>
-                          <th>구분</th>
-                          <th>항목명</th>
-                          <th>금액</th>
-                          <th>관리</th>
+                    </thead>
+                    <tbody>
+                      {paginatedList.map((emp) => (
+                        <tr
+                          key={emp.emp_no}
+                          className={selectedEmp?.emp_no === emp.emp_no ? "selected-row" : ""}
+                          onClick={() => setSelectedEmp(emp)}
+                        >
+                          <td>{emp.emp_name}</td>
+                          <td>{getDeptName(emp.dept_no)}</td>
+                          <td>{getPositionName(emp.position_id)}</td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {salaryItems.map((row, idx) => (
-                          <tr key={idx}>
-                            <td>{row.item_type === "ALLOWANCE" ? "수당" : "공제"}</td>
-                            <td>{row.item_name}</td>
-                            <td>{row.amount.toLocaleString()} 원</td>
-                            <td>
-                              <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                                <Button size="xs" onClick={() => handleEdit(row)}>수정</Button>
-                                <Button size="xs" color="red" appearance="ghost" onClick={() => handleDelete(row.id)}>
-                                  삭제
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </>
-                ) : (
-                  <p>사원을 선택해주세요.</p>
-                )}
-              </Card>
-            </div>
+                      ))}
+                    </tbody>
+                  </table>
 
-            {showModal && selectedEmp && (
-              <SalaryItemFormModal
-                open={showModal}
-                onClose={() => setShowModal(false)}
-                type={modalType}
-                empNo={selectedEmp.emp_no}
-                salaryMonth={salaryMonth}
-                item={editItem}
-                onSuccess={fetchSalaryItems}
-              />
-            )}
-          </Card>
+                  <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+                    <Paging
+                      paging={{ page: page, size: size, totalCount: filteredEmployees.length }}
+                      onPageChange={(newPage) => setPage(newPage)}
+                    />
+                  </div>
+                </Card>
+
+                {/* 선택된 사원 급여 항목 */}
+                <Card style={{ flex: 2, padding: 15 }}>
+                  {selectedEmp ? (
+                    <>
+                      <h5>선택된 사원: {selectedEmp.emp_name} ({salaryMonth})</h5>
+                      <div style={{ marginTop: 20}}>
+                      <table className="employee-item-config-table">
+                        <thead>
+                          <tr>
+                            <th>구분</th>
+                            <th>항목명</th>
+                            <th>금액</th>
+                            <th>관리</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {salaryItems.map((row, idx) => (
+                            <tr key={idx}>
+                              <td>{row.item_type === "ALLOWANCE" ? "수당" : "공제"}</td>
+                              <td>{row.item_name}</td>
+                              <td>{row.amount.toLocaleString()} 원</td>
+                              <td>
+                                <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
+                                  <IconButton icon={<EditIcon />} size="sm" onClick={() => handleEdit(row)} />
+                                  <IconButton icon={<TrashIcon />} size="sm" color="red" onClick={() => handleDelete(row.id)} />
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      </div>
+                    </>
+                  ) : (
+                    <p>사원을 선택해주세요.</p>
+                  )}
+                </Card>
+              </div>
+
+              {showModal && selectedEmp && (
+                <SalaryItemFormModal
+                  open={showModal}
+                  onClose={() => setShowModal(false)}
+                  type={modalType}
+                  empNo={selectedEmp.emp_no}
+                  salaryMonth={salaryMonth}
+                  item={editItem}
+                  onSuccess={fetchSalaryItems}
+                />
+              )}
+            </Card>
+          </div>
         </Content>
       </Container>
     </Container>

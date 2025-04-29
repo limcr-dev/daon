@@ -1,81 +1,80 @@
-import { useState } from 'react';
-import {
-  Container,
-  Content,
-} from 'rsuite';
-import {
-  FiSearch,
-  FiMessageSquare,
-  FiUsers,
-  FiSettings
-} from 'react-icons/fi';
+import React, { useEffect, useState } from 'react';
+import { Container, Content, InputGroup, Input } from 'rsuite';
+import { useUser } from '../../common/contexts/UserContext';
+import { request } from '../../common/components/helpers/axios_helper';
+import MessengerFavorite from './MessengerFavorite';
 import { useNavigate } from 'react-router-dom';
-
-
+import {
+  Button
+} from 'rsuite';
 
 const MessengerRun = () => {
 
+  // UserContext에서 사용자 정보 가져오기
+  const { user } = useUser();
+  const [favorites, setFavorites] = useState([]);
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
-  
-    const goHome = () => {
-      navigate('/messenger/messengerRun');
-    }
-  
-    const goChattingList = () => {
-      navigate('/messenger/messengerChatList');
-    }
-  
-    const goSetting = () => {
-      navigate('/messenger/messengerSetting');
-    }
 
+  const goHome = () => navigate('/messenger/messengerRun');
+  const goChattingList = () => navigate('/messenger/messengerChatList');
+  const goSetting = () => navigate('/messenger/messengerSetting');
+
+  const filtered = favorites.filter(item =>
+    item.emp_name.includes(search) || String(item.emp_no).includes(search)
+  );
+
+  const fetchFavorites = (keyword = '') => {
+    const url = keyword
+      ? `/messenger/favorite/search?userId=${user.emp_no}&keyword=${encodeURIComponent(keyword)}`
+      : `/messenger/favorite/list?userId=${user.emp_no}`;
+
+    request("GET", url)
+      .then(res => setFavorites(res.data || []))
+      .catch(() => setFavorites([]));
+  };
+
+  useEffect(() => {
+    if (!user?.emp_no) return;
+    request("GET", `/messenger/favorite/list?userId=${user.emp_no}`)
+      .then(res => setFavorites(res.data || []))
+      .catch(() => setFavorites([]));
+  }, [user.emp_no]);
 
   return (
-    <div className="flex flex-col h-screen w-[350px] bg-white shadow-md">
-      {/* Search */}
-      <div className="p-4 bg-purple-200 rounded-b-3xl">
-        <div className="flex items-center bg-white px-3 py-2 rounded-full">
-          <div className="bg-gray-300 w-8 h-8 rounded-full flex items-center justify-center font-bold text-white mr-2">D</div>
-          <input
-            type="text"
+    <Container style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      {/* 상단 검색창 고정 */}
+      <div style={{ padding: '10px', backgroundColor: '#f5f5f5', borderBottom: '1px solid #ddd' }}>
+        <InputGroup inside>
+          <Input
+            placeholder="사번/이름 검색"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 outline-none bg-transparent text-sm"
-            placeholder="Search by name, number..."
+            onChange={(value) => {
+              setSearch(value);
+              fetchFavorites(value);
+            }}
           />
-          <FiSearch className="text-gray-500" />
-        </div>
+        </InputGroup>
       </div>
 
-      {/* Chats */}
-      <div className="p-4 text-sm font-semibold text-gray-500">즐겨찾기 목록</div>
-      
-      <div className="flex-1 overflow-auto px-4">
+      {/* 즐겨찾기 목록 - 가운데 스크롤 */}
+      <Content style={{ flex: 1, overflowY: 'auto', padding: '15px' }}>
+        <MessengerFavorite list={favorites} />
+      </Content>
 
+      {/* 하단 메뉴 고정 */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-around',
+        padding: '10px',
+        backgroundColor: '#f5f5f5',
+        borderTop: '1px solid #ddd'
+      }}>
+        <Button onClick={goHome}>👥 Contacts</Button>
+        <Button onClick={goChattingList}>💬 Chats</Button>
+        {/* <Button onClick={goSetting}>⚙️ Settings</Button> */}
       </div>
-
-
-
-      {/* Bottom Navigation */}
-			<div className="flex justify-around items-center py-3 border-t bg-white" style={{ display: 'flex' }}>
-				<div className="flex flex-col items-center text-gray-400">
-					<button className="text-xs mt-1" onClick={goHome}><FiUsers size={20} />Contacts</button>
-				</div>
-
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-				<div className="flex flex-col items-center text-purple-400">
-					<button className="text-xs mt-1" onClick={goChattingList}><FiMessageSquare size={20} />Chats</button>
-				</div>
-
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-				<div className="flex flex-col items-center text-gray-400">
-					<button className="text-xs mt-1" onClick={goSetting}><FiSettings size={20} />Settings</button>
-				</div>
-			</div>
-    </div>
+    </Container>
   );
 };
 export default MessengerRun;

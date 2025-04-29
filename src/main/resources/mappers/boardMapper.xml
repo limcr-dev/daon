@@ -7,22 +7,29 @@
 
 	<!-- 공지 목록 조회 -->
 	<select id="noticeList" resultType="com.spring.daon.board.Notice">
-		SELECT * FROM notice
-		 WHERE notice_delete = 'N'
-		 ORDER BY notice_reg_date DESC    
+		SELECT n.*
+			 , e.emp_name
+		  FROM notice n, employees e
+		 WHERE n.emp_no = e.emp_no
+		   AND n.notice_delete = 'N'
+		 ORDER BY n.notice_reg_date DESC    
 	</select>
  
 	<!-- 공지 작성 -->
 	<insert id="insertNotice" parameterType="com.spring.daon.board.Notice">
-		INSERT INTO notice (notice_no, emp_no, notice_title, notice_content)
-		SELECT IFNULL(MAX(notice_no), 0) + 1, #{emp_no}, #{notice_title}, #{notice_content}
-		  FROM notice
+		INSERT INTO notice ( emp_no, notice_title, notice_filename, notice_content)
+		VALUES (#{emp_no}, #{notice_title}, #{notice_filename}, #{notice_content})
 	</insert>   
    
    <!-- 공지 상세 페이지 -->
 	<select id="noticeDetail" resultType="com.spring.daon.board.Notice">
-		SELECT * FROM notice
-		 WHERE notice_no = #{notice_no}    
+		SELECT n.*
+			 , e.emp_name
+			 , e.dept_no
+			 , e.position_id
+		  FROM notice n, employees e
+		 WHERE notice_no = #{notice_no}
+		   AND n.emp_no = e.emp_no
 	</select>
    
 	<!-- 조회수 증가 -->
@@ -36,6 +43,7 @@
 	<update id="updateNotice" parameterType="com.spring.daon.board.Notice">
 		UPDATE notice
 		   SET notice_title = #{notice_title}
+		   	 , notice_filename = #{notice_filename}
 		   	 , notice_content = #{notice_content}
 		 WHERE notice_no = #{notice_no}
 	</update>
@@ -47,24 +55,33 @@
    		 WHERE notice_no = #{notice_no}
 	</update>
 	
-		<!-- 자료 목록 조회 -->
+	<!-- 자료 목록 조회 -->
 	<select id="libraryList" resultType="com.spring.daon.board.Library">
-		SELECT * FROM library
-		 WHERE library_delete = 'N'
-		 ORDER BY library_reg_date DESC    
+		SELECT l.*
+			 , e.emp_name
+			 , e.dept_no
+			 , e.position_id
+		  FROM library l, employees e
+		 WHERE l.emp_no = e.emp_no
+		   AND library_delete = 'N'
+		 ORDER BY library_no DESC
 	</select>
  
 	<!-- 자료 작성 -->
 	<insert id="insertLibrary" parameterType="com.spring.daon.board.Library">
-		INSERT INTO library (library_no, emp_no, library_title, library_content)
-		SELECT IFNULL(MAX(library_no), 0) + 1, #{emp_no}, #{library_title}, #{library_content}
-		  FROM library
+		INSERT INTO library (emp_no, library_title, library_filename, library_content)
+		VALUES (#{emp_no}, #{library_title}, #{library_filename}, #{library_content})
 	</insert>   
    
    <!-- 자료 상세 페이지 -->
 	<select id="libraryDetail" resultType="com.spring.daon.board.Library">
-		SELECT * FROM library
-		 WHERE library_no = #{library_no}    
+		SELECT l.*
+			 , e.emp_name
+			 , e.dept_no
+			 , e.position_id
+		  FROM library l, employees e
+		 WHERE l.emp_no = e.emp_no
+		   AND library_no = #{library_no}
 	</select>
    
 	<!-- 자료 조회수 증가 -->
@@ -79,6 +96,7 @@
 		UPDATE library
 		   SET library_title = #{library_title}
 		   	 , library_content = #{library_content}
+		   	 , library_filename = #{library_filename}
 		 WHERE library_no = #{library_no}
 	</update>
    
@@ -88,6 +106,6 @@
    		   SET library_delete = 'Y'
    		 WHERE library_no = #{library_no}
 	</update>
-	
+			
 </mapper>   
 

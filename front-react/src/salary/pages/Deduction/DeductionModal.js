@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button } from "rsuite";
-import { request } from "../../../common/components/helpers/axios_helper"; // ✅ 경로 실제 axios.js 위치로 조정
+import { request } from "../../../common/components/helpers/axios_helper";
 
 const DeductionModal = ({ open, onClose, item, onSuccess }) => {
   const [form, setForm] = useState({
@@ -11,7 +11,7 @@ const DeductionModal = ({ open, onClose, item, onSuccess }) => {
     is_active: true,
   });
 
-  // ✅ 수정 모드일 경우 기존 값 세팅
+  // 수정 모드일 경우 기존 값 세팅
   useEffect(() => {
     if (item) {
       setForm({
@@ -32,7 +32,7 @@ const DeductionModal = ({ open, onClose, item, onSuccess }) => {
     }
   }, [item]);
 
-  // ✅ 입력값 변경 핸들러
+  // 입력값 변경 핸들러
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
@@ -51,7 +51,7 @@ const DeductionModal = ({ open, onClose, item, onSuccess }) => {
     }
   };
 
-  // ✅ 저장 처리
+  // 저장 처리
   const handleSubmit = () => {
     const method = item ? "put" : "post";
     const url = item

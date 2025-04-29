@@ -9,9 +9,6 @@ import EmployeeResignPage from './pages/EmployeeResignPage';
 import PositionManage from './pages/Position/PositionManage';
 import ContractEmployeeManage from './pages/ContractEmployeeManage/ContractEmployeeManage';
 
-
-
-
 const HrMgtRouter = () => {
     return (
         <Routes>

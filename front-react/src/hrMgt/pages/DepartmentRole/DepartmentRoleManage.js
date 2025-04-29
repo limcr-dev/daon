@@ -16,8 +16,7 @@ const DepartmentRoleManage = () => {
         <EmployeeLeftbar />
         <Content>
           <Header />
-         
-          <div style={{ display: "flex", gap: 30 }}>
+          <div style={{ display: "flex", gap: 30, marginTop: "50px", marginLeft: "30px", marginRight: "30px" }}>
             <GroupedDepartmentListPanel onSelectDept={setSelectedDept} />
             <RoleListPanel deptNo={selectedDept} />
           </div>

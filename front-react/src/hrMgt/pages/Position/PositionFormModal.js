@@ -1,6 +1,5 @@
-// 📁 src/pages/hrMgt/PositionModal.js
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Input } from "rsuite";
+import { Modal, Button, Input, toaster, Notification } from "rsuite";
 import { request } from "../../../common/components/helpers/axios_helper";
 
 const PositionModal = ({ open, onClose, item, onSuccess }) => {
@@ -29,7 +28,7 @@ const PositionModal = ({ open, onClose, item, onSuccess }) => {
 
   const handleSubmit = () => {
     const method = item ? "put" : "post";
-    const url = item ? `/api/positions` : `/api/positions`;
+    const url = `/api/positions`; 
 
     const payload = item
       ? { ...item, ...form }
@@ -37,10 +36,23 @@ const PositionModal = ({ open, onClose, item, onSuccess }) => {
 
     request(method, url, payload)
       .then(() => {
+        toaster.push(
+          <Notification type="success" header={item ? "수정 완료" : "등록 완료"} closable>
+            {item ? "직급이 성공적으로 수정되었습니다." : "직급이 성공적으로 등록되었습니다."}
+          </Notification>,
+          { placement: 'topEnd' }
+        );
         onSuccess();
         onClose();
       })
-      .catch(() => alert("저장 실패"));
+      .catch(() => {
+        toaster.push(
+          <Notification type="error" header="저장 실패" closable>
+            직급 저장에 실패했습니다.
+          </Notification>,
+          { placement: 'topEnd' }
+        );
+      });
   };
 
   return (

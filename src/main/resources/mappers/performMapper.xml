@@ -74,7 +74,35 @@
 	
 	<!-- update 역량 문제 찾기 -->
   	<select id="updateFind" parameterType="String" resultType="com.spring.daon.performMgt.EvalQuesComp">
-	  	select * 
+		 (SELECT * FROM eval_quescomp
+	WHERE eval_comp_id = (SELECT eval_num1 FROM eval_test WHERE eval_order_num = #{eval_order_num})
+	LIMIT 2
+	)
+	UNION ALL
+	(
+	SELECT * FROM eval_quescomp
+	WHERE eval_comp_id = (SELECT eval_num2 FROM eval_test WHERE eval_order_num = #{eval_order_num})
+	LIMIT 2
+	)
+	UNION ALL
+	(
+	SELECT * FROM eval_quescomp
+	WHERE eval_comp_id = (SELECT eval_num3 FROM eval_test WHERE eval_order_num = #{eval_order_num})
+	LIMIT 2
+	)
+	UNION ALL
+	(
+	SELECT * FROM eval_quescomp
+	WHERE eval_comp_id = (SELECT eval_num4 FROM eval_test WHERE eval_order_num = #{eval_order_num})
+	LIMIT 2
+	)
+	UNION ALL
+	(
+	SELECT * FROM eval_quescomp
+	WHERE eval_comp_id = (SELECT eval_num5 FROM eval_test WHERE eval_order_num = #{eval_order_num})
+	LIMIT 2)
+  	</select>
+  	<!-- select * 
 		  from eval_quescomp
 		 where eval_comp_id in(
 			 select eval_num1 from eval_test where eval_order_num = #{eval_order_num}
@@ -86,8 +114,7 @@
 			 select eval_num4 from eval_test where eval_order_num = #{eval_order_num}
 			 union
 			 select eval_num5 from eval_test where eval_order_num = #{eval_order_num}
-		 )
-  	</select>
+		 ) -->
   	
   	<!--  -->
 	
@@ -106,13 +133,14 @@
 			 UNION
 			 select eval_num2 from eval_test where eval_order_num = #{eval_order_num}
 			 UNION
-			 select eval_num3 from eval_test where eval_order_num = #{eval_order_num}
+			 select eval_num3 from eval_test where eval_order_num = #{eval_order_num} 
 			 union
 			 select eval_num4 from eval_test where eval_order_num = #{eval_order_num}
 			 union
 			 select eval_num5 from eval_test where eval_order_num = #{eval_order_num}
 		 )
 	</select>
+
 	
 	<!-- 평가 직원 리스트 : 수정-->
 	<select id="evalList" resultType="com.spring.daon.performMgt.Test"> 
@@ -270,10 +298,114 @@
 		    eval_emp_no
 	</select>
 	
+	<!-- 자기평가 진행 현황 (개인용)-->
+	<select id="selfStatusEmp" parameterType="int" resultType="com.spring.daon.performMgt.SelfTarget">
+		SELECT eval_emp_no
+		     , SUM(CASE WHEN self_test_status = '제출완료' THEN 1 ELSE 0 END) AS self_cnt
+		     , COUNT(*) AS self_total_cnt
+		  FROM self_target
+		  where eval_emp_no = #{emp_no}
+	  GROUP BY eval_emp_no
+	</select>
+	
+	<!-- 동료평가 진행 현황 (관리자용)-->
+	<select id="peerStatus" resultType="com.spring.daon.performMgt.PeerTarget">
+		SELECT eval_emp_no
+		     , SUM(CASE WHEN peer_test_status = '제출완료' THEN 1 ELSE 0 END) AS peer_cnt
+		     , COUNT(*) AS peer_total_cnt
+		  FROM peer_target
+	  GROUP BY eval_emp_no
+	</select>
+	<!-- 동료평가 진행 현황 (개인용) -->
+	<select id="peerStatusEmp" parameterType="int" resultType="com.spring.daon.performMgt.PeerTarget">
+		SELECT eval_emp_no
+		     , SUM(CASE WHEN peer_test_status = '제출완료' THEN 1 ELSE 0 END) AS peer_cnt
+		     , COUNT(*) AS peer_total_cnt
+		  FROM peer_target
+		  where eval_emp_no = #{emp_no}
+	  GROUP BY eval_emp_no
+	</select>
+	
+	
+	<!-- 개인별 동료평가 점수 -->
+	<select id="peerScore" parameterType="int" resultType="com.spring.daon.performMgt.EvalPeer">
+		SELECT eval_order_num
+			 , eval_comp1
+			 , eval_test_date
+			 , ROUND(AVG(eval_comp1_score),2)as avg1
+			 , eval_comp2
+			 , ROUND(AVG(eval_comp2_score),2)as avg2
+			 , eval_comp3
+			 , ROUND(AVG(eval_comp3_score),2)as avg3
+			 , eval_comp4
+			 , ROUND(AVG(eval_comp4_score),2)as avg4
+			 , eval_comp5
+			 , ROUND(AVG(eval_comp5_score),2)as avg5
+			 , eval_total_score
+			 , ROUND(eval_total_score /5.0 ,2) as avg_total
+		  FROM eval_peer
+		where eval_peer_no = #{emp_no}
+		group by eval_order_num
+	</select>
+	
+	<!-- 개인별 자기평가 점수 -->
+	<select id="selfScore" parameterType="int" resultType="com.spring.daon.performMgt.EvalSelf">
+		SELECT eval_order_num
+			 , eval_comp1
+			 , eval_test_date
+			 , eval_comp1_score
+			 , eval_comp2
+			 , eval_comp2_score
+			 , eval_comp3
+			 , eval_comp3_score
+			 , eval_comp4
+			 , eval_comp4_score
+			 , eval_comp5
+			 , eval_comp5_score
+			 , eval_total_score
+			 , ROUND(eval_total_score /5.0 ,2) as avg_total
+		  FROM eval_self
+		where eval_emp_no = #{emp_no}
+		group by eval_order_num
+	</select>
+	
+	<!-- 개인별 근태 점수 -->
+	<select id="attandScore" parameterType="int" resultType="com.spring.daon.performMgt.EvalAttand">
+		SELECT
+		    DATE_FORMAT(date, '%Y-%m') AS eval_test_date,
+		    sum(late)AS late,
+		    sum(early_leave) AS early_leave,
+		    sum(absent)*3 AS absent,
+		    100-(sum(late)+sum(early_leave)+sum(absent)*3) AS avg_total
+		FROM
+		    attendance
+		WHERE
+		    date BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 YEAR) AND CURDATE()
+		   AND emp_no = #{emp_no}
+		GROUP BY
+		    DATE_FORMAT(date, '%Y-%m')
+		ORDER BY
+		    date
+	</select>
+	<!-- 근태 점수 total -->
+	<select id="attandTotalScore" resultType="com.spring.daon.performMgt.EvalAttand">
+		SELECT emp_no,
+		       ROUND(AVG(avg_total), 2) AS attand_avg
+		  FROM
+		(SELECT emp_no,
+		    	DATE_FORMAT(date, '%Y-%m') AS eval_test_date,
+		    	100 - (SUM(late) + SUM(early_leave) + SUM(absent) * 3) AS avg_total
+		   FROM attendance
+		  WHERE date BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 YEAR) AND CURDATE()
+		  GROUP BY emp_no, DATE_FORMAT(date, '%Y-%m')) mothly_avg
+		  GROUP BY emp_no
+	</select>
+	
 	<!-- 전체 직원 리스트 -->
-	<select id="employees" resultType="com.spring.daon.hrMgt.Employees">
+	<select id="employees" parameterType="int" resultType="com.spring.daon.hrMgt.Employees">
 		select *
 		  from employees
+		 WHERE emp_no = #{emp_no}
 	</select>
 	
 	<!-- 동료평가리스트 -->
@@ -288,6 +420,74 @@
 		  from eval_self
 	</select>
 	
+	<!-- 목표설정 -->
+	 <insert id="addGoal" parameterType="com.spring.daon.performMgt.Goal">
+        INSERT INTO eval_goals (title, description, emp_id)
+        VALUES (#{title}, #{description},#{emp_id})
+    </insert>
+    
+	<!-- 목표 목록 (개인) / 월별 달성 -->
+    <select id="getAllGoals" parameterType="int" resultType="com.spring.daon.performMgt.Goal">
+        select id
+        	 , title
+			 , description
+			 , created_at
+			 , completed
+			 , DATE_FORMAT(created_at, '%Y-%m') AS goal_month 
+		FROM eval_goals
+		where emp_id = #{emp_no}
+		GROUP BY
+		emp_id, DATE_FORMAT(created_at, '%Y-%m')
+    </select>
+    
+     <!-- 목표 리스트 (개인) -->
+    <select id="goalsList" parameterType="int" resultType="com.spring.daon.performMgt.Goal">
+    	  select id
+        	 , title
+			 , description
+			 , created_at
+			 , completed
+			 , DATE_FORMAT(created_at, '%Y-%m') as month
+		FROM eval_goals
+		where emp_id = #{emp_no}
+		ORDER BY created_at
+    </select>
+    
+    <!-- 목표 달성률 (개인) -->
+    <select id="totalGoalsScore" parameterType="int" resultType="com.spring.daon.performMgt.Goal">
+    	SELECT
+		    emp_id,
+		    DATE_FORMAT(created_at, '%Y-%m') AS goal_month,    
+		    ROUND(
+		        (SUM(CASE WHEN completed = 1 THEN 1 ELSE 0 END) / COUNT(*)) * 100, 2 ) AS completion_rate
+		 FROM eval_goals
+		WHERE emp_id = #{emp_id}
+		GROUP BY
+		    emp_id, DATE_FORMAT(created_at, '%Y-%m')
+    </select>
+    
+   
+    
+    <!-- 목표 달성률 (전체)-->
+    <select id="totalAllGoalsScore" resultType="com.spring.daon.performMgt.Goal">
+        SELECT
+		    emp_id,
+		    DATE_FORMAT(created_at, '%Y-%m') AS goal_month,    
+		    ROUND(
+		        (SUM(CASE WHEN completed = 1 THEN 1 ELSE 0 END) / COUNT(*)) * 100,
+		        2
+		    ) AS completion_rate
+		FROM
+		    eval_goals
+		GROUP BY
+		    emp_id, DATE_FORMAT(created_at, '%Y-%m')
+    </select>
+	
+	
+	<!-- 목표 달성 -->
+    <update id="completeGoal" parameterType="long" >
+        UPDATE eval_goals SET completed = 1 WHERE id = #{id}
+    </update>
 	
 	
 	

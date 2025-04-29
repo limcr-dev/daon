@@ -12,7 +12,9 @@ const Employee = () => {
         <EmployeeLeftbar />
         <Content>
           <Header />
+          <div style={{ marginTop: "50px", marginLeft: "30px", marginRight: "30px" }}>
           <EmployeeDashboard/>
+          </div>
         </Content>
       </Container>
     </Container>

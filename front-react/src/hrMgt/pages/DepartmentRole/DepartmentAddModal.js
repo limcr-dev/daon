@@ -1,14 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Modal, Button, Input, SelectPicker, Message, useToaster } from "rsuite";
+import { Modal, Button, Input, SelectPicker, toaster, Notification } from "rsuite"; // ✅ toaster, Notification 수정
 import { request } from "../../../common/components/helpers/axios_helper"; // ✅ axios 헬퍼 import
 
 const DepartmentAddModal = ({ open, onClose, onSuccess }) => {
   const [deptName, setDeptName] = useState("");
   const [parentOptions, setParentOptions] = useState([]);
   const [parentDept, setParentDept] = useState(null);
-  const toaster = useToaster();
 
-  // ✅ 상위 부서 옵션 조회
+  // 상위 부서 옵션 조회
   const fetchParentDepartments = useCallback(() => {
     request("get", "/api/departments")
       .then((res) => {
@@ -18,11 +17,14 @@ const DepartmentAddModal = ({ open, onClose, onSuccess }) => {
       })
       .catch((err) => {
         console.error("부서 옵션 조회 실패:", err);
-        toaster.push(<Message showIcon type="error">부서 목록을 불러오지 못했습니다.</Message>, {
-          placement: "topCenter",
-        });
+        toaster.push(
+          <Notification type="error" header="조회 실패" closable>
+            부서 목록을 불러오지 못했습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
       });
-  }, [toaster]);
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -30,7 +32,7 @@ const DepartmentAddModal = ({ open, onClose, onSuccess }) => {
     }
   }, [open, fetchParentDepartments]);
 
-  // ✅ 부서 등록
+  // 부서 등록
   const handleSubmit = () => {
     if (!deptName) return;
 
@@ -41,7 +43,12 @@ const DepartmentAddModal = ({ open, onClose, onSuccess }) => {
 
     request("post", "/api/departments", payload)
       .then(() => {
-        toaster.push(<Message showIcon type="success">등록 완료</Message>, { placement: "topCenter" });
+        toaster.push(
+          <Notification type="success" header="등록 완료" closable>
+            부서가 성공적으로 등록되었습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
         setDeptName("");
         setParentDept(null);
         onClose();
@@ -49,7 +56,12 @@ const DepartmentAddModal = ({ open, onClose, onSuccess }) => {
       })
       .catch((err) => {
         console.error("부서 등록 실패:", err);
-        toaster.push(<Message showIcon type="error">등록 실패</Message>, { placement: "topCenter" });
+        toaster.push(
+          <Notification type="error" header="등록 실패" closable>
+            부서 등록에 실패했습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
       });
   };
 

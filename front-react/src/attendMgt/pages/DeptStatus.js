@@ -11,7 +11,7 @@ import { request } from '../../common/components/helpers/axios_helper';
 // css
 import "../css/AttendCalendar.css";
 import "../css/DeptStatus.css";
-
+import "../css/AttendBoard.css"
 // js
 import AttendMgtLeftbar from "./AttendMgtLeftbar";
 import { useUser } from "../../common/contexts/UserContext";
@@ -116,7 +116,7 @@ const DeptStatus = () => {
   }
   return (
     <div>
-      <Container style={{ minHeight: "100vh", width: "100%" }}>
+      <Container style={{ height: '1050px', width: '100%' }}>
         <Leftbar />
         <Container>
           <AttendMgtLeftbar user={user} />
@@ -169,18 +169,18 @@ const DeptStatus = () => {
                   <Card.Header className="cardHeaderList">
                     <span style={{ fontWeight: '600', fontSize: '16px' }}>근태현황</span>
                   </Card.Header>
-                  <table className='board-table'>
+                  <table className='attend-board-table'>
                     <thead>
                       <tr>
-                        <th style={{ width: "10%", textAlign: "center" }}>직원명</th>
-                        <th style={{ width: "10%", textAlign: "center" }}>근무타입</th>
-                        <th style={{ width: "10%", textAlign: "center" }}>부서명</th>
-                        <th style={{ width: "8%", textAlign: "center" }}>직급</th>
-                        <th style={{ width: "12%", textAlign: "center" }}>날짜</th>
-                        <th style={{ width: "8%", textAlign: "center" }}>출근</th>
-                        <th style={{ width: "8%", textAlign: "center" }}>퇴근</th>
-                        <th style={{ width: "16%", textAlign: "center" }}>비고 </th>
-                        <th style={{ width: "35%", textAlign: "center" }}>수정메시지 </th>
+                        <th style={{ width: "10%"}}>직원명</th>
+                        <th style={{ width: "10%"}}>근무타입</th>
+                        <th style={{ width: "10%"}}>부서명</th>
+                        <th style={{ width: "8%"}}>직급</th>
+                        <th style={{ width: "12%"}}>날짜</th>
+                        <th style={{ width: "8%"}}>출근</th>
+                        <th style={{ width: "8%"}}>퇴근</th>
+                        <th style={{ width: "16%"}}>비고 </th>
+                        <th style={{ width: "35%"}}>수정메시지 </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -188,12 +188,12 @@ const DeptStatus = () => {
                         .filter(deptStatus => deptStatus.date >= moveDate.startDate && deptStatus.date <= moveDate.endDate)
                         .map((deptStatus) => (
                           <tr key={deptStatus.attendance_no} onClick={() => openEditPage(deptStatus.attendance_no)}>
-                            <td align="center">{deptStatus.emp_name}</td>
-                            <td align="center">{deptStatus.type_name}</td>
-                            <td align="center">{deptStatus.dept_name}</td>
-                            <td align="center">{getPositionName(deptStatus.position_id)}</td>
-                            <td align="center">{deptStatus.date}</td>
-                            <td style={{ color: deptStatus.late ? '#FF6B6B' : '#49A902' }} align="center">
+                            <td>{deptStatus.emp_name}</td>
+                            <td>{deptStatus.type_name}</td>
+                            <td>{deptStatus.dept_name}</td>
+                            <td>{getPositionName(deptStatus.position_id)}</td>
+                            <td >{deptStatus.date}</td>
+                            <td style={{ color: deptStatus.late ? '#FF6B6B' : '#49A902' }}>
                               <b>{deptStatus.check_in_time || '-'}</b>
                             </td>
                             <td style={{ color: deptStatus.early_leave ? '#FFA500' : '#49A902' }} align="center">

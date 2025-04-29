@@ -1,39 +1,17 @@
-// 📁 Registration.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Modal, Button } from "rsuite";
+import { Modal, Button, toaster, Notification } from "rsuite";  // ✅ 추가
 import "../css/Registration.css";
 import { request } from "../../common/components/helpers/axios_helper";
 
-// ✅ 부서 계층 구조
+// 부서 계층 구조
 const departmentData = {
   1: {
     name: "회사",
     children: {
-      10: {
-        name: "인사부",
-        children: [
-          { label: "인사팀", value: 101 },
-          { label: "총무팀", value: 102 },
-          { label: "회계팀", value: 103 },
-        ]
-      },
-      20: {
-        name: "개발부",
-        children: [
-          { label: "연구개발팀", value: 201 },
-          { label: "생산관리팀", value: 202 },
-          { label: "IT팀", value: 203 },
-        ]
-      },
-      30: {
-        name: "영업부",
-        children: [
-          { label: "영업팀", value: 301 },
-          { label: "마케팅팀", value: 302 },
-          { label: "품질관리팀", value: 303 },
-        ]
-      }
+      10: { name: "인사부", children: [{ label: "인사팀", value: 101 }, { label: "총무팀", value: 102 }, { label: "회계팀", value: 103 }] },
+      20: { name: "개발부", children: [{ label: "연구개발팀", value: 201 }, { label: "생산관리팀", value: 202 }, { label: "IT팀", value: 203 }] },
+      30: { name: "영업부", children: [{ label: "영업팀", value: 301 }, { label: "마케팅팀", value: 302 }, { label: "품질관리팀", value: 303 }] },
     }
   }
 };
@@ -67,6 +45,10 @@ const Registration = ({ open, onClose }) => {
   const [imageFile, setImageFile] = useState(null);
   const [upperDept, setUpperDept] = useState('');
   const [middleDept, setMiddleDept] = useState('');
+  const [phone2, setPhone2] = useState('');
+  const [phone3, setPhone3] = useState('');
+  const [ext1, setExt1] = useState('');
+  const [ext2, setExt2] = useState('');
 
   const changeValue = (e) => {
     const { name, value } = e.target;
@@ -88,28 +70,74 @@ const Registration = ({ open, onClose }) => {
     setImageFile(e.target.files[0]);
   };
 
+  // 등록 처리
   const submitEmployee = (e) => {
     e.preventDefault();
 
+    const fullPhone = `010-${phone2}-${phone3}`;
+    const fullExt = (ext1 && ext2) ? `${ext1}-${ext2}` : '';
+
+    // 유효성 검사
+    if (phone2.length !== 4 || phone3.length !== 4) {
+      toaster.push(
+        <Notification type="warning" header="휴대폰 번호 오류" closable>
+          휴대폰 번호를 정확히 입력해주세요. (010-1234-5678 형식)
+        </Notification>,
+        { placement: "topCenter" }
+      );
+      return;
+    }
+    if ((ext1 || ext2) && (ext1.length < 3 || ext1.length > 4 || ext2.length !== 4)) {
+      toaster.push(
+        <Notification type="warning" header="내선 번호 오류" closable>
+          내선 번호를 정확히 입력해주세요. (앞자리 3~4자리, 뒷자리 4자리)
+        </Notification>,
+        { placement: "topCenter" }
+      );
+      return;
+    }
+
     const formData = new FormData();
-    formData.append("employee", new Blob([JSON.stringify(employee)], { type: "application/json" }));
+    formData.append("employee", new Blob([JSON.stringify({
+      ...employee,
+      emp_mobile: fullPhone,
+      emp_ext_tel: fullExt,
+    })], { type: "application/json" }));
+
     if (imageFile) {
       formData.append("image", imageFile);
     }
 
-    request("post", "/api/insertEmployee", formData, {})
+    request("post", "/api/insertEmployee", formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
       .then((res) => {
         if (res.status === 201 || res.data) {
-          alert("사원 등록이 완료되었습니다.");
+          toaster.push(
+            <Notification type="success" header="등록 완료" closable>
+              사원 등록이 완료되었습니다.
+            </Notification>,
+            { placement: "topCenter" }
+          );
           navigate("/employee");
           onClose();
         } else {
-          alert("사원 등록에 실패했습니다.");
+          toaster.push(
+            <Notification type="error" header="등록 실패" closable>
+              사원 등록에 실패했습니다.
+            </Notification>,
+            { placement: "topCenter" }
+          );
         }
       })
       .catch((err) => {
         console.error("등록 실패:", err);
-        alert("사원 등록 중 오류가 발생했습니다.");
+        toaster.push(
+          <Notification type="error" header="등록 오류" closable>
+            사원 등록 중 오류가 발생했습니다.
+          </Notification>,
+          { placement: "topCenter" }
+        );
       });
   };
 
@@ -118,7 +146,8 @@ const Registration = ({ open, onClose }) => {
       <Modal.Header><h3>👤 사원 등록</h3></Modal.Header>
       <Modal.Body>
         <form onSubmit={submitEmployee} style={{ maxWidth: "860px", margin: "0 auto" }}>
-          <div className="form-row">
+         {/* 프로필 이미지, 성별 */}
+         <div className="form-row">
             <div className="form-group">
               <label>프로필 이미지:</label>
               <input type="file" accept="image/*" onChange={handleImageChange} />
@@ -133,6 +162,7 @@ const Registration = ({ open, onClose }) => {
             </div>
           </div>
 
+          {/* 이름, 영문이름 */}
           <div className="form-row">
             <div className="form-group">
               <label>이름:</label>
@@ -144,6 +174,7 @@ const Registration = ({ open, onClose }) => {
             </div>
           </div>
 
+          {/* 생년월일, 입사일 */}
           <div className="form-row">
             <div className="form-group">
               <label>생년월일:</label>
@@ -155,30 +186,79 @@ const Registration = ({ open, onClose }) => {
             </div>
           </div>
 
-          
+          {/* 이메일 입력 */}
           <div className="form-row">
             <div className="form-group">
               <label>사내 이메일:</label>
-              <input type="email" name="emp_email" value={employee.emp_email} onChange={changeValue} required />
+              <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                <input
+                  type="text"
+                  placeholder="아이디"
+                  value={employee.emp_email.split('@')[0] || ''}
+                  onChange={(e) => setEmployee((prev) => ({ ...prev, emp_email: `${e.target.value}@daon-ai.com` }))}
+                  style={{ flex: 1 }}
+                  required
+                />
+                <span>@daon-ai.com</span>
+              </div>
             </div>
+
             <div className="form-group">
               <label>외부 이메일:</label>
-              <input type="email" name="emp_ext_email" value={employee.emp_ext_email} onChange={changeValue} required />
+              <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                <input
+                  type="text"
+                  placeholder="아이디"
+                  value={employee.emp_ext_email.split('@')[0] || ''}
+                  onChange={(e) => {
+                    const domain = employee.emp_ext_email.split('@')[1] || 'naver.com';
+                    setEmployee((prev) => ({ ...prev, emp_ext_email: `${e.target.value}@${domain}` }));
+                  }}
+                  style={{ flex: 1 }}
+                  required
+                />
+                <span>@</span>
+                <select
+                  value={employee.emp_ext_email.split('@')[1] || 'naver.com'}
+                  onChange={(e) => {
+                    const id = employee.emp_ext_email.split('@')[0] || '';
+                    setEmployee((prev) => ({ ...prev, emp_ext_email: `${id}@${e.target.value}` }));
+                  }}
+                  style={{ flex: 1 }}
+                >
+                  <option value="naver.com">naver.com</option>
+                  <option value="daum.net">daum.net</option>
+                  <option value="gmail.com">gmail.com</option>
+                </select>
+              </div>
             </div>
           </div>
 
+          {/* 휴대폰 번호, 내선 번호 */}
           <div className="form-row">
             <div className="form-group">
               <label>휴대폰 번호:</label>
-              <input type="text" name="emp_mobile" value={employee.emp_mobile} onChange={changeValue} required />
+              <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                <input type="text" value="010" readOnly style={{ width: "60px", textAlign: "center", backgroundColor: "#f0f0f0", border: "1px solid #ccc" }} />
+                <span>-</span>
+                <input type="text" maxLength="4" value={phone2} onChange={(e) => setPhone2(e.target.value.replace(/[^0-9]/g, ''))} required style={{ width: "80px", textAlign: "center" }} />
+                <span>-</span>
+                <input type="text" maxLength="4" value={phone3} onChange={(e) => setPhone3(e.target.value.replace(/[^0-9]/g, ''))} required style={{ width: "80px", textAlign: "center" }} />
+              </div>
             </div>
+
             <div className="form-group">
               <label>내선 번호:</label>
-              <input type="text" name="emp_ext_tel" value={employee.emp_ext_tel} onChange={changeValue} />
+              <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                <input type="text" maxLength="4" value={ext1} onChange={(e) => setExt1(e.target.value.replace(/[^0-9]/g, ''))} style={{ width: "70px", textAlign: "center" }} />
+                <span>-</span>
+                <input type="text" maxLength="4" value={ext2} onChange={(e) => setExt2(e.target.value.replace(/[^0-9]/g, ''))} style={{ width: "80px", textAlign: "center" }} />
+              </div>
             </div>
           </div>
 
-          <div className="form-row">
+                   {/* 직책, 직급 */}
+                   <div className="form-row">
             <div className="form-group">
               <label>직책:</label>
               <select name="role_id" value={employee.role_id} onChange={changeValue} required>
@@ -195,17 +275,21 @@ const Registration = ({ open, onClose }) => {
               <select name="position_id" value={employee.position_id} onChange={changeValue} required>
                 <option value="">선택</option>
                 <option value="10">사장</option>
+                <option value="15">부사장</option>
                 <option value="20">전무</option>
+                <option value="25">상무</option>
                 <option value="30">이사</option>
-                <option value="40">부장</option>
-                <option value="50">과장</option>
-                <option value="60">대리</option>
-                <option value="70">사원</option>
-                <option value="80">인턴</option>
+                <option value="35">부장</option>
+                <option value="40">차장</option>
+                <option value="45">과장</option>
+                <option value="50">대리</option>
+                <option value="55">사원</option>
+                <option value="60">인턴</option>
               </select>
             </div>
           </div>
 
+          {/* 부서 선택 */}
           <div className="form-row">
             <div className="form-group">
               <label>상위 부서:</label>
@@ -227,6 +311,7 @@ const Registration = ({ open, onClose }) => {
             </div>
           </div>
 
+          {/* 고용 형태, 계약 만료일, 근무 형태, 권한 */}
           <div className="form-row">
             <div className="form-group">
               <label>고용 형태:</label>
@@ -238,8 +323,8 @@ const Registration = ({ open, onClose }) => {
                 <option value="4">프리랜서</option>
               </select>
             </div>
+
             {(employee.emp_type === '2' || employee.emp_type === '3') && (
-            
               <div className="form-group">
                 <label>계약 만료일:</label>
                 <input type="date" name="contract_end_date" value={employee.contract_end_date} onChange={changeValue} />
@@ -253,6 +338,7 @@ const Registration = ({ open, onClose }) => {
                 <option value="2">오후근무</option>
               </select>
             </div>
+
             <div className="form-group">
               <label>권한:</label>
               <select name="admin_type" value={employee.admin_type} onChange={changeValue} required>
@@ -265,8 +351,9 @@ const Registration = ({ open, onClose }) => {
             </div>
           </div>
 
-          <div className="button">
-            <Button type="submit" appearance="primary">등록</Button>
+          {/* 등록, 취소 버튼 */}
+          <div className="button" style={{ marginTop: "20px", textAlign: "center" }}>
+            <Button type="submit" appearance="primary" style={{ marginRight: "10px" }}>등록</Button>
             <Button onClick={onClose} appearance="subtle">취소</Button>
           </div>
         </form>
@@ -274,5 +361,6 @@ const Registration = ({ open, onClose }) => {
     </Modal>
   );
 };
-
 export default Registration;
+
+
