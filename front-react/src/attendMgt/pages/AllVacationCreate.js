@@ -145,7 +145,7 @@ const AllVacationCreate = () => {
                   <Card.Header className="cardHeaderList">
                     <span style={{ fontWeight: '600', fontSize: '16px' }}>생성내역</span>
                   </Card.Header>
-                  <table className='board-table'>
+                  <table className='attend-board-table'>
                     <thead>
                       <tr>
                         <th style={{ width: "10%", textAlign: "center" }}>직원명</th>
