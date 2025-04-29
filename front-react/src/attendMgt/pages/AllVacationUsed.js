@@ -14,7 +14,7 @@ import "../css/DeptStatus.css";
 import AttendMgtLeftbar from "./AttendMgtLeftbar";
 import { useUser } from "../../common/contexts/UserContext";
 import { AllVacationUseInfo } from "../components/Info";
-import { formatDate, getStatusText } from '../components/CommonUtil';
+import { formatDate } from '../components/CommonUtil';
 import AttendPaging from "../components/AttendPaging";
 import { getPositionName } from '../../hrMgt/components/getEmployeeInfo';
 
@@ -93,7 +93,7 @@ const AllVacationUsed = () => {
 
   return (
     <div>
-      <Container style={{ minHeight: "100vh", width: "100%" }}>
+      <Container style={{ height: '1050px', width: '100%' }}>
         <Leftbar />
         <Container>
           <AttendMgtLeftbar user={user} />
@@ -165,7 +165,7 @@ const AllVacationUsed = () => {
                             <td align="center">{vacation.emp_name}</td>
                             <td align="center">{vacation.dept_name}</td>
                             <td align="center">{getPositionName(vacation.position_id)}</td>
-                            <td align="center">{vacation.vacation_type == 1 ? '연차' : vacation.vacation_type == 2 ? '경조휴가' : '병가'}</td>
+                            <td align="center">{vacation.vacation_type === 1 ? '연차' : vacation.vacation_type === 2 ? '경조휴가' : '병가'}</td>
                             <td align="center">{vacation.start_date} ~ {vacation.end_date}</td>
                             <td align="center">{vacation.used_days}</td>
                             <td className="customText-truncate" align="center">

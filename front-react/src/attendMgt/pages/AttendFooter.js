@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { Card } from 'rsuite';
+import { Avatar, Card } from 'rsuite';
 import { request } from '../../common/components/helpers/axios_helper';
 
 const AttendFooter = (props) => {
@@ -11,7 +11,7 @@ const AttendFooter = (props) => {
 
   // 수정 기록 
   const [changeLog, setChangeLog] = useState([])
-  
+
   // 수정 기록  불러오기
   useEffect(() => {
     request("GET", "/attend/changeLog/" + emp_no + "/" + year + "/" + month)
@@ -30,9 +30,15 @@ const AttendFooter = (props) => {
           <tbody>
             {changeLog.map(log => (
               <tr key={log.attendance_no}>
-                {/* <td>{log.emp_img}</td> */}
-                
-                <td style={{ width: "100px" }}>daon_logo.png</td>
+                <td style={{ width: "50px" }}>
+                  <Avatar
+                    circle
+                    size="sm"
+                    src={log.emp_img}
+                    alt="프로필"
+                    style={{ cursor: 'pointer' }}
+                    onError={(e) => { e.target.src = '/default-profile.png'; }}
+                  /></td>
                 <td>{log.emp_name}
                   {/* 수정 날짜 회색,작은글씨 */}
                   <small style={{ color: "#9FA19F" }}>{log.modifyTime}</small>
