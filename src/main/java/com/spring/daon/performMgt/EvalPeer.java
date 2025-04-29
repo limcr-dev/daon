@@ -45,5 +45,14 @@ public class EvalPeer {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" , timezone = "Asia/Seoul")
     private Date eval_test_date;
     private String eval_order_num;
+    
+    // order번호 별 점수
+    private double avg1;	// 역량1 점수
+    private double avg2;	// 역량2 점수	
+    private double avg3;	// 역량3 점수
+    private double avg4;	// 역량4 점수
+    private double avg5;	// 역량5 점수
+    private double avg_total;	// 평균 점수
+    
 		
 }
