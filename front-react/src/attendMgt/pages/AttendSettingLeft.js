@@ -147,7 +147,7 @@ const AttendSettingLeft = (user) => {
         backdrop="static"
         dialogClassName="modal-450w"
       >
-        <WorkScheduleAdd closeModal={closeAddModal} />
+        <WorkScheduleAdd closeAddModal={closeAddModal} />
       </Modal>
 
       {/* 수정 모달창 */}
