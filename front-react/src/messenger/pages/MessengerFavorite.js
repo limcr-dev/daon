@@ -62,7 +62,14 @@ const MessengerFavorite = ({ list }) => {
               cursor: 'pointer'
             }}
           >
-            <Avatar circle src={`/images/profiles/${emp.emp_img}`} />
+            {/* <Avatar circle src={`/images/profiles/${emp.emp_img}`} /> */}
+            <Avatar
+              circle
+              src={emp.emp_img
+                ? `http://${window.location.hostname}:8081/api/images/${encodeURIComponent(emp.emp_img)}`
+                : '/default-profile.png'
+              }
+            />
             <div style={{ flexGrow: 1 }}>
               <div><strong>{emp.emp_name}</strong></div>
               <div style={{ fontSize: '12px', color: '#888' }}>
