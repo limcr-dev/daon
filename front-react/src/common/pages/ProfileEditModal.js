@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button, Form, Avatar, Uploader } from 'rsuite';
-import { request } from '../../common/components/helpers/axios_helper';
+import { API_URL, request } from '../../common/components/helpers/axios_helper';
 
 const ProfileEditModal = ({ show, onClose, empNo, onSuccess }) => {
   const [form, setForm] = useState({
@@ -26,7 +26,7 @@ const ProfileEditModal = ({ show, onClose, empNo, onSuccess }) => {
             emp_pwd: '',
             emp_img: null
           });
-          setPreview(emp_img ? `http://localhost:8081/api/images/${encodeURIComponent(emp_img)}` : null);
+          setPreview(emp_img ? `${API_URL}/api/images/${encodeURIComponent(emp_img)}` : null);
           setEmployeeFromApi(res.data);
         })
         .catch((err) => console.error('사원 정보 불러오기 실패:', err));

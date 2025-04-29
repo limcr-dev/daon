@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { request } from '../../common/components/helpers/axios_helper';
+import { API_URL, request } from '../../common/components/helpers/axios_helper';
 import { useUser } from '../../common/contexts/UserContext';
 import { Avatar, List } from 'rsuite';
 
@@ -66,7 +66,7 @@ const MessengerFavorite = ({ list }) => {
             <Avatar
               circle
               src={emp.emp_img
-                ? `http://${window.location.hostname}:8081/api/images/${encodeURIComponent(emp.emp_img)}`
+                ? `${API_URL}/api/images/${encodeURIComponent(emp.emp_img)}`
                 : '/default-profile.png'
               }
             />

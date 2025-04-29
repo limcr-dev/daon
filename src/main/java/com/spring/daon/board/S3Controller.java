@@ -22,7 +22,7 @@ public class S3Controller {
 
     private final S3Service s3Service;
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = "http://13.209.178.147:80")
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {

@@ -76,9 +76,9 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 	    CorsConfiguration config = new CorsConfiguration();
 	    
-	    // config.setAllowedOriginPatterns(List.of("http://localhost:3000")); // 프론트엔드 도메인 지정
-	    config.setAllowedOriginPatterns(List.of("*")); // 모든 Origin 허용(배포 후 변경 필요)
-	    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+	    //config.setAllowedOriginPatterns(List.of("*")); // 모든 Origin 허용(배포 후 변경 필요)
+	    config.addAllowedOrigin("https://daon-ai.com");
+		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 	    config.setAllowedHeaders(List.of("*"));
 	    config.setAllowCredentials(true); // 쿠키 전송 허용
 	    config.setExposedHeaders(List.of("Authorization", "Set-Cookie")); // 클라이언트가 접근할 수 있는 헤더

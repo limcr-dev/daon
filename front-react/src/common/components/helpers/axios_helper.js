@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 //import { getAuthToken, removeAuthToken, setAuthToken } from './auth_helper';
 
 // API 기본 URL 설정
-const API_URL = 'http://localhost:8081';
+export const API_URL = 'http://13.209.178.147:80';
 
 // axios 인스턴스 생성
 const api = axios.create({

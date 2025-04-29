@@ -8,6 +8,7 @@ import Leftbar from "../../common/pages/Leftbar";
 import EmployeeLeftbar from "./EmployeeLeftbar";
 import { getPositionName, getDeptName, getRoleName, getEmpType } from "../components/getEmployeeInfo";
 import { request } from "../../common/components/helpers/axios_helper";
+import { API_URL } from "../../common/components/helpers/axios_helper"; 
 import Header from '../../common/pages/Header';
 
 // (부서데이터는 프로젝트 데이터에 맞게 조정!)
@@ -163,7 +164,7 @@ const EmployeeDetail = () => {
               <Divider />
               {employee.emp_img && (
                 <img
-                  src={`http://localhost:8081/api/images/${encodeURIComponent(employee.emp_img)}`}
+                  src={`${API_URL}/api/images/${encodeURIComponent(employee.emp_img)}`}
                   alt="프로필"
                 style={{ width: 150, height: 150, objectFit: "cover", borderRadius: "50%", marginBottom: 20 }}
                 />

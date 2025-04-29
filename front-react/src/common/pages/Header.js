@@ -5,7 +5,7 @@ import ExitIcon from '@rsuite/icons/Exit';
 import EmailIcon from '@rsuite/icons/Email';
 import MessageIcon from '@rsuite/icons/Message';
 import WechatOutlineIcon from '@rsuite/icons/WechatOutline';
-import { request } from '../../common/components/helpers/axios_helper';
+import { API_URL, request } from '../../common/components/helpers/axios_helper';
 import ProfileEditModal from './ProfileEditModal';
 
 const Header = ({ onProfileUpdated }) => {
@@ -32,7 +32,7 @@ const Header = ({ onProfileUpdated }) => {
   }, [loadEmployeeInfo]);
 
   const imageUrl = empImg
-    ? `http://localhost:8081/api/images/${encodeURIComponent(empImg)}`
+    ? `${API_URL}/api/images/${encodeURIComponent(empImg)}`
     : '/default-profile.png';
 
   //메신저 실행
@@ -51,7 +51,7 @@ const Header = ({ onProfileUpdated }) => {
 
   // 챗봇 실행
   const chatbotRun = () => {
-    const url = 'http://localhost:8501';  // ✨ 수정: 'http://' 붙여주고 포트번호 8501로!
+    const url = `http://${window.location.hostname}:8501`;  // ✨ 수정: 'http://' 붙여주고 포트번호 8501로!
     const features = 'width=800,height=600,resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no,location=no';
     window.open(url, 'Daoni', features);
   }

@@ -3,7 +3,7 @@ import { Card, Text, Avatar, HStack, VStack } from 'rsuite';
 import Attendance from './Attendance';
 import { getPositionName, getDeptName } from "../../../hrMgt/components/getEmployeeInfo";
 import { useUser } from '../../../common/contexts/UserContext';
-import { request } from '../../../common/components/helpers/axios_helper';
+import { API_URL, request } from '../../../common/components/helpers/axios_helper';
 
 const Profile = ({ reloadTrigger }) => {
   const { user } = useUser();
@@ -25,7 +25,7 @@ const Profile = ({ reloadTrigger }) => {
   const { emp_name, emp_img, emp_no, position_id, dept_no } = empData;
 
   const imageUrl = emp_img
-    ? `http://localhost:8081/api/images/${encodeURIComponent(emp_img)}`
+    ? `${API_URL}/api/images/${encodeURIComponent(emp_img)}`
     : '/default-profile.png';
 
   return (

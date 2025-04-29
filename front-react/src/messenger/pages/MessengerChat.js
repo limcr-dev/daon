@@ -4,7 +4,7 @@ import { Client } from '@stomp/stompjs';
 import { Input, Button, Divider } from 'rsuite';
 import { useParams } from 'react-router-dom';
 import { useUser } from '../../common/contexts/UserContext';
-import { getAuthToken, request } from '../../common/components/helpers/axios_helper';
+import { API_URL, getAuthToken, request } from '../../common/components/helpers/axios_helper';
 import axios from 'axios';
 
 const departmentNames = {
@@ -134,7 +134,7 @@ const MessengerChat = () => {
 		formData.append('roomCode', roomId);
 		formData.append('senderId', user.emp_no);
 
-		axios.post(`http://${window.location.hostname}:8081/messenger/file/upload`, formData, {
+		axios.post(`${API_URL}/messenger/file/upload`, formData, {
 			headers: { 'Authorization': `Bearer ${getAuthToken()}` }
 		})
 			.then(res => {

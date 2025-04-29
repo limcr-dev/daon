@@ -21,8 +21,6 @@ public class BoardController {
 	@Autowired
 	private BoardServiceImpl service;
 	
-	// http://localhost:8081/board/notice
-	
 	// 공지사항 목록 조회
 	@GetMapping("/notice")
 	public ResponseEntity<?> noticeList() {

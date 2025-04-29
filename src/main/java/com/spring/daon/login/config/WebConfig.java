@@ -15,6 +15,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource; // 주의 (
 import org.springframework.web.filter.CorsFilter;  // 주의
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -37,7 +38,7 @@ public class WebConfig implements WebMvcConfigurer {
 		CorsConfiguration config = new CorsConfiguration();
 		
 		config.setAllowCredentials(true);	// 쿠키 전송을 허용
-		config.addAllowedOrigin("http://localhost:3000");	// 프론트엔드 도메인 설정
+		config.addAllowedOrigin("http://13.209.178.147:80");	// 프론트엔드 도메인 설정
 		
 		// 모든 헤더 허용 대신 필요한 헤더만 명시
 		config.setAllowedHeaders(Arrays.asList(
@@ -86,4 +87,13 @@ public class WebConfig implements WebMvcConfigurer {
 	    registry.addResourceHandler("/uploads/**")
 	    .addResourceLocations("file:C:/daon/uploads/");
     }
+	
+	 @Override
+	    public void addCorsMappings(CorsRegistry registry) {
+	        registry.addMapping("/**")
+	                .allowedOrigins("http://13.209.178.147:80", "https://daon-ai.com")  // 프론트 주소
+	                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // OPTIONS 반드시 포함!!
+	                .allowedHeaders("*")
+	                .allowCredentials(true); // 쿠키 포함 허용
+	    }
 }
