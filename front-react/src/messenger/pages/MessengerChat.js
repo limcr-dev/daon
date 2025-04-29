@@ -114,7 +114,12 @@ const MessengerChat = () => {
 				body: JSON.stringify(message)
 			});
 			setInput('');
-			localStorage.setItem('messenger-refresh', Date.now());
+			// 메시지 보낸 직후 채팅방리스트에 갱신
+			localStorage.setItem('messenger-refresh', JSON.stringify({
+				time: Date.now(),
+				roomCode: roomId,
+				lastMessage: message.content
+			}));
 		} else {
 			console.warn("STOMP 연결이 아직 완료되지 않았습니다.");
 		}
@@ -186,13 +191,21 @@ const MessengerChat = () => {
 				client.subscribe(`/topic/room/${roomId}`, (message) => {
 					const msg = JSON.parse(message.body);
 					console.log('받은 메시지:', msg);
+
 					if (msg.timestamp && typeof msg.timestamp === 'object' && msg.timestamp.year) {
 						// 객체형이면 문자열로 변환
 						const { year, monthValue, dayOfMonth, hour, minute, second } = msg.timestamp;
 						msg.timestamp = `${year}-${String(monthValue).padStart(2, '0')}-${String(dayOfMonth).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
 					}
-					console.log('서버에서 받은 timestamp:', msg.timestamp);
+					// 메세지 추가
 					setMessages(prev => [...prev, msg]);
+
+					// 메시지 받은 순간에 최근대화목록 갱신
+					localStorage.setItem('messenger-refresh', JSON.stringify({
+						time: Date.now(),
+						roomCode: roomId,
+						lastMessage: msg.content
+					}));
 				});
 
 				// 입력중 표시

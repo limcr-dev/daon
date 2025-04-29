@@ -14,6 +14,8 @@ import Paging from '../../common/components/paging';
 import { useUser } from '../../common/contexts/UserContext';
 import { request } from '../../common/components/helpers/axios_helper';
 import Header from '../../common/pages/Header';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const styles = {
   width: 300,
@@ -39,17 +41,20 @@ const AddressBook = () => {
   const [keyword, setKeyword] = useState('');
   const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, user: null });
   const [modal, setModal] = useState({ visible: false, type: '', user: null });
+  const [favoriteList, setFavoriteList] = useState([]);
 
-  const fetchData = (page = 1, search = keyword) => {
-    request("GET", `/messenger/addressBook?page=${page}&size=${paging.size}&search=${search || ''}`)
-      .then(res => {
-        setAbList(res.data?.list || []);
-        setPaging(res.data?.paging || paging);
-      })
-      .catch(err => {
-        console.error("주소록 요청 실패:", err);
-        setAbList([]);
-      });
+  const fetchData = async (page = 1, search = keyword) => {
+    try {
+      const res1 = await request("GET", `/messenger/addressBook?page=${page}&size=${paging.size}&search=${search || ''}`);
+      setAbList(res1.data?.list || []);
+      setPaging(res1.data?.paging || paging);
+
+      const res2 = await request("GET", `/messenger/favorite/list?userId=${user.emp_no}`);
+      setFavoriteList(res2.data || []);
+    } catch (err) {
+      console.error("주소록 요청 실패:", err);
+      setAbList([]);
+    }
   };
 
   const handleContextMenu = (e, user) => {
@@ -130,7 +135,7 @@ const AddressBook = () => {
                   <table className='abList'>
                     <thead>
                       <tr>
-                        <th> 사번 </th>
+                        <th> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;사번 </th>
                         <th style={{ textAlign: 'center' }}> 이름 </th>
                         <th style={{ textAlign: 'center' }}> 부서 </th>
                         <th style={{ textAlign: 'center' }}> 직급 </th>
@@ -138,19 +143,55 @@ const AddressBook = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {abList.map((employees, index) => (
-                        <tr
-                          key={index}
-                          onContextMenu={(e) => handleContextMenu(e, employees)}
-                          style={{ cursor: 'context-menu' }}
-                        >
-                          <td> {employees.emp_no} </td>
-                          <td style={{ textAlign: 'center' }}> {employees.emp_name} </td>
-                          <td style={{ textAlign: 'center' }}> {departmentNames[employees.dept_no] || '-'} </td>
-                          <td style={{ textAlign: 'center' }}> {positionNames[employees.position_id] || '-'} </td>
-                          <td style={{ textAlign: 'center' }}> {employees.emp_ext_tel?.slice(4, 9)} </td>
-                        </tr>
-                      ))}
+                      {abList.map((employees, index) => {
+                        const isFavorite = favoriteList.some(fav => fav.emp_no === employees.emp_no);
+
+                        const handleStarClick = async () => {
+                          try {
+                            if (isFavorite) {
+                              await request("DELETE", `/messenger/favorite/remove?userId=${user.emp_no}&favoriteId=${employees.emp_no}`);
+                              toast.info('즐겨찾기에서 제거되었습니다.');
+                            } else {
+                              await request("POST", `/messenger/favorite/add`, {
+                                userId: user.emp_no,
+                                favoriteId: employees.emp_no
+                              });
+                              toast.success('즐겨찾기에 추가되었습니다!');
+                            }
+                            fetchData(paging.page); // 갱신
+                          } catch (e) {
+                            toast.error('오류가 발생했습니다.');
+                          }
+                        };
+
+                        return (
+                          <tr
+                            key={index}
+                            onContextMenu={(e) => handleContextMenu(e, employees)}
+                            style={{ cursor: 'context-menu' }}
+                          >
+                            <td>
+                              {/* 별 클릭 이벤트 */}
+                              <span
+                                style={{
+                                  marginRight: '5px',
+                                  cursor: 'pointer',
+                                  color: isFavorite ? 'gold' : '#ccc',
+                                  fontSize: '18px'
+                                }}
+                                onClick={handleStarClick}
+                              >
+                                {isFavorite ? '★' : '☆'}
+                              </span>
+                              {employees.emp_no}
+                            </td>
+                            <td style={{ textAlign: 'center' }}>{employees.emp_name}</td>
+                            <td style={{ textAlign: 'center' }}>{departmentNames[employees.dept_no] || '-'}</td>
+                            <td style={{ textAlign: 'center' }}>{positionNames[employees.position_id] || '-'}</td>
+                            <td style={{ textAlign: 'center' }}>{employees.emp_ext_tel?.slice(4, 9)}</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                   <div style={{ margin: 'auto' }}>
@@ -213,6 +254,8 @@ const AddressBook = () => {
           <Button appearance="subtle" onClick={() => setModal({ ...modal, visible: false })}>아니오</Button>
         </Modal.Footer>
       </Modal>
+
+      <ToastContainer position="bottom-right" autoClose={2000} />
     </div>
   );
 };

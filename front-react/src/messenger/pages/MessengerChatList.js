@@ -60,6 +60,16 @@ const MessengerChatList = () => {
 		const handleStorage = (event) => {
 			if (event.key === 'messenger-refresh') {
 				console.log("📩 메시지 보냈다 신호 감지! 방 목록 다시 로드");
+				const data = JSON.parse(event.newValue || '{}');
+				if (data.roomCode && data.lastMessage) {
+					setRooms(prevRooms =>
+						prevRooms.map(room =>
+							room.roomCode === data.roomCode
+								? { ...room, lastMessage: data.lastMessage, lastTime: new Date().toISOString() }
+								: room
+						)
+					);
+				}
 				fetchRooms();
 			}
 		};
