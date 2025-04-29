@@ -31,7 +31,11 @@ public class PeerTarget {
     private int eval_emp_no;          // 평가자
     private String eval_order_num;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" , timezone = "Asia/Seoul")
-    private Date created_at;	
+    private Date created_at;
+    
+    
+    private int peer_cnt;  // 내가 진행한 동료평가 "제출완료"
+    private int peer_total_cnt; // 내가 진행해야 할 동료평가
     
     private String emp_name;
 }

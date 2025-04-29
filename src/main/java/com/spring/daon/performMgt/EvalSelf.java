@@ -43,5 +43,7 @@ public class EvalSelf {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" , timezone = "Asia/Seoul")
     private Date eval_test_date;  
     private String eval_order_num;
+    
+    private double avg_total;	// 평균 점수
 		
 }

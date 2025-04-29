@@ -1,7 +1,6 @@
 package com.spring.daon.performMgt;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.spring.daon.hrMgt.Employees;
 
 @RestController
 @RequestMapping("/performMgt")
@@ -177,10 +175,10 @@ public class PerformMgtController {
 	
 	//전체 직원 리스트
 	@GetMapping("/employees")
-	public ResponseEntity<?> employees(){
+	public ResponseEntity<?> employees(@PathVariable int emp_no){
 		System.out.println("<< 전체 직원 평가 리스트  >>");
 		
-		return new ResponseEntity<>(service.employees(), HttpStatus.OK);	// 200
+		return new ResponseEntity<>(service.employees(emp_no), HttpStatus.OK);	// 200
 	}
 	
 	//동료평가리스트
@@ -199,8 +197,97 @@ public class PerformMgtController {
 		return new ResponseEntity<>(service.evalSelf(), HttpStatus.OK);	// 200
 	}
 	
+	// 자기평가 진행 현황 (개인용)
+	@GetMapping("selfStatus_emp/{emp_no}")
+	public ResponseEntity<?> selfStatusEmp(@PathVariable int emp_no){
+		System.out.println("<< 자기평가 진행 현황 리스트(개인)  >>");
+		
+		return new ResponseEntity<>(service.selfStatusEmp(emp_no), HttpStatus.OK);	// 200
+	}
 	
+	// 동료평가 진행 현황 (관리자용)
+	@GetMapping("/peerStatus")
+	public ResponseEntity<?> peerStatus(){
+		System.out.println("<< 동료평가 진행 현황 리스트 (관리자) >>");
+		
+		return new ResponseEntity<>(service.peerStatus(), HttpStatus.OK);	// 200
+	}
+	// 동료평가 진행 현황 (개인용)
+	@GetMapping("/peerStatus_emp/{emp_no}")
+	public ResponseEntity<?> peerStatusEmp(@PathVariable int emp_no){
+		System.out.println("<< 동료평가 진행 현황 리스트 (개인) >>");
+		
+		return new ResponseEntity<>(service.peerStatusEmp(emp_no), HttpStatus.OK);	// 200
+	}
 	
+	// 개인별 동료평가 점수
+	@GetMapping("/peerScore/{emp_no}")
+	public ResponseEntity<?> peerScore(@PathVariable int emp_no){
+		System.out.println("<< 개인별 동료평가 점수 리스트  >>");
+		
+		return new ResponseEntity<>(service.peerScore(emp_no), HttpStatus.OK);	// 200
+	}
+	
+	// 개인별 자기평가 점수
+	@GetMapping("/selfScore/{emp_no}")
+	public ResponseEntity<?> selfScore(@PathVariable int emp_no){
+		System.out.println("<< 개인별 자기평가 점수 리스트  >>");
+		
+		return new ResponseEntity<>(service.selfScore(emp_no), HttpStatus.OK);	// 200
+	}
+	
+	// 개인별 근태 점수
+	@GetMapping("/attandScore/{emp_no}")
+	public ResponseEntity<?> attandScore(@PathVariable int emp_no){
+		System.out.println("<< 개인별 자기평가 점수 리스트  >>");
+		
+		return new ResponseEntity<>(service.attandScore(emp_no), HttpStatus.OK);	// 200
+	}
+	
+	// total 근태 점수
+	@GetMapping("/attandTotalScore")
+	public ResponseEntity<?> attandTotalScore(){
+		System.out.println("<< total 자기평가 점수 리스트  >>");
+		
+		return new ResponseEntity<>(service.attandTotalScore(), HttpStatus.OK);	// 200
+	}
+	
+	// 목표설정
+	@PostMapping("/addGoal")
+	public ResponseEntity<?> addGoal(@RequestBody Goal goal){
+		System.out.println("<<< 목표 설정 >>>");
+		
+	return new ResponseEntity<>(service.addGoal(goal), HttpStatus.CREATED); 
+	}
+	
+	// 목표 목록
+	@GetMapping("/getAllGoals/{emp_no}")
+	public ResponseEntity<?> getAllGoals(@PathVariable int emp_no) {
+		System.out.println("<<< 목표 설정 >>>");
+		return new ResponseEntity<>(service.getAllGoals(emp_no), HttpStatus.OK);	// 200
+	}
+	
+	// 목표달성
+	@PutMapping("/{id}/complete")
+	public ResponseEntity<?> completeGoal(@PathVariable Long id){
+		System.out.println("<<< update 테스트 >>>");
+		
+		return new ResponseEntity<>(service.completeGoal(id), HttpStatus.OK);	// 200
+	}
+	
+	// 목표 달성률 (개인)
+	@GetMapping("/totalGoalsScore/{emp_no}")
+	public ResponseEntity<?> totalGoalsScore(@PathVariable int emp_no) {
+		System.out.println("<<< 목표 달성률 (개인) >>>");
+		return new ResponseEntity<>(service.totalGoalsScore(emp_no), HttpStatus.OK);	// 200
+	}
+	
+	// 목표 달성률 (전체)
+	@GetMapping("/totalAllGoalsScore")
+	public ResponseEntity<?> totalAllGoalsScore() {
+		System.out.println("<<< 목표 달성률 (전체) >>>");
+		return new ResponseEntity<>(service.totalAllGoalsScore(), HttpStatus.OK);	// 200
+	}
 	
 	// 평가 관리 리스트
 	

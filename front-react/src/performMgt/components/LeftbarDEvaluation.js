@@ -1,11 +1,6 @@
 
-import {
-  ButtonToolbar,
-  Sidebar,
-  Sidenav,
-  Text,
-} from 'rsuite';
-
+import { Button, Divider, Sidebar, Sidenav,Text} from 'rsuite';
+import { useState } from 'react';
 import EvalTree from './EvalTree';
 
 const LeftbarDEvaluation = () => {
@@ -19,13 +14,18 @@ const LeftbarDEvaluation = () => {
           alignItems: 'center',
           flexDirection: 'column'
         }}>
-        <Text size={35} style={{ marginTop: '20px' }}>인사 평가</Text>
+          {/* leftmenu - title */}
+        <Text size={25} weight={'bold'} style={{ marginTop: '35px' }}>인사평가</Text>
 
-        <ButtonToolbar style={{ marginTop: '10px' }}>
-          {/* <IconButton icon={<AddOutlineIcon />}>메일쓰기</IconButton> */}
-        </ButtonToolbar>
+        {/* leftmenu - button */}
+        {/* <Button style={{ marginTop: '15px', backgroundColor: '#CECEF2' }}> */}
+          <p style={{ margin: '20px' }}></p>
+         
+        {/* </Button> */}
 
-      </Sidenav.Header>
+        </Sidenav.Header>
+        <Divider />
+
       <Sidenav style={{ marginTop: '20px' }}>
         <Sidenav.Body style={{ backgroundColor: '#f0f0f0' }}>
           <EvalTree />
