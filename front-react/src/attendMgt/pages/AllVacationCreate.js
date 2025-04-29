@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Col, Container, Content, DatePicker, Divider, Input, InputGroup, Row, Whisper } from "rsuite";
 
 // 공통 js
@@ -14,7 +14,7 @@ import "../css/DeptStatus.css";
 import AttendMgtLeftbar from "./AttendMgtLeftbar";
 import { useUser } from "../../common/contexts/UserContext";
 import { AllVacationCreateInfo } from "../components/Info";
-import { formatDate, getStatusText } from '../components/CommonUtil';
+import { formatDate } from '../components/CommonUtil';
 import AttendPaging from "../components/AttendPaging";
 import { getPositionName } from '../../hrMgt/components/getEmployeeInfo';
 
@@ -92,7 +92,7 @@ const AllVacationCreate = () => {
 
   return (
     <div>
-      <Container style={{ minHeight: "100vh", width: "100%" }}>
+      <Container style={{ height: '1050px', width: '100%' }}>
         <Leftbar />
         <Container>
           <AttendMgtLeftbar user={user} />

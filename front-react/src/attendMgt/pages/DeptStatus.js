@@ -116,7 +116,7 @@ const DeptStatus = () => {
   }
   return (
     <div>
-      <Container style={{ minHeight: "100vh", width: "100%" }}>
+      <Container style={{ height: '1050px', width: '100%' }}>
         <Leftbar />
         <Container>
           <AttendMgtLeftbar user={user} />

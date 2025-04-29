@@ -49,7 +49,7 @@ public class AttendMgtController {
 	public ResponseEntity<?> attendByDate(@PathVariable int emp_no) {
 		System.out.println("<<< attendByDate >>>");
 		Attendance result = service.attendByDate(emp_no);
-
+		System.out.println("<<< attendByDate >>>" + result);
 		 if (result == null) {
 		        return ResponseEntity.ok(Collections.emptyMap());
 		    }

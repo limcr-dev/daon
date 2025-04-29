@@ -84,13 +84,17 @@
 	
 	<!-- 선택한 달 변경이력 불러오기 -->
 	<select id="changeLog" parameterType="java.util.Map" resultType="com.spring.daon.attendMgt.Attendance">
-	     SELECT a.*, e.emp_name, e.emp_img
-		    FROM attendance a
-		    JOIN employees e ON a.emp_no = e.emp_no
-		    WHERE a.emp_no = #{emp_no}
-		      AND MONTH(a.date) = #{month}
-		      AND YEAR(a.date) = #{year}
-		      AND a.message IS NOT NULL
+	    SELECT 
+		  a.*, 
+		  em.emp_name, 
+		  em.emp_img
+		FROM attendance a
+		JOIN employees e ON a.emp_no = e.emp_no
+		LEFT JOIN employees em ON a.modifier = em.emp_no
+		WHERE a.emp_no = #{emp_no}
+		  AND MONTH(a.date) = #{month}
+		  AND YEAR(a.date) = #{year}
+		  AND a.message IS NOT NULL
 	</select>
 	
 	<!-- 선택한 근태기록 불러오기기 -->
