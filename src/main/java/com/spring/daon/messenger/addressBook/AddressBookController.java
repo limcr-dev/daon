@@ -25,7 +25,6 @@ public class AddressBookController {
 	@Autowired
 	private AddressBookServiceImpl service;
 	
-	// http://localhost:8081/messenger/addressBook
 	@GetMapping("/addressBook")
 	public ResponseEntity<Map<String, Object>> addressBook(
 			@RequestParam(defaultValue = "1") int page,

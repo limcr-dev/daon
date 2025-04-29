@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Loader, IconButton, Panel, Avatar } from 'rsuite';
 import { MdClose } from 'react-icons/md';
-import { request } from '../../common/components/helpers/axios_helper';
+import { API_URL, request } from '../../common/components/helpers/axios_helper';
 import { getPositionName, getDeptName } from "../../hrMgt/components/getEmployeeInfo";
 
 const EmployeeProfilePage = ({ empNo, onClose }) => {
@@ -24,7 +24,7 @@ const EmployeeProfilePage = ({ empNo, onClose }) => {
   }, [empNo]);
 
   const imageUrl = emp?.emp_img
-    ? `http://localhost:8081/api/images/${encodeURIComponent(emp.emp_img)}`
+    ? `${API_URL}/api/images/${encodeURIComponent(emp.emp_img)}`
     : '/default-profile.jpg';
 
   const HeaderWithCloseButton = (

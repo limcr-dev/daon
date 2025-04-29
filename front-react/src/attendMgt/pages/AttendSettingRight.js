@@ -5,7 +5,7 @@ import {
   getDeptName,
   getPositionName,
 } from "../../hrMgt/components/getEmployeeInfo";
-import { request } from "../../common/components/helpers/axios_helper";
+import { API_URL, request } from "../../common/components/helpers/axios_helper";
 
 const AttendSettingRight = (user) => {
   const [employeesList, setEmployeesList] = useState([]);
@@ -28,7 +28,7 @@ const AttendSettingRight = (user) => {
     const url = `/attend/workScheduleEmpList?page=${page}&size=${
       paging.size
     }&search=${search || ""}`;
-    request("GET", "http://localhost:8081" + url)
+    request("GET", ${API_URL} + url)
       .then((res) => {
         const data = res.data; // res.data로 접근
         if (data && data.list) {

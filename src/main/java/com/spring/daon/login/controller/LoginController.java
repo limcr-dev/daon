@@ -32,7 +32,6 @@ import com.spring.daon.login.exception.AppException;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class LoginController {
 
 	// 리프레시 토큰 쿠키 이름 상수 추가
@@ -176,7 +175,7 @@ public class LoginController {
 	    
 		// 쿠키 설정
         cookie.setHttpOnly(true);// JavaScript에서 접근 불가능하게 설정
-        cookie.setSecure(false); 
+        cookie.setSecure(true); 
         cookie.setPath("/");     // 해당 경로에서만 쿠키 전송
         cookie.setMaxAge((int)(refreshTokenValidity / 1000)); // 24시간(밀리초를 초로 변환)
         response.addCookie(cookie);
@@ -195,7 +194,7 @@ public class LoginController {
 //	    } 
 	  
 		cookie.setHttpOnly(true);
-        cookie.setSecure(false);
+        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(0); // 즉시 만료
         

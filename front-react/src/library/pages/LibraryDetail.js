@@ -5,7 +5,7 @@ import Leftbar from '../../common/pages/Leftbar';
 import BoardLeftbar from './BoardLeftbar';
 import Header from '../../common/pages/Header';
 import '../css/board.css'
-import { request } from '../../common/components/helpers/axios_helper';
+import { API_URL, request } from '../../common/components/helpers/axios_helper';
 import { useUser } from '../../common/contexts/UserContext';
 import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployeeInfo';
 
@@ -113,7 +113,7 @@ const LibraryDetail = () => {
                                                             size="sm"
                                                             onClick={() => {
                                                                 const encodedFilename = encodeURIComponent(library.library_filename);
-                                                                const downloadUrl = `http://localhost:8081/api/s3/library/download/${encodedFilename}`;
+                                                                const downloadUrl = `${API_URL}/api/s3/library/download/${encodedFilename}`;
                                                                 window.open(downloadUrl, '_blank');
                                                             }}
                                                         >

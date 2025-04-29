@@ -7,7 +7,7 @@ import ApproveLeftbar from './ApproveLeftbar';
 import ExpenseForm from '../components/ExpenseForm ';
 import '../css/approveForm.css'; // 스타일 파일
 import { useUser } from '../../common/contexts/UserContext';
-import { request } from '../../common/components/helpers/axios_helper';
+import { API_URL, request } from '../../common/components/helpers/axios_helper';
 import WorkReportDetail from '../components/WorkReportDetail';
 import { getFormName, StatusBadge, UrgentBadge } from '../components/ApprCodeToText';
 import VacationDetail from '../components/VacationDetail';
@@ -267,7 +267,7 @@ const DocumentDetail = () => {
                                         size="sm"
                                         onClick={() => {
                                             const encodedFilename = encodeURIComponent(document.doc_filename);
-                                            const downloadUrl = `http://localhost:8081/api/s3/library/download/${encodedFilename}`;
+                                            const downloadUrl = `${API_URL}/api/s3/library/download/${encodedFilename}`;
                                             window.open(downloadUrl, '_blank');
                                         }}
                                     >
