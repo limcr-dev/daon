@@ -141,7 +141,7 @@ const MessengerChatList = () => {
 			}}>
 				<Button onClick={goHome}>👥 Contacts</Button>
 				<Button onClick={goChattingList}>💬 Chats</Button>
-				<Button onClick={goSetting}>⚙️ Settings</Button>
+				{/* <Button onClick={goSetting}>⚙️ Settings</Button> */}
 			</div>
 		</div>
 	);

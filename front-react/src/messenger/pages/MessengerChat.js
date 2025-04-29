@@ -43,6 +43,7 @@ const MessengerChat = () => {
 			.then(res => {
 				// 1:1 채팅방이면 targetUser 저장
 				setTargetUser(res.data.targetUser);
+				setEmpImg(res.data.targetUser?.emp_img);
 			})
 			.catch(err => {
 				console.error("상대방 정보 불러오기 실패:", err);
