@@ -12,7 +12,7 @@ const MessengerPop = () => {
    useEffect(() => {
       if (!user?.emp_no) return;
 
-      const socket = new SockJS(`http://${window.location.hostname}:8081/ws-chat`);
+      const socket = new SockJS(`${API_URL}/ws-chat`);
       const client = new Client({
          webSocketFactory: () => socket,
          reconnectDelay: 5000,
