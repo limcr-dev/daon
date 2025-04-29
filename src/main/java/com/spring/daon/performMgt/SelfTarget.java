@@ -29,7 +29,10 @@ public class SelfTarget {
 	private String self_test_status;
     private int eval_emp_no;          // 평가자
     private String eval_order_num;
-    
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" , timezone = "Asia/Seoul")
     private Date created_at;	
+    
+    
+    private int self_cnt;  // 내가 진행한 자기평가 "제출완료"
+    private int self_total_cnt; // 내가 진행해야 할 자기평가
 }

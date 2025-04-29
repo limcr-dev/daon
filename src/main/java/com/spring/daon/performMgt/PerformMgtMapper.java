@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.spring.daon.attendMgt.Attendance;
 import com.spring.daon.hrMgt.Employees;
 
 @Mapper
@@ -67,7 +68,7 @@ public interface PerformMgtMapper {
 	public List<EvalEmployees> evalStatus();
 	
 	//전체 직원 리스트
-	public List<Employees> employees();
+	public Employees employees(int emp_no);
 	
 	//동료평가리스트
 	public List<EvalPeer> evalPeer();
@@ -75,6 +76,41 @@ public interface PerformMgtMapper {
 	// 자기평가 리스트 
 	public List<EvalSelf> evalSelf();
 	
+	// 자기평가 진행 현황(개인용)
+	public SelfTarget selfStatusEmp(int emp_no);
+	
+	// 동료평가 진행 현황 (관리자용)
+	public List<PeerTarget> peerStatus();
+	
+	// 동료평가 진행 현황(개인용)
+	public PeerTarget peerStatusEmp(int emp_no);
+	
+	// 개인별 동료평가 점수
+	public List<EvalPeer> peerScore(int emp_no);
+	
+	// 개인별 자기평가 점수
+	public List<EvalSelf> selfScore(int emp_no);
+	
+	// 개인별 근태 점수
+	public List<EvalAttand> attandScore(int emp_no);
+	
+	// total 근태 점수
+	public List<EvalAttand> attandTotalScore();
+		
+	// 목표설정
+	public int addGoal(Goal goal);
+	
+	// 목표 목록
+	public List<Goal> getAllGoals(int emp_no); 
+	
+	// 목표 달성
+	public int completeGoal(Long id);
+	
+	// 목표 달성률 (개인)
+	public List<Goal> totalGoalsScore(int emp_no);
+	
+	// 목표 달성률 (전체)
+	public List<Goal> totalAllGoalsScore();
 	
 	// 역량별 문제 불러오기
 	

@@ -1,12 +1,5 @@
 package com.spring.daon.performMgt;
 
-
-import java.sql.Date;
-import java.util.List;
-
-import javax.persistence.Id;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.spring.daon.hrMgt.Employees;
 
 import lombok.AllArgsConstructor;
@@ -30,6 +23,9 @@ public class EvalEmployees {
 	private int self_cnt;		// 자기 평가 완료 개수
 	private int self_total_cnt;	// 자기 평가 전체 개수
 	private double peer_avg;	// 동료 평가 평균
+	
+	// 동료평가 완료 개수
+	// 동료평가 전체 개수
 	
 	private String emp_name;
 	private int emp_no;

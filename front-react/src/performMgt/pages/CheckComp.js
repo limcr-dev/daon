@@ -8,7 +8,7 @@ import { Button, Container, Content, Radio, RadioGroup } from "rsuite";
 import CompList from './sub/CompList';
 import { useNavigate } from "react-router-dom";
 import TestList from './sub/TestList';
-
+import Header from "../../common/pages/Header";
 
 // 관리자 평가 역량 선택해서 테스트 만들기
 const CheckComp = () => {
@@ -138,6 +138,7 @@ const CheckComp = () => {
                 <Container>
                     <LeftbarDEvaluation />
                     <Content>
+                        <Header />
                         <div className="main-content p-4">
 
                             <h2 className="mb-4"> 역량 선택(5가지)</h2>

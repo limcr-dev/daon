@@ -2,18 +2,18 @@ import { request } from "../../common/components/helpers/axios_helper"
 import React, { useEffect, useState } from "react";
 import Leftbar from "../../common/pages/Leftbar";
 import LeftbarDEvaluation from "../components/LeftbarDEvaluation";
-import { Button, Col, Container, Content } from "rsuite";
+import { Container, Content } from "rsuite";
 import { Card } from "react-bootstrap";
-import { useUser } from '../../common/contexts/UserContext';
 import "../css/EvalList.css";
-import { getDeptName, getPositionName, getRoleName } from "../../hrMgt/components/getEmployeeInfo";
+import { getDeptName, getPositionName } from "../../hrMgt/components/getEmployeeInfo";
+import GradeChart from "../GradeChart";
+import { useNavigate } from "react-router-dom";
+import Header from "../../common/pages/Header";
 
 
 const EvalList = () => {
-    const { user } = useUser();
-
+    const navigate = useNavigate();
     const [testList, setTestList] = useState([]);
-
 
     useEffect(() => {
         request('GET', "/performMgt/testListT")
@@ -23,8 +23,6 @@ const EvalList = () => {
             .catch((error) =>
                 console.error("데이터 가져오기 오류 : ", error));
     }, []);
-
-
 
     // 삭제
     const deleteTest = (orderNum) => {
@@ -53,29 +51,105 @@ const EvalList = () => {
                     }
                 });
     }
+
     const [evalList, setEvalList] = useState([]);
+    const [gradeChart, setGradeChart] = useState([]);
+
     // 전체 직원 평가 리스트 
     useEffect(() => {
         request('GET', `/performMgt/evalStatus`)
             .then(res => {
-                setEvalList(res.data);
-
                 console.log("직원리스트", res.data)
+                const employees = res.data;
+
+                // 여기서 Promise.all 로 두개 동시에!
+                Promise.all([
+                    request('GET', `/performMgt/peerStatus`),
+                    request('GET', `/performMgt/attandTotalScore`)
+                ])
+                    .then(([peerRes, attandRes]) => {
+                        console.log("동료평가진행현황", peerRes.data);
+                        console.log("근태평가 점수", attandRes.data);
+
+                        const peerList = peerRes.data;
+                        const attandList = attandRes.data;
+
+                        const mergedList = employees.map(emp => {
+                            const peerInfo = peerList.find(peer => peer.eval_emp_no === emp.emp_no);
+                            const attandInfo = attandList.find(att => att.emp_no === emp.emp_no);
+
+                            return {
+                                ...emp,
+                                peer_cnt: peerInfo?.peer_cnt || null,
+                                peer_total_cnt: peerInfo?.peer_total_cnt || null,
+                                attand_avg: attandInfo?.attand_avg || null,
+                            };
+                        });
+
+                        setEvalList(mergedList);
+
+
+                        const setSelf = getCntGrade(res.data, "self");
+                        const setPeer = getCntGrade(res.data, "peer");
+                        const setAttand = getCntGrade(mergedList, "attand");
+                        setGradeChart([
+                            { name: "자기평가", ...setSelf },
+                            { name: "동료평가", ...setPeer },
+                            { name: "근태평가", ...setAttand },
+                        ]);
+
+                    })
+                    .catch((error) => {
+                        console.error("동료평가나 근태평가 가져오기 오류 : ", error);
+                    });
             })
             .catch((error) =>
                 console.error("데이터 가져오기 오류 : ", error));
     }, []);
 
-    const getGrade = (self_avg) => {
-        return self_avg;
+    const getGrade = (avg) => {
+        if (avg >= 93 && avg <= 100) {
+            return "S";
+        } else if (avg >= 83 && avg <= 92) {
+            return "A";
+        } else if (avg >= 75 && avg <= 82) {
+            return "B";
+        } else if (avg >= 65 && avg <= 74) {
+            return "C";
+        } else if (avg >= 36 && avg <= 64) {
+            return "D";
+        } else {
+            return "F";
+        }
     }
+    const getCntGrade = (evalList, type = "self") => {
+        const distribute = { S: 0, A: 0, B: 0, C: 0, D: 0, F: 0 };
+
+        evalList.forEach(emp => {
+            let score;
+            if (type === "self") {
+                score = emp.self_avg;
+            } else if (type === "peer") {
+                score = emp.peer_avg;
+            } else if (type === "attand") {
+                score = emp.attand_avg;
+            }
+
+            if (score != null) { // score가 존재할 때만
+                const grade = getGrade(score);
+                distribute[grade]++;
+            }
+        });
+        return distribute;
+    };
 
     return (
-        <Container style={{ minHeight: '100vh', width: '100%' }}>
+        <Container style={{ minHeight: '100vh', width: '100%' }}>s
             <Leftbar />
             <Container>
                 <LeftbarDEvaluation />
                 <Content>
+                    <Header />
                     <div>
                         <Card align="center">
                             <h5 className="line"> 현재 등록된 역량 테스트 </h5>
@@ -93,7 +167,6 @@ const EvalList = () => {
                                 </thead>
                                 <tbody>
                                     {testList.length > 0 ? (
-
                                         <>
                                             {testList.map((test, index) => (
                                                 <tr key={index}>
@@ -119,68 +192,61 @@ const EvalList = () => {
                             </table>
                         </Card>
                         <Card align="center">
-                            {/* <Col style={{ marginBottom: '20px' , width: '98%' }}> */}
                             <h5 className="line"> 통계 </h5>
                             <Card className='eval-card'>
                                 {/* 상단 상태 표시 */}
                                 <Card.Header style={{ display: 'flex', justify: 'end' }}>
                                     <span>
-                                        대시보드
+                                        등급분포도
                                     </span>
                                 </Card.Header>
-
                                 {/* 본문 */}
                                 <Card.Body className="p-4 space-y-2">
-                                    <p style={{ fontWeight: '600', fontSize: '16px' }}>
-                                        대시보드
-                                    </p>
-
+                                    <GradeChart data={gradeChart} />
                                 </Card.Body>
-
-                                {/* 하단 버튼 */}
-                                <Card.Footer>
-                                    <Button>
-                                        자세히 보러가기???
-                                    </Button>
-                                </Card.Footer>
                             </Card>
-
-                            {/* </Col>  */}
-
-                            {/* <Col style={{ marginBottom: '20px', width: '98%' }}> */}
-
                             <Card className='eval-card'>
                                 <Card.Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', backgroundColor: '#f5f5f5', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
-                                    <h5 style={{marginLeft:'20px'}}> 직원 리스트 </h5>
+                                    <h5 style={{ marginLeft: '20px' }}> 직원 리스트 </h5>
                                 </Card.Header>
 
                                 <table className='eval-table'>
                                     <thead>
                                         <tr>
-                                            <th>이름 (사번)</th>
-                                            <th>자기평가</th>
-                                            <th>동료평가</th>
+
+                                            <th rowSpan={2}>이름  <br />(사번) </th>
+                                            <th colSpan={2}>자기평가</th>
+                                            <th colSpan={2}>동료평가</th>
+                                            <th rowSpan={2}>근태평가</th>
+                                            <th rowSpan={2}>부서</th>
+                                            <th rowSpan={2}>직급</th>
+                                            <th rowSpan={2}></th>
+                                        </tr>
+                                        <tr>
                                             <th>완료/전체</th>
-                                            <th>부서</th>
-                                            <th>직급</th>
-                                            <th></th>
+                                            <th>점수</th>
+                                            <th>완료/전체</th>
+                                            <th>점수</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {evalList.eval_emp_no}
                                         {evalList.length > 0 ? (
-                                            // {item.emp_img}
                                             <>
                                                 {evalList.map((item, evalIndex) => (
                                                     <tr key={evalIndex}>
-                                                        <td>{item.emp_name}&nbsp;({item.emp_no})</td>
-                                                        <td>{getGrade(item.self_avg)}</td>
-                                                        <td>{getGrade(item.peer_avg)}</td>
-                                                        <td>{item.self_cnt}/{item.self_total_cnt}</td>
+                                                        <td>{item.emp_name}<br />({item.emp_no})</td>
+                                                        <td>({item.self_cnt}/{item.self_total_cnt})</td>
+                                                        <td> {getGrade(item.self_avg)}등급<br />({item.self_avg})</td>
+                                                        <td>({item.peer_cnt}/{item.peer_total_cnt})</td>
+                                                        <td>{getGrade(item.peer_avg)}등급 <br />({item.peer_avg})</td>
+                                                        <td>{getGrade(item.attand_avg)}등급<br />({item.attand_avg})</td>
+
                                                         <td>{getDeptName(item.dept_no)}</td>
                                                         <td>{getPositionName(item.position_id)}</td>
 
-                                                        <td>상세보기</td>
+                                                        <td> <button onClick={() => navigate(`/performMgt/evaluation/detail/${item.emp_no}`)}>
+                                                            상세보기
+                                                        </button></td>
                                                     </tr>
                                                 ))}
                                             </>
@@ -193,21 +259,9 @@ const EvalList = () => {
                                     </tbody>
                                 </table>
 
-                                {/* <Card.Body className="p-4 space-y-2">
-                                <p style={{ fontWeight: '600', fontSize: '16px' }}>
-                                    대시보드
-                                </p>
 
-                            </Card.Body>
-
-                            {/* 하단 버튼 */}
-                                {/* <Card.Footer>
-                                <Button>
-                                    자세히 보러가기???
-                                </Button>
-                            </Card.Footer> */}
                             </Card>
-                            {/* </Col>*/}
+
                         </Card>
                     </div>
                 </Content>
