@@ -68,7 +68,6 @@ const Login = () => {
       // 홈 화면 이동
       console.log("홈 화면으로 이동 시도");
       navigate('/home');
-      console.log("navigate 호출 완료");
 
     } catch (error) {
       console.error("===== 로그인 오류 발생 =====");

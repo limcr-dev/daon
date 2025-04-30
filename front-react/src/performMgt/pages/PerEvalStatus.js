@@ -30,7 +30,7 @@ const PerEvalStatus = () => {
     useEffect(() => {
         if (user?.emp_no) {
             // 동료평가 진행현황
-            request("GET", `/performMgt/peerStatus_emp/${user.emp_no}`)
+            request("GET", `/perform/peerStatus_emp/${user.emp_no}`)
                 .then((res) => {
                     setPeerStatus(res.data);
                     console.log("동료평가진행현황", res.data)
@@ -40,7 +40,7 @@ const PerEvalStatus = () => {
                 });
 
             // 동료평가 점수
-            request("GET", `/performMgt/peerScore/${user.emp_no}`)
+            request("GET", `/perform/peerScore/${user.emp_no}`)
                 .then((res) => {
                     setPeerLineChart(res.data);
                     const helpdata = (list) => {
@@ -68,7 +68,7 @@ const PerEvalStatus = () => {
                 });
 
             // 자기평가 진행 현황
-            request("GET", `/performMgt/selfStatus_emp/${user.emp_no}`)
+            request("GET", `/perform/selfStatus_emp/${user.emp_no}`)
                 .then((res) => {
 
                     setSelfStatus(res.data);
@@ -79,7 +79,7 @@ const PerEvalStatus = () => {
                 });
 
             // 자기평가 점수    
-            request("GET", `/performMgt/selfScore/${user.emp_no}`)
+            request("GET", `/perform/selfScore/${user.emp_no}`)
                 .then((res) => {
                     setSelfLineChart(res.data);
                     const helpdata = (list) => {
@@ -109,7 +109,7 @@ const PerEvalStatus = () => {
                 });
 
             // 근태평가 점수    
-            request("GET", `/performMgt/attandScore/${user.emp_no}`)
+            request("GET", `/perform/attandScore/${user.emp_no}`)
                 .then((res) => {
                     setAttandLineChart(res.data);
 
@@ -120,7 +120,7 @@ const PerEvalStatus = () => {
                 });
 
             // 목표 달성 진행율    
-            request("GET", `/performMgt/totalGoalsScore/${user.emp_no}`)
+            request("GET", `/perform/totalGoalsScore/${user.emp_no}`)
                 .then((res) => {
                     const helpdata = (goal) => {
                         if (!goal || goal.length === 0) return [];

@@ -17,7 +17,7 @@ const GoalForm = () => {
 
   // 목표 리스트 가져오기
   useEffect(() => {
-    request('GET', `/performMgt/goalsList/${user.emp_no}`)
+    request('GET', `/perform/goalsList/${user.emp_no}`)
       .then(res => {
         console.log("목표 리스트:", res.data);   // 추가
         setGoals(res.data);
@@ -40,7 +40,7 @@ const GoalForm = () => {
     };
 
 
-    request('POST', "/performMgt/addGoal", goalToSend)
+    request('POST', "/perform/addGoal", goalToSend)
       .then(res => {
         if (res.status === 201 || res.status === 200) {
           alert("목표설정 성공");
@@ -57,7 +57,7 @@ const GoalForm = () => {
 
   // 목표 완료처리하는 함수
   const handleCompleteGoal = (id) => {
-    request('PUT', `/performMgt/${id}/complete`)
+    request('PUT', `/perform/${id}/complete`)
       .then(res => {
         if (res.status === 201 || res.status === 200) {
           alert("목표 완료 성공");

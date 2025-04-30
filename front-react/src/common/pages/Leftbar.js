@@ -48,14 +48,14 @@ const Leftbar = ({ onOpenOrgChart }) => {
                 <Nav.Item icon={<Icon as={MdHome} />} onClick={() => navigate('/home')}>홈</Nav.Item>
                 <Nav.Item icon={<Icon as={MdBusinessCenter} />} onClick={() => navigate('/attendMgt')}>근태 관리</Nav.Item>
                 <Nav.Item icon={<Icon as={MdCalendarMonth} />} onClick={() => navigate('/schedule')}>일정</Nav.Item>
-                <Nav.Item icon={<Icon as={MdAssignment} />} onClick={() => navigate('/approve')}>전자결재</Nav.Item>
+                <Nav.Item icon={<Icon as={MdAssignment} />} onClick={() => navigate('/approveMgt')}>전자결재</Nav.Item>
                 <Nav.Item icon={<Icon as={MdCreate} />} onClick={() => navigate('/performMgt')}>인사평가</Nav.Item>
 
                 {(user?.admin_type === 2 || user?.admin_type === 3) && (
                   <Nav.Item icon={<Icon as={MdGroup} />} onClick={() => navigate('/employee')}>인사관리</Nav.Item>
                 )}
-                <Nav.Item icon={<Icon as={MdDescription} />} onClick={() => navigate('/board')}>게시판</Nav.Item>
-                <Nav.Item icon={<Icon as={MdContactPage} />} onClick={() => navigate('/messenger/addressBook')}>주소록</Nav.Item>
+                <Nav.Item icon={<Icon as={MdDescription} />} onClick={() => navigate('/boardMgt')}>게시판</Nav.Item>
+                <Nav.Item icon={<Icon as={MdContactPage} />} onClick={() => navigate('/messengerMgt/addressBook')}>주소록</Nav.Item>
                 {(user?.admin_type === 2 || user?.admin_type === 4) && (
                   <Nav.Item icon={<Icon as={MdPayments} />} onClick={() => navigate('/salary')}>급여</Nav.Item>
                 )}

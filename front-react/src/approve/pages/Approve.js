@@ -106,7 +106,7 @@ const Approve = () => {
                       <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end' }}>
                         <Button
                           appearance="primary"
-                          onClick={() => navigate("/approve/documentDetail/" + doc.doc_form + "/" + doc.doc_no)}
+                          onClick={() => navigate("/approveMgt/documentDetail/" + doc.doc_form + "/" + doc.doc_no)}
                         >
                           결재하기
                         </Button>

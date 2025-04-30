@@ -65,7 +65,7 @@ const Updatelibrary = () => {
 
             console.log('정상', response.data);
             alert("게시글을 수정하였습니다.");
-            navigate('/board/libraryList/');
+            navigate('/boardMgt/libraryList/');
         } catch (error) {
             console.log('실패', error);
             alert("게시글 수정에 실패하였습니다.");
@@ -141,7 +141,7 @@ const Updatelibrary = () => {
                                         <Button appearance="primary" color="blue" onClick={submitlibrary}>수정</Button>
                                     </div>
                                     <div style={{ marginTop: '10px' }}>
-                                        <Button appearance="ghost" color="blue" onClick={() => navigate('/board/libraryList')}>목록</Button>
+                                        <Button appearance="ghost" color="blue" onClick={() => navigate('/boardMgt/libraryList')}>목록</Button>
                                     </div>
                                 </Card.Footer>
                             </Card>

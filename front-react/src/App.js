@@ -52,13 +52,13 @@ const AppRoutes = () => {
 
       {/*  로그인 필요 */}
       <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
-      <Route path="/approve/*" element={<ProtectedRoute element={<ApproveRouter />} />} />
+      <Route path="/approveMgt/*" element={<ProtectedRoute element={<ApproveRouter />} />} />
       <Route path="/attendMgt/*" element={<ProtectedRoute element={<AttendRouter />} />} />
-      <Route path="/employee/*" element={<ProtectedRoute element={<HrMgtRouter />} requiredAdminTypes={[2, 3]} />} />
-      <Route path="/messenger/*" element={<ProtectedRoute element={<MessengerRouter />} />} />
+      <Route path="/employeeMgt/*" element={<ProtectedRoute element={<HrMgtRouter />} requiredAdminTypes={[2, 3]} />} />
+      <Route path="/messengerMgt/*" element={<ProtectedRoute element={<MessengerRouter />} />} />
       <Route path="/performMgt/*" element={<ProtectedRoute element={<PerformMgtRouter />} />} />
-      <Route path="/schedule/*" element={<ProtectedRoute element={<ScheduleRouter />} />} />
-      <Route path="/board/*" element={<ProtectedRoute element={<BoardRouter />} />} />
+      <Route path="/scheduleMgt/*" element={<ProtectedRoute element={<ScheduleRouter />} />} />
+      <Route path="/boardMgt/*" element={<ProtectedRoute element={<BoardRouter />} />} />
     
       {/*  급여 라우트는 admin_type === 4 (급여 관리자)만 접근 가능 */}
       <Route

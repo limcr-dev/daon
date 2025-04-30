@@ -26,7 +26,7 @@ const BoardMenu = () => {
 
   const handleSelect = (selectedLabel) => {
     if (selectedLabel) {
-      navigate(`/board/${selectedLabel.value}`);
+      navigate(`/boardMgt/${selectedLabel.value}`);
     }
   };
   return (

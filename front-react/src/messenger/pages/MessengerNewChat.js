@@ -5,8 +5,8 @@ import { Button, Divider } from 'rsuite';
 const MessengerNewChat = () => {
   const navigate = useNavigate();
 
-  const goSingle = () => navigate('/messenger/messengerNewSingle');
-  const goGroup = () => navigate('/messenger/messengerNewGroup');
+  const goSingle = () => navigate('/messengerMgt/messengerNewSingle');
+  const goGroup = () => navigate('/messengerMgt/messengerNewGroup');
 
   return (
     <div style={{ padding: '40px', textAlign: 'center' }}>

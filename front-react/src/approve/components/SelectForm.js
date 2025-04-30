@@ -38,7 +38,7 @@ const SelectForm = ({ closeModal }) => {
 
   const handleSelect = (selectedLabel) => {
     if (!selectedLabel.value.includes('Menu')) {
-      navigate(`/approve/form/${selectedLabel.value}`);
+      navigate(`/approveMgt/form/${selectedLabel.value}`);
       closeModal();
     }
   };
