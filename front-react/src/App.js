@@ -7,7 +7,6 @@ import Home from './common/pages/Home';
 import AttendRouter from "./attendMgt/AttendRouter";
 import ApproveRouter from "./approve/ApproveRouter";
 import HrMgtRouter from "./hrMgt/HrMgtRouter";
-import MailRouter from "./mail/MailRouter";
 import MessengerRouter from "./messenger/MessengerRouter";
 import PerformMgtRouter from "./performMgt/PerformMgtRouter";
 import ScheduleRouter from "./schedule/ScheduleRouter";
@@ -16,7 +15,6 @@ import SalaryRouter from "./salary/SalaryRouter";
 
 import { UserProvider, useUser } from "./common/contexts/UserContext";
 import MesseangerPop from "./messenger/pages/MessengerPop";
-import AddressBook from "./messenger/pages/AddressBook";
 
 //  로그인하지 않은 경우 접근 막기
 const ProtectedRoute = ({ element, requiredAdminTypes }) => {
@@ -57,7 +55,6 @@ const AppRoutes = () => {
       <Route path="/approve/*" element={<ProtectedRoute element={<ApproveRouter />} />} />
       <Route path="/attendMgt/*" element={<ProtectedRoute element={<AttendRouter />} />} />
       <Route path="/employee/*" element={<ProtectedRoute element={<HrMgtRouter />} requiredAdminTypes={[2, 3]} />} />
-      <Route path="/mail/*" element={<ProtectedRoute element={<MailRouter />} />} />
       <Route path="/messenger/*" element={<ProtectedRoute element={<MessengerRouter />} />} />
       <Route path="/performMgt/*" element={<ProtectedRoute element={<PerformMgtRouter />} />} />
       <Route path="/schedule/*" element={<ProtectedRoute element={<ScheduleRouter />} />} />

@@ -28,7 +28,7 @@ const AttendSettingRight = (user) => {
     const url = `/attend/workScheduleEmpList?page=${page}&size=${
       paging.size
     }&search=${search || ""}`;
-    request("GET", ${API_URL} + url)
+    request("GET", API_URL + url)
       .then((res) => {
         const data = res.data; // res.data로 접근
         if (data && data.list) {

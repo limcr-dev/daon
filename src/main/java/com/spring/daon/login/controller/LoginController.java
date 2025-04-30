@@ -32,6 +32,7 @@ import com.spring.daon.login.exception.AppException;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class LoginController {
 
 	// 리프레시 토큰 쿠키 이름 상수 추가
@@ -164,41 +165,20 @@ public class LoginController {
 	
 	// 쿠키에 리프레시 토큰 추가
 	private void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
-		Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
-		
-		// 개발환경 여부 체크해서 Secure 설정
-//	    if (isProduction()) {
-//	        cookie.setSecure(true);	// HTTPS에서만 전송되도록 설정 (프로덕션에서)
-//	    } else {
-//	        cookie.setSecure(false); // 개발단계에서 사용
-//	    }
-	    
-		// 쿠키 설정
-        cookie.setHttpOnly(true);// JavaScript에서 접근 불가능하게 설정
-        cookie.setSecure(true); 
-        cookie.setPath("/");     // 해당 경로에서만 쿠키 전송
-        cookie.setMaxAge((int)(refreshTokenValidity / 1000)); // 24시간(밀리초를 초로 변환)
-        response.addCookie(cookie);
-        System.out.println("리프레시 토큰 쿠키 추가: " + refreshToken.substring(0, 20) + "...");
+	    String cookie = String.format(
+	        "refresh_token=%s; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=%d",
+	        refreshToken,
+	        refreshTokenValidity / 1000
+	    );
+	    response.setHeader("Set-Cookie", cookie);
+	    System.out.println("✅ Set-Cookie 헤더 설정 완료: " + cookie);
 	}
 	
 	// 쿠키에서 리프레시 토큰 삭제
 	private void deleteRefreshTokenCookie(HttpServletResponse response) {
-		Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, null);
-		
-		// 개발환경 여부 체크해서 Secure 설정
-//	    if (isProduction()) {
-//	        cookie.setSecure(true);	// HTTPS에서만 전송되도록 설정 (프로덕션에서)
-//	    } else {
-//	        cookie.setSecure(false); // 개발단계에서 사용
-//	    } 
-	  
-		cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0); // 즉시 만료
-        
-        response.addCookie(cookie);
+	    String cookie = "refresh_token=; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=0";
+	    response.setHeader("Set-Cookie", cookie);
+	    System.out.println("❌ 쿠키 삭제 완료");
 	}
 	
 	// 쿠키에서 리프레시 토큰 추출

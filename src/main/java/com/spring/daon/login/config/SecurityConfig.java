@@ -75,16 +75,21 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 	    CorsConfiguration config = new CorsConfiguration();
-	    
-	    //config.setAllowedOriginPatterns(List.of("*")); // 모든 Origin 허용(배포 후 변경 필요)
-	    config.addAllowedOrigin("https://daon-ai.com");
-		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+	    config.setAllowedOrigins(List.of(
+	        "https://daon-ai.com",
+	        "http://13.209.178.147:80"
+	    ));
+
+	    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 	    config.setAllowedHeaders(List.of("*"));
-	    config.setAllowCredentials(true); // 쿠키 전송 허용
-	    config.setExposedHeaders(List.of("Authorization", "Set-Cookie")); // 클라이언트가 접근할 수 있는 헤더
+	    config.setAllowCredentials(true);
+	    config.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
 
 	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 	    source.registerCorsConfiguration("/**", config);
+
 	    return source;
 	}
+
 }
