@@ -53,7 +53,7 @@ const DocumentDetail = () => {
             .then(() => {
                 alert("승인 처리되었습니다.");
                 setApproveModalOpen(false);
-                navigate('/approve');
+                navigate('/approveMgt');
             })
             .catch(error => {
                 console.error("승인 처리 오류:", error);
@@ -72,7 +72,7 @@ const DocumentDetail = () => {
             .then(() => {
                 alert("반려 처리되었습니다.");
                 setRejectModalOpen(false);
-                navigate('/approve');
+                navigate('/approveMgt');
             })
             .catch(error => {
                 console.error("반려 처리 오류:", error);
@@ -86,7 +86,7 @@ const DocumentDetail = () => {
             try {
                 await request("POST", `approve/cancel/${document.doc_no}`);
                 alert("상신이 취소되었습니다.");
-                navigate('/approve');
+                navigate('/approveMgt');
             } catch (error) {
                 console.error("상신 취소 오류:", error);
                 alert("상신 취소 중 오류가 발생했습니다.")
@@ -172,7 +172,7 @@ const DocumentDetail = () => {
                             {/* 문서 작성자이고 임시저장 상태일 때 */}
                             {user.emp_no === document.emp_no && document.doc_status === 1 && (
                                 <>
-                                    <Button appearance='primary' color='blue' onClick={() => { navigate(`/approve/documentUpdate/${form_no}/${doc_no}`) }}>수정</Button>
+                                    <Button appearance='primary' color='blue' onClick={() => { navigate(`/approveMgt/documentUpdate/${form_no}/${doc_no}`) }}>수정</Button>
                                 </>
                             )}
 
@@ -190,7 +190,7 @@ const DocumentDetail = () => {
                             )}
 
                             {/* 공통 버튼 */}
-                            <Button appearance='ghost' color='blue' onClick={() => navigate('/approve')}>목록</Button>
+                            <Button appearance='ghost' color='blue' onClick={() => navigate('/approveMgt')}>목록</Button>
 
                             <div style={{
                                 display: 'flex',

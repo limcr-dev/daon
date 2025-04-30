@@ -63,7 +63,7 @@ const InsertNotice = () => {
 
             if (res.status === 201) {
                 console.log('정상', res.data);
-                navigate('/board/noticeList');  // 작성 성공 시, 공지 목록 페이지로 이동
+                navigate('/boardMgt/noticeList');  // 작성 성공 시, 공지 목록 페이지로 이동
             } else {
                 alert("공지 작성에 실패하였습니다.");   // 작성 실패 시, alert 창 띄움
             }
@@ -74,7 +74,7 @@ const InsertNotice = () => {
     }
 
     const noticeList = () => {
-        navigate('/board/noticeList');
+        navigate('/boardMgt/noticeList');
     }
 
     // FileUpload 컴포넌트에서 전달된 파일 이름을 받아서 상태를 업데이트

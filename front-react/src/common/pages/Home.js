@@ -103,7 +103,7 @@ const Home = () => {
                     <Card style={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
                       <Card.Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', backgroundColor: '#f5f5f5', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
                         <span style={{ fontWeight: '600', fontSize: '16px' }}>공지사항</span>
-                        <Button appearance="link" onClick={() => navigate('/board/noticeList')}>더보기</Button>
+                        <Button appearance="link" onClick={() => navigate('/boardMgt/noticeList')}>더보기</Button>
                       </Card.Header>
                       <table className='board-table'>
                         <tr>
@@ -154,7 +154,7 @@ const Home = () => {
                     <Card style={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
                       <Card.Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', backgroundColor: '#f5f5f5', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
                         <span style={{ fontWeight: '600', fontSize: '16px' }}>자료실</span>
-                        <Button appearance="link" onClick={() => navigate('/board/libraryList')}>더보기</Button>
+                        <Button appearance="link" onClick={() => navigate('/boardMgt/libraryList')}>더보기</Button>
                       </Card.Header>
                       <table className='board-table'>
                         <tr>
@@ -208,7 +208,7 @@ const Home = () => {
                         <span style={{ fontWeight: '600', fontSize: '16px' }}>
                           기안 문서
                         </span>
-                        <Button appearance="link" onClick={() => navigate('/approve/documents')}>더보기</Button>
+                        <Button appearance="link" onClick={() => navigate('/approveMgt/documents')}>더보기</Button>
                       </Card.Header>
                       <table className='approve-table'>
                         <thead>

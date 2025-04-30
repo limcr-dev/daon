@@ -202,7 +202,7 @@ const DocumentUpdate = () => {
                 .then(response => {
                     console.log("결재 요청 성공:", response);
                     alert("결재 요청이 완료되었습니다.");
-                    navigate('/approve');
+                    navigate('/approveMgt');
                 })
                 .catch(error => {
                     console.error("결재 요청 오류:", error);
@@ -244,7 +244,7 @@ const DocumentUpdate = () => {
                 .then(response => {
                     console.log("임시저장 성공:", response);
                     alert("임시저장 요청이 완료되었습니다.");
-                    navigate('/approve');
+                    navigate('/approveMgt');
                 })
                 .catch(error => {
                     console.error("임시저장 요청 오류:", error);
@@ -296,7 +296,7 @@ const DocumentUpdate = () => {
                             <div className="document-actions" style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
                                 <Button appearance='primary' color='blue' onClick={handleSubmitRequest}>결재 요청</Button>
                                 <Button appearance='ghost' color='blue' onClick={handleSaveRequest}>임시저장</Button>
-                                <Button appearance='ghost' color='blue' onClick={() => navigate('/approve')}>목록</Button>
+                                <Button appearance='ghost' color='blue' onClick={() => navigate('/approveMgt')}>목록</Button>
                                 <Button appearance='primary' color='green' onClick={() => setInfoOpen(true)}>결재선 지정</Button>
                                 <ButtonGroup>
                                     <Button

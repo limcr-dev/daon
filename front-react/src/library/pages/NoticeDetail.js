@@ -33,7 +33,7 @@ const NoticeDetail = () => {
 
     // 수정 버튼 누르면 실행되는 함수(arrow function 활용)
     const updateNotice = () => {
-        navigate('/board/updateNotice/' + notice_no);
+        navigate('/boardMgt/updateNotice/' + notice_no);
     }
 
     // 삭제 버튼 누르면 실행되는 함수(arrow function 활용)
@@ -42,7 +42,7 @@ const NoticeDetail = () => {
             .then((res) => {
                 // axios는 응답을 자동으로 JSON으로 파싱하므로, res.data로 접근
                 if (res.data === 'ok') {
-                    navigate('/board/noticeList');  // 삭제 성공 시, 공지사항 목록 페이지로 이동
+                    navigate('/boardMgt/noticeList');  // 삭제 성공 시, 공지사항 목록 페이지로 이동
                 } else {
                     alert('게시글 삭제에 실패하였습니다.'); // 삭제 실패 시, alert창 띄움
                 }
@@ -54,7 +54,7 @@ const NoticeDetail = () => {
     }
 
     const noticeList = () => {
-        navigate('/board/noticeList');
+        navigate('/boardMgt/noticeList');
     }
 
     return (

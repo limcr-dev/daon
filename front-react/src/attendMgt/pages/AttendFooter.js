@@ -16,7 +16,12 @@ const AttendFooter = (props) => {
   useEffect(() => {
     request("GET", "/attend/changeLog/" + emp_no + "/" + year + "/" + month)
       .then((res) => {
-        setChangeLog(res.data);
+        if (Array.isArray(res.data)) {
+          setChangeLog(res.data);
+        } else {
+          console.warn("changeLog 응답이 배열이 아님:", res.data);
+          setChangeLog([]);
+        }
       })
   }, [emp_no, year, month]);
 

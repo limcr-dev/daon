@@ -46,7 +46,7 @@ const InsertLibrary = () => {
 
             if (res.status === 201) {
                 alert('자료를 성공적으로 입력하였습니다.');
-                navigate('/board/libraryList');
+                navigate('/boardMgt/libraryList');
             } else {
                 alert('자료 입력에 실패하였습니다.');
             }
@@ -57,7 +57,7 @@ const InsertLibrary = () => {
     };
 
     const libraryList = () => {
-        navigate('/board/libraryList');
+        navigate('/boardMgt/libraryList');
     };
 
     // FileUpload 컴포넌트에서 전달된 파일 이름을 받아서 상태를 업데이트

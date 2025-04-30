@@ -90,7 +90,7 @@ const NoticeList = () => {
                   </tbody>
                 </table>
                 <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', padding: '15px' }}>
-                  <Button appearance="primary" color="blue" onClick={() => navigate('/board/insertNotice')}>작성</Button>
+                  <Button appearance="primary" color="blue" onClick={() => navigate('/boardMgt/insertNotice')}>작성</Button>
                 </Card.Footer>
               </Card>
             </Col>

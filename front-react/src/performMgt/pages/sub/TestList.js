@@ -14,7 +14,7 @@ const TestList = () => {
 
 
   useEffect(() => {
-    request("get", "/performMgt/testList")
+    request("get", "/perform/testList")
       .then((res) => {
         console.log("응답", res);
         setTestList(res.data);
@@ -32,7 +32,7 @@ const TestList = () => {
   const deleteTest = (orderNum) => {
     if (window.confirm(`${orderNum}번 데이터를 정말 삭제할까요?`))
 
-      request("delete", `/performMgt/testList/${orderNum}`)
+      request("delete", `/perform/testList/${orderNum}`)
         .then((res) => {
           console.log("삭제 응답", res.data);
           if (res.data === "ok") {
@@ -73,7 +73,7 @@ const TestList = () => {
 
         console.log("서버로 보내는 데이터(put):", payload);
 
-        const updateRes = await request("put", `/performMgt/testList/${test.eval_order_num}`, payload);
+        const updateRes = await request("put", `/perform/testList/${test.eval_order_num}`, payload);
         console.log("서버응답:", updateRes.data);
 
         if (updateRes.status === 200 && updateRes.data > 0) {
@@ -81,7 +81,7 @@ const TestList = () => {
           if (test.eval_emp_type === '자기평가') {
 
             // insert 자기평가 
-            const insertRes = await request("post", `/performMgt/selfTargetInsert`, {eval_order_num: String(test.eval_order_num)});
+            const insertRes = await request("post", `/perform/selfTargetInsert`, {eval_order_num: String(test.eval_order_num)});
             console.log("서버응답:", insertRes.data);
 
             if (insertRes.data === 1 || insertRes.data > 0) {
@@ -95,7 +95,7 @@ const TestList = () => {
             // 동료평가 target 테이블 insert
             if (test.eval_emp_type === '동료평가') {
             
-              const peerRes = await request("post", `/performMgt/peerTargetInsert`,{eval_order_num: String(test.eval_order_num)});
+              const peerRes = await request("post", `/perform/peerTargetInsert`,{eval_order_num: String(test.eval_order_num)});
               console.log("peer_target 생성 응답:", peerRes.data);
             
               if (peerRes.status === 201 || peerRes.data === "ok") {

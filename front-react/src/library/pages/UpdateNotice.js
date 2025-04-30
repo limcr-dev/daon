@@ -66,7 +66,7 @@ const UpdateNotice = (props) => {
             console.log('정상', res.data);
 
             if (res.status === 200) {
-                navigate('/board/noticeDetail/' + notice_no);
+                navigate('/boardMgt/noticeDetail/' + notice_no);
             } else {
                 alert("게시글 수정에 실패하였습니다.");
             }
@@ -148,7 +148,7 @@ const UpdateNotice = (props) => {
                                 <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', padding: '15px' }}>
                                     <div style={{ display: 'flex', gap: '10px' }}>
                                         <Button appearance="primary" color="blue" onClick={submitNotice}>수정</Button>
-                                        <Button appearance="ghost" color="blue" onClick={() => navigate('/board')}>취소</Button>
+                                        <Button appearance="ghost" color="blue" onClick={() => navigate('/boardMgt')}>취소</Button>
                                     </div>
                                 </Card.Footer>
                             </Card>

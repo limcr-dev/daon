@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Input, List, Checkbox } from 'rsuite';
-import { useNavigate } from 'react-router-dom';
 import { request } from '../../common/components/helpers/axios_helper';
 import { useUser } from '../../common/contexts/UserContext';
 
@@ -9,7 +8,6 @@ const MessengerNewGroup = () => {
   const [employees, setEmployees] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (!user?.emp_no) return;

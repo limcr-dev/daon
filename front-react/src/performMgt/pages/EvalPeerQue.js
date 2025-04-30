@@ -23,10 +23,10 @@ const EvalPeerQue = () => {
 
     // 테스트 리스트 불러오기
     useEffect(() => {
-        request("GET", "/performMgt/testListT")
+        request("GET", "/perform/testListT")
             .then((res) => {
                 // 동료평가 테스트 리스트를 불러온다.. 진행안함만?!
-                request("GET", `/performMgt/peerList/${user.emp_no}`)
+                request("GET", `/perform/peerList/${user.emp_no}`)
                 .then((response)=>{
                     // peerList에서 eval_order_num 값들만 배열로 추출
                     const peerEvalNums = response.data.map(item =>item.eval_order_num);
@@ -51,7 +51,7 @@ const EvalPeerQue = () => {
     // 동료 리스트 불러오기!
     useEffect(() => {
         console.log("동료 리스트 불러오기 시작!");
-        request("GET", `/performMgt/peerList/${user.emp_no}`)
+        request("GET", `/perform/peerList/${user.emp_no}`)
             .then((response) => {
                 setPeerList(response.data);
                 console.log(response.data);
@@ -74,7 +74,7 @@ const EvalPeerQue = () => {
 
         if (window.confirm(`${orderNum}번 테스트를 ${selectedPeer}에게 시작할까요?`)) {
             setOrderNum(orderNum); // 저장
-            request("GET", `/performMgt/queslist/${orderNum}`)
+            request("GET", `/perform/queslist/${orderNum}`)
                 .then((data) => {
                     console.log("응답", data);
                     setQuesList(data.data);
@@ -137,7 +137,7 @@ const EvalPeerQue = () => {
         }
 
         try {
-            const res = await request("POST", "/performMgt/evalPeerInsert", payload);
+            const res = await request("POST", "/perform/evalPeerInsert", payload);
 
             if (res.status === 200 || res.data > 0) {
                 alert("평가가 성공적으로 저장되었습니다!");

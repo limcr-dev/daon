@@ -19,7 +19,7 @@ const MessengerTree = () => {
 
   const handleSelect = (label) => {
     if(label) {
-      navigate(`/messenger/${label.value}`);
+      navigate(`/messengerMgt/${label.value}`);
     }
   };
 

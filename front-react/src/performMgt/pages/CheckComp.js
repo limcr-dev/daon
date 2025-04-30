@@ -61,7 +61,7 @@ const CheckComp = () => {
     // 컴포넌트 처음 랜더링 될때 역량 리스트 가져와서 배열
     useEffect(() => {
         // alert("test");
-        request("get", "/performMgt/compList")
+        request("get", "/perform/compList")
             .then(comp => {
                 // console.log("Fetched Data : ", comp);
                 setCompList(comp.data);
@@ -72,7 +72,7 @@ const CheckComp = () => {
 
     // 마지막 번호를 받아서 +1세팅, 3자리 숫자로 생성
     useEffect(() => {
-        request("get", "/performMgt/lastOrderNum")
+        request("get", "/perform/lastOrderNum")
             .then(res => {
                 const text = res?.data ?? "000";  // null이거나 undefined 이면 "000"
                 console.log("서버응답:", text);
@@ -117,7 +117,7 @@ const CheckComp = () => {
             return; // 함수 종료
         }
         
-        request("post", "/performMgt/insertComp" , test)
+        request("post", "/perform/insertComp" , test)
             .then((res) => {
                 if (res.status === 201) {
                     alert("성공적으로 저장되었습니다");

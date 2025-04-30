@@ -144,7 +144,9 @@ const AddressBook = () => {
                     </thead>
                     <tbody>
                       {abList.map((employees, index) => {
-                        const isFavorite = favoriteList.some(fav => fav.emp_no === employees.emp_no);
+                        const isFavorite = Array.isArray(favoriteList)
+                          ? favoriteList.some(fav => fav.emp_no === employees.emp_no)
+                          : false;
 
                         const handleStarClick = async () => {
                           try {
@@ -158,7 +160,7 @@ const AddressBook = () => {
                               });
                               toast.success('즐겨찾기에 추가되었습니다!');
                             }
-                            fetchData(paging.page); // 갱신
+                            fetchData(paging.page);
                           } catch (e) {
                             toast.error('오류가 발생했습니다.');
                           }
@@ -171,7 +173,6 @@ const AddressBook = () => {
                             style={{ cursor: 'context-menu' }}
                           >
                             <td>
-                              {/* 별 클릭 이벤트 */}
                               <span
                                 style={{
                                   marginRight: '5px',
@@ -188,7 +189,11 @@ const AddressBook = () => {
                             <td style={{ textAlign: 'center' }}>{employees.emp_name}</td>
                             <td style={{ textAlign: 'center' }}>{departmentNames[employees.dept_no] || '-'}</td>
                             <td style={{ textAlign: 'center' }}>{positionNames[employees.position_id] || '-'}</td>
-                            <td style={{ textAlign: 'center' }}>{employees.emp_ext_tel?.slice(4, 9)}</td>
+                            <td style={{ textAlign: 'center' }}>
+                              {typeof employees.emp_ext_tel === 'string' && employees.emp_ext_tel.length >= 9
+                                ? employees.emp_ext_tel.slice(4, 9)
+                                : '-'}
+                            </td>
                           </tr>
                         );
                       })}
@@ -220,13 +225,23 @@ const AddressBook = () => {
           <li
             style={{ cursor: 'pointer' }}
             onClick={() => {
+              const already = Array.isArray(favoriteList)
+                ? favoriteList.some(fav => fav.emp_no === contextMenu.user?.emp_no)
+                : false;
+
+              if (already) {
+                alert("이미 등록된 사용자입니다.");
+                return;
+              }
+
               request("POST", `/messenger/favorite/add`, {
                 userId: user.emp_no,
-                favoriteId: contextMenu.user.emp_no
+                favoriteId: contextMenu.user?.emp_no
               })
                 .then(res => {
                   if (res.data === "추가 성공") {
                     alert("즐겨찾기에 추가되었습니다!");
+                    fetchData(paging.page);
                   } else {
                     alert("이미 등록된 사용자입니다.");
                   }

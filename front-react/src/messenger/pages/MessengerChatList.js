@@ -77,9 +77,9 @@ const MessengerChatList = () => {
 		return () => window.removeEventListener('storage', handleStorage);
 	}, []);
 
-	const goHome = () => navigate('/messenger/messengerRun');
-	const goChattingList = () => navigate('/messenger/messengerChatList');
-	const goSetting = () => navigate('/messenger/messengerSetting');
+	const goHome = () => navigate('/messengerMgt/messengerRun');
+	const goChattingList = () => navigate('/messengerMgt/messengerChatList');
+	const goSetting = () => navigate('/messengerMgt/messengerSetting');
 
 	return (
 		<div style={{

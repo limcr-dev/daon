@@ -8,9 +8,9 @@ const MessengerSetting = () => {
 	const { user } = useUser();
 	const navigate = useNavigate();
 
-	const goHome = () => navigate('/messenger/messengerRun');
-	const goChattingList = () => navigate('/messenger/messengerChatList');
-	const goSetting = () => navigate('/messenger/messengerSetting');
+	const goHome = () => navigate('/messengerMgt/messengerRun');
+	const goChattingList = () => navigate('/messengerMgt/messengerChatList');
+	const goSetting = () => navigate('/messengerMgt/messengerSetting');
 	return (
 		<div>
 			설정 think중..

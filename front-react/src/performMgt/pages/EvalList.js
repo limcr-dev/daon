@@ -16,7 +16,7 @@ const EvalList = () => {
     const [testList, setTestList] = useState([]);
 
     useEffect(() => {
-        request('GET', "/performMgt/testListT")
+        request('GET', "/perform/testListT")
             .then(res => {
                 setTestList(res.data);
             })
@@ -28,7 +28,7 @@ const EvalList = () => {
     const deleteTest = (orderNum) => {
         if (window.confirm(`${orderNum}번 데이터를 정말 삭제할까요?`))
 
-            request('DELETE', `/performMgt/testList/${orderNum}`)
+            request('DELETE', `/perform/testList/${orderNum}`)
                 .then((res) => {
                     console.log("삭제 응답", res.data);
                     if (res.data === "ok") {
@@ -57,15 +57,15 @@ const EvalList = () => {
 
     // 전체 직원 평가 리스트 
     useEffect(() => {
-        request('GET', `/performMgt/evalStatus`)
+        request('GET', `/perform/evalStatus`)
             .then(res => {
                 console.log("직원리스트", res.data)
                 const employees = res.data;
 
                 // 여기서 Promise.all 로 두개 동시에!
                 Promise.all([
-                    request('GET', `/performMgt/peerStatus`),
-                    request('GET', `/performMgt/attandTotalScore`)
+                    request('GET', `/perform/peerStatus`),
+                    request('GET', `/perform/attandTotalScore`)
                 ])
                     .then(([peerRes, attandRes]) => {
                         console.log("동료평가진행현황", peerRes.data);
@@ -144,7 +144,7 @@ const EvalList = () => {
     };
 
     return (
-        <Container style={{ minHeight: '100vh', width: '100%' }}>s
+        <Container style={{ minHeight: '100vh', width: '100%' }}>
             <Leftbar />
             <Container>
                 <LeftbarDEvaluation />

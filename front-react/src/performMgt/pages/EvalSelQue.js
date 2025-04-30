@@ -20,11 +20,11 @@ const EvalSelQue = () => {
 
     // 테스트 리스트 불러오기 
     useEffect(() => {
-        request("get", "/performMgt/testListT")
+        request("get", "/perform/testListT")
             .then((res) => {
                 console.log("자기평가 전체리스트", res.data);
 
-                request("get", `/performMgt/selfList/${user.emp_no}`)
+                request("get", `/perform/selfList/${user.emp_no}`)
                     .then((response) => {
                         console.log("최종 자기평가 리스트:", response.data);
 
@@ -60,7 +60,7 @@ const EvalSelQue = () => {
 
         if (window.confirm(`${orderNum}번 테스트를 시작할까요?`)) {
             setOrderNum(orderNum); // 저장
-            request("GET", `/performMgt/queslist/${orderNum}`)
+            request("GET", `/perform/queslist/${orderNum}`)
                 .then((data) => {
                     console.log("응답", data);
                     setQuesList(data.data);
@@ -116,7 +116,7 @@ const EvalSelQue = () => {
         }
 
         try {
-            const res = await request("post", `/performMgt/evalSelfInsert`, payload)
+            const res = await request("post", `/perform/evalSelfInsert`, payload)
 
             if (res.status === 200 || res.data === "ok") {
                 alert("평가가 성공적으로 저장되었습니다!");

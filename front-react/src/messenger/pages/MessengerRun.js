@@ -16,13 +16,16 @@ const MessengerRun = () => {
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
 
-  const goHome = () => navigate('/messenger/messengerRun');
-  const goChattingList = () => navigate('/messenger/messengerChatList');
-  const goSetting = () => navigate('/messenger/messengerSetting');
+  const goHome = () => navigate('/messengerMgt/messengerRun');
+  const goChattingList = () => navigate('/messengerMgt/messengerChatList');
+  const goSetting = () => navigate('/messengerMgt/messengerSetting');
 
-  const filtered = favorites.filter(item =>
-    item.emp_name.includes(search) || String(item.emp_no).includes(search)
-  );
+  const filtered = Array.isArray(favorites)
+    ? favorites.filter(item =>
+      item.emp_name.includes(search) || String(item.emp_no).includes(search)
+    )
+    : [];
+
 
   const fetchFavorites = (keyword = '') => {
     const url = keyword
@@ -30,8 +33,17 @@ const MessengerRun = () => {
       : `/messenger/favorite/list?userId=${user.emp_no}`;
 
     request("GET", url)
-      .then(res => setFavorites(res.data || []))
+      .then(res => {
+        const data = res.data;
+        if (Array.isArray(data)) {
+          setFavorites(data);
+        } else {
+          console.warn("서버 응답이 배열이 아닙니다:", data);
+          setFavorites([]);
+        }
+      })
       .catch(() => setFavorites([]));
+
   };
 
   useEffect(() => {

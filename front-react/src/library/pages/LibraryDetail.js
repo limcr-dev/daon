@@ -43,7 +43,7 @@ const LibraryDetail = () => {
 
     // 수정 버튼 누르면 실행되는 함수(arrow function 활용)
     const updateLibrary = () => {
-        navigate('/board/updateLibrary/' + library_no);
+        navigate('/boardMgt/updateLibrary/' + library_no);
     }
 
     // 삭제 버튼 누르면 실행되는 함수(arrow function 활용)
@@ -55,7 +55,7 @@ const LibraryDetail = () => {
             // response.data로 접근하되, 서버가 text로 반환한다면 response.data가 텍스트일 것임
             if (response.data === 'ok') {
                 alert('자료를 삭제하였습니다.');
-                navigate('/board/libraryList');  // 삭제 성공 시, 자료 목록 페이지로 이동
+                navigate('/boardMgt/libraryList');  // 삭제 성공 시, 자료 목록 페이지로 이동
             } else {
                 alert('자료 삭제에 실패하였습니다.');
             }
@@ -66,7 +66,7 @@ const LibraryDetail = () => {
     }
 
     const libraryList = () => {
-        navigate('/board/libraryList');
+        navigate('/boardMgt/libraryList');
     }
 
     return (

@@ -37,7 +37,7 @@ const ApproveMenu = () => {
   
   const handleSelect = (selectedLabel) => {
     if (!selectedLabel.value.includes('Menu')) {
-      navigate(`/approve/${selectedLabel.value}`);
+      navigate(`/approveMgt/${selectedLabel.value}`);
     }
   };
   return (
