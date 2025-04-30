@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { useUser } from '../../common/contexts/UserContext';
+import { API_URL } from '../../common/components/helpers/axios_helper';
 
 const MessengerPop = () => {
    const { user } = useUser();
