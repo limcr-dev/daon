@@ -58,8 +58,10 @@ public class SecurityConfig {
 				    .antMatchers("/ws-chat/**").permitAll()
 				    .antMatchers("/api/token/refresh").permitAll()
 				    .antMatchers("/api/s3/library/download/**").permitAll() // 파일 다운로드 경로 추가
+				    .antMatchers("/messenger/file/upload").permitAll()
+				    .antMatchers("/messenger/file/uploads/**").permitAll()
 				    .antMatchers("/", "/index.html", "/static/**").permitAll() //
-				    .anyRequest().authenticated()       // 나머지 전부 로그인 필요!!			
+				    .anyRequest().authenticated()		
 		);
 		
 		return http.build();
