@@ -28,7 +28,7 @@ const Home = () => {
 
   // 핸들러
   const handleNewsClick = () => {
-    window.open('/messenger/crwal/news_more', '_blank', 'width=1200,height=800');
+    window.open('/messengerMgt/crwal/news_more', '_blank', 'width=1200,height=800');
   };
 
   // noticeList 링크로 들어왔을 때 처음 실행되는 부분
@@ -122,7 +122,7 @@ const Home = () => {
                           noticeList.map(notice => (
                             <tr key={notice.notice_no}>
                               <td>{notice.notice_no}</td>
-                              <td><Link to={"/board/noticeDetail/" + notice.notice_no}>{notice.notice_title}</Link></td>
+                              <td><Link to={"/boardMgt/noticeDetail/" + notice.notice_no}>{notice.notice_title}</Link></td>
                               <td>{notice.emp_name}</td>
                               <td>
                                 {notice.notice_filename ? (
@@ -173,7 +173,7 @@ const Home = () => {
                           libraryList.map(library => (
                             <tr key={library.library_no}>
                               <td>{library.library_no}</td>
-                              <td><Link to={"/board/libraryDetail/" + library.library_no}>{library.library_title}</Link></td>
+                              <td><Link to={"/boardMgt/libraryDetail/" + library.library_no}>{library.library_title}</Link></td>
                               <td>{library.emp_name}</td>
                               <td>
                                 {library.library_filename ? (
@@ -233,7 +233,7 @@ const Home = () => {
                                 <td>{doc.doc_no}</td>
                                 <td>{doc.doc_reg_date}</td>
                                 <td>{getFormName(doc.doc_form)}</td>
-                                <td><Link to={"/approve/documentDetail/" + doc.doc_form + "/" + doc.doc_no}>{doc.doc_title}</Link></td>
+                                <td><Link to={"/approveMgt/documentDetail/" + doc.doc_form + "/" + doc.doc_no}>{doc.doc_title}</Link></td>
                                 <td>
                                   {doc.doc_filename ? (
                                     <OverlayTrigger

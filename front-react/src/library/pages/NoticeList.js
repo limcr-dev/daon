@@ -63,7 +63,7 @@ const NoticeList = () => {
                     noticeList.map(notice => (
                       <tr key={notice.notice_no}>
                         <td>{notice.notice_no}</td>
-                        <td><Link to={"/board/noticeDetail/" + notice.notice_no}>{notice.notice_title}</Link></td>
+                        <td><Link to={"/boardMgt/noticeDetail/" + notice.notice_no}>{notice.notice_title}</Link></td>
                         <td>{notice.emp_name}</td>
                         <td>
                           {notice.notice_filename ? (

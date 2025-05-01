@@ -49,7 +49,15 @@ const MessengerRun = () => {
   useEffect(() => {
     if (!user?.emp_no) return;
     request("GET", `/messenger/favorite/list?userId=${user.emp_no}`)
-      .then(res => setFavorites(res.data || []))
+      .then(res => {
+        const data = res.data;
+        if (Array.isArray(data)) {
+          setFavorites(data);
+        } else {
+          console.warn("서버 응답이 배열이 아닙니다:", data);
+          setFavorites([]);
+        }
+      })
       .catch(() => setFavorites([]));
   }, [user.emp_no]);
 

@@ -5,8 +5,8 @@
      
 <mapper namespace="com.spring.daon.messenger.file.FileMapper">
 
-	<!-- 파일 저장 -->
-	<insert id="insertFile">
+   <!-- 파일 저장 -->
+   <insert id="insertFile">
         INSERT INTO chat_file (
             room_code,
             sender_id,
@@ -19,7 +19,7 @@
             #{senderId},
             #{originalName},
             #{savedName},
-            NOW()
+            #{uploadedAt}
         )
     </insert>
     

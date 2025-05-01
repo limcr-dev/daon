@@ -7,7 +7,7 @@ function Weather() {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetch("http://127.0.0.1:5000/crawl")
+		fetch("/crawl")
 			.then((res) => res.json())
 			.then((data) => {
 				setTimeout(() => {
@@ -60,7 +60,7 @@ function Weather() {
 			{loading ? <Loading /> : (
 				data ? (
 					<div>
-						<p style={{marginBottom: '10px'}}>📍 위치: {data.location} </p>
+						<p style={{ marginBottom: '10px' }}>📍 위치: {data.location} </p>
 						<div className="weather-list">
 							{data.weekly.map((item, index) => {
 								const formatted = formatWeatherData(item);

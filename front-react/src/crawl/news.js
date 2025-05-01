@@ -7,17 +7,22 @@ function News() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/crawl")
+    fetch("/crawl")
       .then((res) => res.json())
       .then((data) => {
-        console.log('데이터 :', data.news);
-        setData(data.news || []);
+        if (data && Array.isArray(data.news)) {
+          setData(data.news);
+        } else {
+          setData([]);
+        }
         setLoading(false);
       })
       .catch((err) => {
-        console.error(err);
+        console.error("뉴스 데이터 가져오기 오류:", err);
+        setData([]);
         setLoading(false);
       });
+
   }, []);
 
   if (loading) return <Loading />;

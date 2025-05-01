@@ -44,7 +44,7 @@ const MessengerPop = () => {
                   pauseOnHover: true,
                   onClick: () => {
                      const windowName = `chat-${msg.roomCode}`;
-                     const newWindow = window.open(`/messenger/chat/${msg.roomCode}`, windowName, 'width=500,height=600');
+                     const newWindow = window.open(`/messengerMgt/chat/${msg.roomCode}`, windowName, 'width=500,height=600');
                      if (newWindow) {
                         newWindow.focus();
                      }

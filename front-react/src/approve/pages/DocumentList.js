@@ -84,7 +84,7 @@ const DocumentList = () => {
                           <td>{doc.doc_no}</td>
                           <td>{doc.doc_reg_date}</td>
                           <td>{getFormName(doc.doc_form)}</td>
-                          <td><Link to={"/approve/documentDetail/" + doc.doc_form + "/" + doc.doc_no}>{doc.doc_title}</Link></td>
+                          <td><Link to={"/approveMgt/documentDetail/" + doc.doc_form + "/" + doc.doc_no}>{doc.doc_title}</Link></td>
                           <td>
                             {doc.doc_filename ? (
                               <OverlayTrigger

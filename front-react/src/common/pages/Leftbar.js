@@ -47,7 +47,7 @@ const Leftbar = ({ onOpenOrgChart }) => {
               <Nav>
                 <Nav.Item icon={<Icon as={MdHome} />} onClick={() => navigate('/home')}>홈</Nav.Item>
                 <Nav.Item icon={<Icon as={MdBusinessCenter} />} onClick={() => navigate('/attendMgt')}>근태 관리</Nav.Item>
-                <Nav.Item icon={<Icon as={MdCalendarMonth} />} onClick={() => navigate('/schedule')}>일정</Nav.Item>
+                <Nav.Item icon={<Icon as={MdCalendarMonth} />} onClick={() => navigate('/scheduleMgt')}>일정</Nav.Item>
                 <Nav.Item icon={<Icon as={MdAssignment} />} onClick={() => navigate('/approveMgt')}>전자결재</Nav.Item>
                 <Nav.Item icon={<Icon as={MdCreate} />} onClick={() => navigate('/performMgt')}>인사평가</Nav.Item>
 
