@@ -99,7 +99,6 @@ const VacationForm = ({ approveLine, onFormDataChange }) => {
   };
 
   const changeValue = (e) => {
-    console.log("end term", end);
     let value = e.target.value;
 
     // coop_dept_no는 숫자로 변환, 빈 문자열이면 null로 설정
@@ -117,7 +116,6 @@ const VacationForm = ({ approveLine, onFormDataChange }) => {
       if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
         // 평일 수 계산 함수 호출
         const workingDays = countWorkingDays(start, end);
-        console.log("평일 수:", workingDays);
         vacationForm.used_days = workingDays;
         setUsedDays(workingDays);
       } else {

@@ -8,70 +8,64 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.spring.daon.hrMgt.Employees;
+
 import lombok.RequiredArgsConstructor;
 
-
-//보안 컨텍스트(SecurityContext)에 인증 빈(Authentication)을 추가하면, 모든 컨트롤러에서 @AuthenticationPrincipal을 입력 매개변수로 추가할 수 있다. 
-//public ResponseEntity< > reqularEndpoint(@AuthenticationPrincipal Employees) => 인증된 사용자를 주입
-//따라서 Filter는 인증된 사용자의 개체를 Controller에 제공한다. 인증빈을 반환하기 위해
-
 @RequiredArgsConstructor
-public class JwtAuthFilter extends OncePerRequestFilter {  // 요청당 한번만 사용되기를 원하므로 OncePerRequestFilter 상속받음
-	
-	private final UserAuthProvider userAuthProvider;
+public class JwtAuthFilter extends OncePerRequestFilter {
 
-	// doFilterInternal 메서드는 Spring Security 필터 체인 메커니즘에 의해 직접 호출하지 않아도 자동으로 실행됨
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-		
-		System.out.println("<<< JwtAuthFilter - doFilterInternal() >>>");
-		
-		// refresh 토큰 엔드포인트는 검증 없이 통과
-		String requestURI = request.getRequestURI();
-		if("/api/token/refresh".equals(requestURI)) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-		
-		// WebSocket
-		if (requestURI != null && requestURI.contains("/ws-chat")) {
-		    filterChain.doFilter(request, response);
-		    return;
-		}
+    private final UserAuthProvider userAuthProvider;
 
-		// 멀티파트 업로드 URL
-		if (requestURI != null && requestURI.contains("/messenger/file/upload")) {
-		    System.out.println("파일 업로드 요청은 필터 통과");
-		    filterChain.doFilter(request, response);
-		    return;
-		}
-		
-		// Authorization 헤더에서 토큰 추출
-		String header = request.getHeader(HttpHeaders.AUTHORIZATION);	// 르그인 시점에 보인다
-		
-		if(header != null) {    // 길이가 정확하고 Bearer 토큰이어야 한다.
-			String[] elements = header.split(" ");
-			
-			// 헤더 형식 검증
-			// elements[0] : Bearer / elements[1] : 실제 JWT 토큰
-			if(elements.length == 2 && "Bearer".equals(elements[0])) {
-				// 토큰 유효성 검증
-				try {
-					// 자격증명이 유효하면 보안 컨텍스트에 인증빈을 추가한다. 검증 통과
-					SecurityContextHolder.getContext().setAuthentication(userAuthProvider.validationToken(elements[1]));
-				} catch(RuntimeException e) {    // 문제가 발생하면 보안 컨텍스트를 지우고 오류를 발생시킨다.
-					SecurityContextHolder.clearContext();  
-					throw e;
-				}
-			}
-		}
-		
-		filterChain.doFilter(request, response);  // 필터끝에서 doFilter() 메서드 호출
-		
-	}
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
+        System.out.println("<<< JwtAuthFilter - doFilterInternal() >>>");
+
+        String requestURI = request.getRequestURI();
+
+        // 토큰 체크 제외 URI
+        if (requestURI.equals("/api/token/refresh") ||
+            requestURI.contains("/ws-chat") ||
+            requestURI.contains("/messenger/file/upload")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // Authorization 헤더에서 토큰 추출
+        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (header != null && header.startsWith("Bearer ")) {
+            String token = header.substring(7);
+
+            try {
+                Authentication auth = userAuthProvider.validationToken(token);
+
+                // admin_type 체크 (특정 URI 한정)
+                if (requestURI.startsWith("/api/positions")) {
+                    Employees emp = (Employees) auth.getPrincipal();
+                    int adminType = emp.getAdmin_type();
+                    if (adminType != 2 && adminType != 3) {
+                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "접근 권한이 없습니다.");
+                        return;
+                    }
+                }
+
+                // 보안 컨텍스트에 인증 객체 저장
+                SecurityContextHolder.getContext().setAuthentication(auth);
+
+            } catch (RuntimeException e) {
+                SecurityContextHolder.clearContext();
+                throw e;
+            }
+        }
+
+        // 필터 체인 계속 진행
+        filterChain.doFilter(request, response);
+    }
 }

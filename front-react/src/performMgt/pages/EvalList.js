@@ -144,7 +144,7 @@ const EvalList = () => {
     };
 
     return (
-        <Container style={{ minHeight: '100vh', width: '100%' }}>s
+        <Container style={{ minHeight: '100vh', width: '100%' }}>
             <Leftbar />
             <Container>
                 <LeftbarDEvaluation />

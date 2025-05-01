@@ -3,7 +3,7 @@ import '../css/workReportForm.css';
 import { getDeptName } from '../../hrMgt/components/getEmployeeInfo';
 
 const WorkReportUpdate = ({ approveLine, onFormDataChange, formData, docData }) => {
-  
+
   // 오늘 날짜
   const today = new Date();
   const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -20,20 +20,14 @@ const WorkReportUpdate = ({ approveLine, onFormDataChange, formData, docData }) 
 
   useEffect(() => {
 
-    if (approveLine && Array.isArray(approveLine)) {
-      setLine(approveLine);
-    }
+    if (approveLine && Array.isArray(approveLine)) { setLine(approveLine); }
 
-    if (formData) {
-      setReport(formData);
-    }
+    if (formData) { setReport(formData); }
 
-    if (docData) {
-      setDocument(docData);
-    }
+    if (docData) { setDocument(docData); }
 
     // 모든 필요한 데이터가 있으면 로딩 완료
-    if (line && report && document) {
+    if (approveLine && formData && docData) {
       setIsLoading(false);
     }
 
@@ -63,8 +57,13 @@ const WorkReportUpdate = ({ approveLine, onFormDataChange, formData, docData }) 
   };
 
   // 로딩 중이면 로딩 표시
-  if (isLoading || !line.length) {
-    return <div>데이터를 불러오는 중입니다...</div>;
+  if (isLoading) {
+    return (
+      <>
+        <div className="form-title">업무기안</div>
+        <div style={{ padding: '20px' }}>데이터를 불러오는 중입니다...</div>
+      </>
+    );
   }
 
   return (
@@ -103,23 +102,23 @@ const WorkReportUpdate = ({ approveLine, onFormDataChange, formData, docData }) 
               <tbody>
                 <tr>
                   <td rowSpan="3" className="approval-position">신청</td>
-                  <td className="approval-header">{line[0].appr_position}</td>
+                  <td className="approval-header">{line[0]?.appr_position || '직급 정보 없음'}</td>
                 </tr>
                 <tr>
                   <td className="approval-sign">
                     {line[0].appr_status === 0 && document.doc_status !== 1 && <div className="approval-stamp">승인</div>}
-                    <div className="approval-name">{line[0].appr_name || '이름 정보 없음'}</div>
+                    <div className="approval-name">{line[0]?.appr_name || '이름 정보 없음'}</div>
                   </td>
                 </tr>
                 <tr>
                   <td className="approval-date">
-                    {document.doc_status !== 1 && <div>{line[0].appr_date}</div>}
+                    {document.doc_status !== 1 && <div>{line[0]?.appr_date || '상태 변경 없음'}</div>}
                   </td>
                 </tr>
               </tbody>
             </table>
             {/* 승인 정보 (결재선) - 결재선이 있을 때만 표시 */}
-            {line.length > 1 ? (
+            {line && line.length > 1 && (
               <table className="approval-table">
                 <tbody>
                   <tr>
@@ -172,8 +171,8 @@ const WorkReportUpdate = ({ approveLine, onFormDataChange, formData, docData }) 
                       : null}
                   </tr>
                 </tbody>
-              </table>) : <div></div>
-            }
+              </table>
+            )}
           </div>
         </div>
 
@@ -184,7 +183,7 @@ const WorkReportUpdate = ({ approveLine, onFormDataChange, formData, docData }) 
               <td className="label-cell">시행일자</td>
               <td>
                 <div className="date-input">
-                  <input type="date" name='execution_date' value={report.execution_date} format='yyyy/MM/dd' onChange={changeValue} min={tomorrowDate} />
+                  <input type="date" name='execution_date' value={report.execution_date} onChange={changeValue} min={tomorrowDate} />
                 </div>
               </td>
               <td className="label-cell">협조부서</td>

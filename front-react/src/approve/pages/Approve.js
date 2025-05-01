@@ -20,53 +20,22 @@ const Approve = () => {
   const [completeList, setCompleteList] = useState([]);
 
   useEffect(() => {
-    try {
-      const fetchData = async () => {
-        const response = await request("GET", `/approve/approverInfo/${user.emp_no}`);
-        if (response && response.data) {
-          // 배열인지 확인하고 설정
-          const data = Array.isArray(response.data) ? response.data : [];
-          setApproverList(data);
-
-        }
-      };
-      fetchData();
-    } catch (error) {
-      console.log("error :", error);
-    }
-  }, []);
-
-  useEffect(() => {
-    try {
-      const fetchData = async () => {
-        const response = await request("GET", "/approve/documents/2/" + parseInt(user.emp_no));
-        if (response && response.data) {
-          // 배열인지 확인하고 설정
-          const data = Array.isArray(response.data) ? response.data : [];
-          setProceedList(data);
-        }
-      };
-      fetchData();
-    } catch (error) {
-      console.log("error :", error);
-    }
-  }, []);
-
-  useEffect(() => {
-    try {
-      const fetchData = async () => {
-        const response = await request("GET", "/approve/documents/3/" + parseInt(user.emp_no));
-        if (response && response.data) {
-          // 배열인지 확인하고 설정
-          const data = Array.isArray(response.data) ? response.data : [];
-          setCompleteList(data);
-        }
-      };
-      fetchData();
-    } catch (error) {
-      console.log("error :", error);
-    }
-  }, []);
+    const fetchAll = async () => {
+      try {
+        const [approverRes, proceedRes, completeRes] = await Promise.all([
+          request("GET", `/approve/approverInfo/${user.emp_no}`),
+          request("GET", `/approve/documents/2/${user.emp_no}`),
+          request("GET", `/approve/documents/3/${user.emp_no}`)
+        ]);
+        setApproverList(Array.isArray(approverRes.data) ? approverRes.data : []);
+        setProceedList(Array.isArray(proceedRes.data) ? proceedRes.data : []);
+        setCompleteList(Array.isArray(completeRes.data) ? completeRes.data : []);
+      } catch (err) {
+        console.error("결재 문서 데이터 불러오기 오류:", err);
+      }
+    };
+    fetchAll();
+  }, [user.emp_no]);
 
   return (
     <Container style={{ minHeight: '100vh', width: '100%' }}>
@@ -132,7 +101,7 @@ const Approve = () => {
               <Card style={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
                 <Card.Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', backgroundColor: '#f5f5f5', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
                   <span style={{ fontWeight: '600', fontSize: '16px' }}>결재 진행 문서</span>
-                  <Button appearance="link">더보기</Button>
+                  <Button appearance="link" onClick={() => navigate('/approve/documents/2')}>더보기</Button>
                 </Card.Header>
                 <table className='approve-table'>
                   <thead>
@@ -192,7 +161,7 @@ const Approve = () => {
               <Card style={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
                 <Card.Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', backgroundColor: '#f5f5f5', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
                   <span style={{ fontWeight: '600', fontSize: '16px' }}>결재 승인 문서</span>
-                  <Button appearance="link">더보기</Button>
+                  <Button appearance="link" onClick={() => navigate('/approve/documents/3')}>더보기</Button>
                 </Card.Header>
 
                 <table className='approve-table'>

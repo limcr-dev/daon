@@ -22,11 +22,6 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
     };
 
     const [deptTree, setDeptTree] = useState([]); // 조직도 정보
-    // const [searchTerm, setSearchTerm] = useState('');   // 실시간 검색을 위한 변수
-    // const handleInputChange = (e) => {
-    //     const newSearchTerm = e.target.value;
-    //     setSearchTerm(newSearchTerm);
-    // }
 
     // 조직도 불러오기
     useEffect(() => {
@@ -38,24 +33,18 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
                 console.error("조직도 불러오기 에러:", error);
             }
         };
-        
+
         fetchOrganization();
     }, []);
 
     // 신청자 결재선 제일 첫번째에 넣기
     useEffect(() => {
         // 이미 approveLine이 있으면 그대로 사용
-        if (approveLine && approveLine.length > 0) {
-            console.log("props로 받은 결재선 사용");
-            return;
-        }
+        if (approveLine && approveLine.length > 0) { return; }
 
         // line이 비어있을 때만 초기화
-        if (line.length === 0 && user && user.emp_no) {
-            // line 상태 업데이트
-            console.log("신청자 정보 추가:", applicant);
-            setLine([applicant]);
-        }
+        if (line.length === 0 && user && user.emp_no) { setLine([applicant]); }
+
     }, [approveLine, user]);
 
     const transformToTree = (departments) => {
@@ -109,7 +98,7 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
                 appr_dept_name: selectedLabel.dept_data.dept_name,
                 appr_dept_no: selectedLabel.dept_data.dept_no,
                 appr_status: line.length === 1 ? 2 : 1,
-                appr_type:'결재자'
+                appr_type: '결재자'
             })
             console.log(approver);
         } else {
@@ -171,25 +160,17 @@ const ApproveLine = ({ closeModal, onSave, approveLine = [] }) => {
     }
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height:'100%'}}>
-            <div style={{ display: 'flex', flex: 1}}>
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
+            <div style={{ display: 'flex', flex: 1 }}>
                 {/* 왼쪽 패널 - 조직도/나의 결재선 */}
                 <div style={{ width: '30%', display: 'flex', flexDirection: 'column', borderRight: '1px solid #e0e0e0', overflow: 'hidden' }}>
-                    {/* <div style={{ padding: '10px' }}>
-                        <input
-                            type="text"
-                            placeholder="이름으로 검색하세요"
-                            value={searchTerm}
-                            onChange={handleInputChange}
-                            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-                        />
-                    </div> */}
+                    
                     <div style={{ flex: 1, overflow: 'hidden' }}>
                         <Tree
                             data={deptTree}
                             showIndentLine
                             defaultExpandAll
-                            
+
                             onSelect={handleSelect}
                             style={{ overflow: 'hidden' }}
                         />

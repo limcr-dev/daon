@@ -27,32 +27,23 @@ const ApproverDocList = () => {
   const [apprDocList, setApprDocList] = useState([]);
 
   useEffect(() => {
-    try {
-      const fetchData = async () => {
-        let endpoint;
-
-        // status 값이 있으면 결재 상태별 문서 조회, 아니면 전체 문서 조회
-        if (status !== null && status !== undefined && !isNaN(status)) {
-          endpoint = `/approve/approver/${status}/${user.emp_no}`;
-        } else {
-          endpoint = `/approve/approver/all/${user.emp_no}`;
-        }
-
-        console.log("url", endpoint);
+    const fetchData = async () => {
+      try {
+        const endpoint = Number.isInteger(status)
+          ? `/approve/approver/${status}/${user.emp_no}`
+          : `/approve/approver/all/${user.emp_no}`;
 
         const response = await request("GET", endpoint);
+        const data = Array.isArray(response.data) ? response.data : [];
+        setApprDocList(data);
+      } catch (error) {
+        console.error("결재 문서 불러오기 오류:", error);
+      }
+    };
 
-        if (response && response.data) {
-          // 배열인지 확인하고 설정
-          const data = Array.isArray(response.data) ? response.data : [];
-          setApprDocList(data);
-        }
-      };
-      fetchData();
-    } catch (error) {
-      console.log("error :", error);
-    }
-  }, [status]);
+    fetchData();
+  }, [status, user.emp_no]);
+
 
   return (
     <Container style={{ minHeight: '100vh', width: '100%' }}>

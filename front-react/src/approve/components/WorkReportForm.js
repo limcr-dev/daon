@@ -14,7 +14,6 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
   tomorrow.setDate(today.getDate() + 1);
   const tomorrowDate = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
 
-
   const [line, setLine] = useState(approveLine);
   const [report, setReport] = useState({
     emp_no: user.emp_no,
@@ -26,7 +25,6 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
   });
 
   useEffect(() => {
-    console.log("받은 결재선 데이터:", approveLine);
     if (approveLine && Array.isArray(approveLine)) {
       setLine(approveLine);
     }
@@ -107,7 +105,7 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
               </tbody>
             </table>
             {/* 승인 정보 (결재선) - 결재선이 있을 때만 표시 */}
-            {line.length > 0 ? (
+            {line && line.length > 0 ? (
               <table className="approval-table">
                 <tbody>
                   <tr>
@@ -125,19 +123,19 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
                   <tr>
                     {line[1] ?
                       <td className="approval-sign">
-                        {line[1].appr_status === 3 && document.doc_status !== 4 && <div className="approval-stamp">승인</div>}
+                        {line[1].appr_status === 3 && <div className="approval-stamp">승인</div>}
                         <div className="approval-name">{line[1].appr_name || '이름 정보 없음'}</div>
                       </td>
                       : null}
                     {line[2] ?
                       <td className="approval-sign">
-                        {line[2].appr_status === 3 && document.doc_status !== 4 && <div className="approval-stamp">승인</div>}
+                        {line[2].appr_status === 3 && <div className="approval-stamp">승인</div>}
                         <div className="approval-name">{line[2].appr_name || '이름 정보 없음'}</div>
                       </td>
                       : null}
                     {line[3] ?
                       <td className="approval-sign">
-                        {line[3].appr_status === 3 && document.doc_status !== 4 && <div className="approval-stamp">승인</div>}
+                        {line[3].appr_status === 3 && <div className="approval-stamp">승인</div>}
                         <div className="approval-name">{line[3].appr_name || '이름 정보 없음'}</div>
                       </td>
                       : null}
@@ -169,13 +167,13 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
               <td className="label-cell">시행일자</td>
               <td>
                 <div className="date-input">
-                  <input type="date" name='execution_date' format='yyyy/MM/dd' onChange={changeValue} min={tomorrowDate} />
+                  <input type="date" name='execution_date' value={report.execution_date} format='yyyy/MM/dd' onChange={changeValue} min={tomorrowDate} />
                 </div>
               </td>
               <td className="label-cell">협조부서</td>
               <td>
                 <div>
-                  <select name="coop_dept_no" onChange={changeValue}>
+                  <select name="coop_dept_no" value={report.coop_dept_no} onChange={changeValue}>
                     <option value="">부서 선택</option>
                     <option value="1">다온</option>
                     <option value="10">경영부</option>
@@ -201,6 +199,7 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
                 <input
                   type="text"
                   name='title'
+                  value={report.title}
                   className="full-width-input"
                   placeholder="제목을 입력하세요"
                   onChange={changeValue}
@@ -215,6 +214,7 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
                 <textarea
                   name='content'
                   placeholder='내용을 입력하세요'
+                  value={report.content}
                   className="full-width-input"
                   onChange={changeValue}
                   style={{

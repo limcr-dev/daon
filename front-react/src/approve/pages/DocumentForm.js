@@ -54,18 +54,16 @@ const DocumentForm = () => {
             };
             setLine([applicant]);
         }
-    }, [user]); // user 정보가 바뀌면 다시 실행
+    }, [user]);
 
 
     // 데이터 변화를 감지하는 이벤트 핸들러
     const handleFormDataChange = (data) => {
         setFormData(data);
-        const title = data.title
         setDocument({
             ...document,
-            doc_title: title
+            doc_title: data.title
         })
-        console.log(formData);
     };
 
     // 모달창 오픈 함수
@@ -73,10 +71,8 @@ const DocumentForm = () => {
 
     // 모달창에서 저장된 결재선을 부모창에서 저장하는 함수
     const handleSaveLine = (lineData) => {
-        // 검증: 데이터가 배열이고 비어있지 않은지 확인
         if (lineData.length > 0) {
             setLine(lineData);
-            console.log('결재선 상태 업데이트됨');
         } else {
             console.warn('받은 결재선 데이터가 비어있거나 배열이 아님:', lineData);
         }
@@ -113,10 +109,6 @@ const DocumentForm = () => {
                     return false;
                 }
                 return true;
-            case 2:
-                return true;
-            case 3:
-                return true;
             case 5:
                 if (!formData.execution_date) {
                     alert("업무 시행일을 지정해주세요.");
@@ -133,20 +125,10 @@ const DocumentForm = () => {
         let requestData = {};
         switch (form_no) {
             case 1:
-                requestData = {
-                    vacation_req: formData
-                };
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
+                requestData = { vacation_req: formData };
                 break;
             case 5:
-                requestData = {
-                    work_report: formData
-                };
+                requestData = { work_report: formData };
                 return requestData;
             default:
                 alert("유효한 양식이 아닙니다.");
@@ -312,7 +294,7 @@ const DocumentForm = () => {
                             </ButtonGroup>
 
                         </div>
-                        <div style={{marginTop:'20px'}}>
+                        <div style={{ marginTop: '20px' }}>
                             <FileUpload onFileUpload={handleFileUpload} />
                         </div>
 

@@ -14,7 +14,9 @@
 	    	 , e.position_id
 	    	 , e.role_id
 	      FROM departments d
-	      LEFT JOIN employees e ON d.dept_no = e.dept_no
+	      LEFT JOIN employees e
+	        ON d.dept_no = e.dept_no
+	       AND e.emp_status IN (1,2)
 	     ORDER BY d.dept_no, e.position_id
 	</select>
 
