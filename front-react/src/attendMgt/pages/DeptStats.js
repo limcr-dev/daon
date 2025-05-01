@@ -82,7 +82,7 @@ const DeptStats = () => {
                   currentDate={currentDate}
                   setCurrentDate={setCurrentDate}
                   setMoveDate={setMoveDate}
-                  pageName={getDeptName(pickDept_no)+' 근태통계'} />
+                  pageName={getDeptName(pickDept_no)+' 근태 통계'} />
 
                 <Card className="attendCard" >
                   <Card.Header className="cardHeaderContents">
