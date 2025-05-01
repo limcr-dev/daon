@@ -47,10 +47,10 @@ const KibanaDashboard = (props) => {
   // const host = "13.209.178.147:5601";
 
   // localhost용
-  const host = "localhost:5601";
+  //const host = "localhost:5601";
 
   // 발표용
-  // const host = "192.168.0.33:5601";
+  const host = "192.168.0.33:5601";
   const Dashboard = ({ pick }) => {
     // 해당 부서에 맞는 URL
     const kibanaUrl = `http://${host}/goto/${deptUrls[pick] || ""}?embed=true`;
