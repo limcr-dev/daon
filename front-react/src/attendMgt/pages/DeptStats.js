@@ -59,7 +59,7 @@ const DeptStats = () => {
 
   return (
     <div>
-      <Container style={{ height: '1050px', width: '100%' }}>
+      <Container style={{ height: '1200px', width: '100%' }}>
         <Leftbar />
         <Container>
           <AttendMgtLeftbar user={user} />
