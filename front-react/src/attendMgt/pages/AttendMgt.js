@@ -111,7 +111,7 @@ const AttendMgt = () => {
   return (
     <Container className="attendContainer">
       <Leftbar />
-      <Container>
+      <Container style={{ height: '1050px', width: '100%' }}>
 
         <AttendMgtLeftbar user={user} />
 
