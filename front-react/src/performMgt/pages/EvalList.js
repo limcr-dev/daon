@@ -16,9 +16,14 @@ const EvalList = () => {
     const [testList, setTestList] = useState([]);
 
     useEffect(() => {
-        request('GET', "/performMgt/testListT")
+        request('GET', "/perform/testListT")
             .then(res => {
-                setTestList(res.data);
+                if (Array.isArray(res.data)) {
+                    setTestList(res.data);
+                }
+                else {
+                    console.warn("응답이 배열이 아님:", res.data);
+                }
             })
             .catch((error) =>
                 console.error("데이터 가져오기 오류 : ", error));
@@ -28,7 +33,7 @@ const EvalList = () => {
     const deleteTest = (orderNum) => {
         if (window.confirm(`${orderNum}번 데이터를 정말 삭제할까요?`))
 
-            request('DELETE', `/performMgt/testList/${orderNum}`)
+            request('DELETE', `/perform/testList/${orderNum}`)
                 .then((res) => {
                     console.log("삭제 응답", res.data);
                     if (res.data === "ok") {
@@ -57,51 +62,56 @@ const EvalList = () => {
 
     // 전체 직원 평가 리스트 
     useEffect(() => {
-        request('GET', `/performMgt/evalStatus`)
+        request('GET', `/perform/evalStatus`)
             .then(res => {
-                console.log("직원리스트", res.data)
-                const employees = res.data;
+                if (Array.isArray(res.data)) {
+                    console.log("직원리스트", res.data)
 
-                // 여기서 Promise.all 로 두개 동시에!
-                Promise.all([
-                    request('GET', `/performMgt/peerStatus`),
-                    request('GET', `/performMgt/attandTotalScore`)
-                ])
-                    .then(([peerRes, attandRes]) => {
-                        console.log("동료평가진행현황", peerRes.data);
-                        console.log("근태평가 점수", attandRes.data);
+                    const employees = res.data;
 
-                        const peerList = peerRes.data;
-                        const attandList = attandRes.data;
+                    // 여기서 Promise.all 로 두개 동시에!
+                    Promise.all([
+                        request('GET', `/perform/peerStatus`),
+                        request('GET', `/perform/attandTotalScore`)
+                    ])
+                        .then(([peerRes, attandRes]) => {
+                            console.log("동료평가진행현황", peerRes.data);
+                            console.log("근태평가 점수", attandRes.data);
 
-                        const mergedList = employees.map(emp => {
-                            const peerInfo = peerList.find(peer => peer.eval_emp_no === emp.emp_no);
-                            const attandInfo = attandList.find(att => att.emp_no === emp.emp_no);
+                            const peerList = Array.isArray(peerRes.data) ? peerRes.data : [];
+                            const attandList = Array.isArray(attandRes.data) ? attandRes.data : [];
 
-                            return {
-                                ...emp,
-                                peer_cnt: peerInfo?.peer_cnt || null,
-                                peer_total_cnt: peerInfo?.peer_total_cnt || null,
-                                attand_avg: attandInfo?.attand_avg || null,
-                            };
+                            const mergedList = employees.map(emp => {
+                                const peerInfo = peerList.find(peer => peer.eval_emp_no === emp.emp_no);
+                                const attandInfo = attandList.find(att => att.emp_no === emp.emp_no);
+
+                                return {
+                                    ...emp,
+                                    peer_cnt: peerInfo?.peer_cnt || null,
+                                    peer_total_cnt: peerInfo?.peer_total_cnt || null,
+                                    attand_avg: attandInfo?.attand_avg || null,
+                                };
+                            });
+
+                            setEvalList(mergedList);
+
+
+                            const setSelf = getCntGrade(res.data, "self");
+                            const setPeer = getCntGrade(res.data, "peer");
+                            const setAttand = getCntGrade(mergedList, "attand");
+                            setGradeChart([
+                                { name: "자기평가", ...setSelf },
+                                { name: "동료평가", ...setPeer },
+                                { name: "근태평가", ...setAttand },
+                            ]);
+
+                        })
+                        .catch((error) => {
+                            console.error("동료평가나 근태평가 가져오기 오류 : ", error);
                         });
-
-                        setEvalList(mergedList);
-
-
-                        const setSelf = getCntGrade(res.data, "self");
-                        const setPeer = getCntGrade(res.data, "peer");
-                        const setAttand = getCntGrade(mergedList, "attand");
-                        setGradeChart([
-                            { name: "자기평가", ...setSelf },
-                            { name: "동료평가", ...setPeer },
-                            { name: "근태평가", ...setAttand },
-                        ]);
-
-                    })
-                    .catch((error) => {
-                        console.error("동료평가나 근태평가 가져오기 오류 : ", error);
-                    });
+                } else {
+                    console.warn("응답이 배열이 아님:", res.data);
+                }
             })
             .catch((error) =>
                 console.error("데이터 가져오기 오류 : ", error));
@@ -144,7 +154,7 @@ const EvalList = () => {
     };
 
     return (
-        <Container style={{ minHeight: '100vh', width: '100%' }}>s
+        <Container style={{ minHeight: '100vh', width: '100%' }}>
             <Leftbar />
             <Container>
                 <LeftbarDEvaluation />
@@ -209,7 +219,6 @@ const EvalList = () => {
                                 <Card.Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', backgroundColor: '#f5f5f5', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
                                     <h5 style={{ marginLeft: '20px' }}> 직원 리스트 </h5>
                                 </Card.Header>
-
                                 <table className='eval-table'>
                                     <thead>
                                         <tr>
@@ -240,10 +249,8 @@ const EvalList = () => {
                                                         <td>({item.peer_cnt}/{item.peer_total_cnt})</td>
                                                         <td>{getGrade(item.peer_avg)}등급 <br />({item.peer_avg})</td>
                                                         <td>{getGrade(item.attand_avg)}등급<br />({item.attand_avg})</td>
-
                                                         <td>{getDeptName(item.dept_no)}</td>
                                                         <td>{getPositionName(item.position_id)}</td>
-
                                                         <td> <button onClick={() => navigate(`/performMgt/evaluation/detail/${item.emp_no}`)}>
                                                             상세보기
                                                         </button></td>
@@ -258,18 +265,12 @@ const EvalList = () => {
                                             </tr>)}
                                     </tbody>
                                 </table>
-
-
                             </Card>
-
                         </Card>
                     </div>
                 </Content>
             </Container>
         </Container >
-
     )
-
-
 }
 export default EvalList;
