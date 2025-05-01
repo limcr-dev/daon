@@ -37,7 +37,7 @@ const Header = ({ onProfileUpdated }) => {
 
   //메신저 실행
   const msgRun = () => {
-    const url = `/messenger/messengerRun`;
+    const url = `/messengerMgt/messengerRun`;
     const features = 'width=500,height=600,resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no,location=no';
     window.open(url, '_blank', features)
   }

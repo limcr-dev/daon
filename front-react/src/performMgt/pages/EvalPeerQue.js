@@ -27,24 +27,28 @@ const EvalPeerQue = () => {
             .then((res) => {
                 // 동료평가 테스트 리스트를 불러온다.. 진행안함만?!
                 request("GET", `/perform/peerList/${user.emp_no}`)
-                .then((response)=>{
-                    // peerList에서 eval_order_num 값들만 배열로 추출
-                    const peerEvalNums = response.data.map(item =>item.eval_order_num);
+                    .then((response) => {
+                        if (Array.isArray(response.data)) {
+                            // peerList에서 eval_order_num 값들만 배열로 추출
+                            const peerEvalNums = response.data.map(item => item.eval_order_num);
 
-                    // testList에서 peerEvalNums에 해당하는 것만 필터링
-                    const refiltered = res.data.filter(test =>
-                        peerEvalNums.includes(test.eval_order_num)
-                    );
-                    console.log("필터된 자기평가 리스트: " , refiltered);
-                    setTestList(refiltered);
-                })
-               .catch((error)=>{
-                console.error("동료평가 리스트 가져오기 오류 : ", error);
-               }) ;
+                            // testList에서 peerEvalNums에 해당하는 것만 필터링
+                            const refiltered = res.data.filter(test =>
+                                peerEvalNums.includes(test.eval_order_num)
+                            );
+                            console.log("필터된 자기평가 리스트: ", refiltered);
+                            setTestList(refiltered);
+                        } else {
+                            console.warn("응답이 배열이 아님:", response.data);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("동료평가 리스트 가져오기 오류 : ", error);
+                    });
             })
-            .catch((error) =>{
+            .catch((error) => {
                 console.error("데이터 가져오기 오류 : ", error);
-    });
+            });
     }, [user]);
 
 
@@ -53,8 +57,12 @@ const EvalPeerQue = () => {
         console.log("동료 리스트 불러오기 시작!");
         request("GET", `/perform/peerList/${user.emp_no}`)
             .then((response) => {
-                setPeerList(response.data);
-                console.log(response.data);
+                if (Array.isArray(response.data)) {
+                    setPeerList(response.data);
+                    console.log(response.data);
+                } else {
+                    console.warn("응답이 배열이 아님:", response.data);
+                }
             })
             .catch((err) => console.error("동료 리스트 불러오기 실패", err));
     }, [user]);
@@ -76,8 +84,12 @@ const EvalPeerQue = () => {
             setOrderNum(orderNum); // 저장
             request("GET", `/perform/queslist/${orderNum}`)
                 .then((data) => {
-                    console.log("응답", data);
-                    setQuesList(data.data);
+                    if (Array.isArray(data.data)) {
+                        console.log("응답", data);
+                        setQuesList(data.data);
+                    } else {
+                        console.warn("응답이 배열이 아님:", data.data);
+                    }
                 })
                 .catch((error) =>
                     console.error("데이터 가져오기 오류 : ", error));
@@ -129,7 +141,6 @@ const EvalPeerQue = () => {
             eval_order_num: orderNum,
         };
 
-
         // comp1~comp5 채워넣기
         for (let i = 0; i < 5; i++) {
             payload[`eval_comp${i + 1}`] = compEntries[i]?.[0] || null;
@@ -138,7 +149,6 @@ const EvalPeerQue = () => {
 
         try {
             const res = await request("POST", "/perform/evalPeerInsert", payload);
-
             if (res.status === 200 || res.data > 0) {
                 alert("평가가 성공적으로 저장되었습니다!");
                 // 초기화하거나, 다른 페이지로 이동하는 코드 여기에!
@@ -153,9 +163,7 @@ const EvalPeerQue = () => {
         }
     };
 
-
     return (
-
         <Container style={{ minHeight: '100vh', width: '100%' }}>
             <Leftbar />
             <Container>
@@ -163,12 +171,9 @@ const EvalPeerQue = () => {
                 <Content>
                     <Header />
                     <div className="main-content p-4">
-
                         <h2 className="mb-4">✏️ 동료 평가</h2>
                         <Card align="center">
-
                             <h5 className="line"> 역량 테스트 리스트 </h5>
-
                             <div className="linenomal">&nbsp;</div>
                             {/* 동료 선택 드롭다운 */}
                             <div style={{ marginBottom: "20px" }}>
@@ -196,12 +201,10 @@ const EvalPeerQue = () => {
                                         <th className="comp-th"> 평가유형 </th>
                                         <th className="comp-th"> 평가역량 </th>
                                         <th className="comp-th">  </th>
-
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {testList.length > 0 ? (
-
                                         <>
                                             {testList.map((test, index) => (
                                                 <tr key={index}>
@@ -210,11 +213,8 @@ const EvalPeerQue = () => {
                                                     <td className="comp-td">{test.eval_end_date || "정보 없음"}</td>
                                                     <td className="comp-td">{test.eval_emp_type || "정보 없음"}</td>
                                                     <td className="comp-td">{test.eval_click_emp || "정보 없음"}</td>
-
                                                     <td className="comp-td">
-
                                                         <button className="subno" type="button" onClick={() => startTest(test.eval_order_num)} >테스트 하기</button>
-
                                                     </td>
                                                 </tr>
                                             ))}
@@ -223,7 +223,6 @@ const EvalPeerQue = () => {
                                         <tr>
                                             <td colSpan={6} align="center">
                                                 정보를 불러오는 중...
-                                                
                                             </td>
                                         </tr>
                                     )}
@@ -233,20 +232,14 @@ const EvalPeerQue = () => {
                         <Card>
                             <form>
                                 <Card.Body>
-
                                     {quesList.length > 0 ? (quesList.map(ques => (
-
                                         <QuesList key={ques.eval_ques_id} ques={ques}
                                             onScoreChange={handleScoreChange}
                                             selectedScore={answers[ques.eval_ques_id]?.score || null} />))
                                     ) : (
                                         <p> 테스트 하기를 클릭하시면 문제가 보입니다!</p>
-
-                                    )
-                                    }
-
+                                    )}
                                     <br />
-
                                 </Card.Body>
                                 <div align='right'>
                                     <Button className="subutt" type="submit" onClick={handleSubmit}> 제출하기  </Button>
@@ -259,7 +252,6 @@ const EvalPeerQue = () => {
             </Container>
         </Container>
     );
-
 };
 
 export default EvalPeerQue;

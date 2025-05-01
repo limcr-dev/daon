@@ -14,13 +14,16 @@ const GoalForm = () => {
   const [addGoal, setAddGoal] = useState({ title: '', description: '' });
   const navigate = useNavigate();
 
-
   // 목표 리스트 가져오기
   useEffect(() => {
     request('GET', `/perform/goalsList/${user.emp_no}`)
       .then(res => {
-        console.log("목표 리스트:", res.data);   // 추가
-        setGoals(res.data);
+        if (Array.isArray(res.data)) {
+          console.log("목표 리스트:", res.data);   // 추가
+          setGoals(res.data);
+        } else {
+          console.warn("응답이 배열이 아님:", res.data);
+        }
       })
       .catch((error) => {
         console.error("목표리스트 가져오기 오류 : ", error);
@@ -38,7 +41,6 @@ const GoalForm = () => {
       ...addGoal,
       emp_id: user.emp_no,  // user 정보에서 emp_no를 가져와서 같이 보낸다
     };
-
 
     request('POST', "/perform/addGoal", goalToSend)
       .then(res => {

@@ -38,7 +38,7 @@ const MessengerNewGroup = () => {
     request('POST', '/messenger/chat/createGroup', body)
       .then(res => {
         const newRoomCode = res.data.roomCode;
-        window.open(`/messenger/chat/${newRoomCode}`, '_blank', 'width=500,height=600');
+        window.open(`/messengerMgt/chat/${newRoomCode}`, '_blank', 'width=500,height=600');
         window.close();
       })
       .catch(console.error);

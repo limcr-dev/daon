@@ -90,7 +90,7 @@ const AddressBook = () => {
         const { roomCode, newRoom } = res.data;
         console.log("newRoom 값:", newRoom);
         if (roomCode && popup) {
-          popup.location.href = `/messenger/chat/${roomCode}`;
+          popup.location.href = `/messengerMgt/chat/${roomCode}`;
           if (newRoom) {
             window.location.reload();
           }

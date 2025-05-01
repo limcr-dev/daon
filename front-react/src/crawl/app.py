@@ -8,7 +8,7 @@ CORS(app)
 
 # cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
-@app.route('/crawl')
+@app.route('/crawl', strict_slashes=False)
 @cross_origin()
 def crawl():
     weather_url = 'https://search.naver.com/search.naver?query=날씨'
@@ -90,5 +90,5 @@ def crawl():
     })
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False, host='0.0.0.0', port=5000)
 

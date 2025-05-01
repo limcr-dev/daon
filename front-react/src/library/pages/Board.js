@@ -87,7 +87,7 @@ const Board = () => {
                         noticeList.map(notice => (
                           <tr key={notice.notice_no}>
                             <td>{notice.notice_no}</td>
-                            <td><Link to={"/board/noticeDetail/" + notice.notice_no}>{notice.notice_title}</Link></td>
+                            <td><Link to={"/boardMgt/noticeDetail/" + notice.notice_no}>{notice.notice_title}</Link></td>
                             <td>{notice.emp_name}</td>
                             <td>
                               {notice.notice_filename ? (
@@ -142,7 +142,7 @@ const Board = () => {
                       libraryList.map(library => (
                         <tr key={library.library_no}>
                           <td>{library.library_no}</td>
-                          <td><Link to={"/board/libraryDetail/" + library.library_no}>{library.library_title}</Link></td>
+                          <td><Link to={"/boardMgt/libraryDetail/" + library.library_no}>{library.library_title}</Link></td>
                           <td>{library.emp_name}</td>
                           <td>
                             {library.library_filename ? (

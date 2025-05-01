@@ -27,7 +27,7 @@ const EvalDetail = () => {
 
     useEffect(() => {
         if (emp_no) {
-            request('GET', `/performMgt/employees/${emp_no}`)
+            request('GET', `/perform/employees/${emp_no}`)
                 .then((res) => {
                     console.log("직원 정보불러오기", res.data)
                     setEmp(res.data);
@@ -37,7 +37,7 @@ const EvalDetail = () => {
                 });
 
             // 동료평가 진행현황
-            request("GET", `/performMgt/peerStatus_emp/${emp_no}`)
+            request("GET", `/perform/peerStatus_emp/${emp_no}`)
                 .then((res) => {
                     setPeerStatus(res.data);
                     console.log("동료평가진행현황", res.data)
@@ -47,7 +47,7 @@ const EvalDetail = () => {
                 });
 
             // 동료평가 점수
-            request("GET", `/performMgt/peerScore/${emp_no}`)
+            request("GET", `/perform/peerScore/${emp_no}`)
                 .then((res) => {
                     setPeerLineChart(res.data);
                     const helpdata = (list) => {
@@ -75,7 +75,7 @@ const EvalDetail = () => {
                 });
 
             // 자기평가 진행 현황
-            request("GET", `/performMgt/selfStatus_emp/${emp_no}`)
+            request("GET", `/perform/selfStatus_emp/${emp_no}`)
                 .then((res) => {
 
                     setSelfStatus(res.data);
@@ -86,7 +86,7 @@ const EvalDetail = () => {
                 });
 
             // 자기평가 점수    
-            request("GET", `/performMgt/selfScore/${emp_no}`)
+            request("GET", `/perform/selfScore/${emp_no}`)
                 .then((res) => {
                     setSelfLineChart(res.data);
                     const helpdata = (list) => {
@@ -113,7 +113,7 @@ const EvalDetail = () => {
                     console.error("자기평가점수 오류 : ", error);
                 });
             // 근태평가 점수    
-            request("GET", `/performMgt/attandScore/${emp_no}`)
+            request("GET", `/perform/attandScore/${emp_no}`)
                 .then((res) => {
                     setAttandLineChart(res.data);
                     console.log("근태평가 점수", res.data)
@@ -122,7 +122,7 @@ const EvalDetail = () => {
                     console.error("근태평가 점수 오류 : ", error);
                 });
             // 목표 달성 진행율    
-            request("GET", `/performMgt/totalGoalsScore/${emp_no}`)
+            request("GET", `/perform/totalGoalsScore/${emp_no}`)
                 .then((res) => {
                     const helpdata = (goal) => {
                         if (!goal || goal.length === 0) return [];

@@ -8,13 +8,16 @@ function News_more() {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetch("http://127.0.0.1:5000/crawl")
+		fetch("/crawl")
 			.then((res) => res.json())
 			.then((data) => {
-				console.log('데이터 :', data);
-				setData(data);
+				if (data && Array.isArray(data.news)) {
+				  setData(data);
+				} else {
+				  setData({ news: [] }); // 안전하게 초기화
+				}
 				setLoading(false);
-			})
+			  })
 			.catch((err) => {
 				console.error(err);
 				setData({ news: [] });
@@ -29,7 +32,7 @@ function News_more() {
 			) : (
 				data && data.news && data.news.length > 0 ? (
 					<div>
-						{data.news.reduce((acc, item, index, arr) => {
+						{(data.news || []).reduce((acc, item, index, arr) => {
 							const prev = arr[index - 1];
 							const isNewCategory = index === 0 || item.rankingnews_name !== prev.rankingnews_name;
 

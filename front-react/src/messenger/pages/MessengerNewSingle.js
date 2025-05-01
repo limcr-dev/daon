@@ -19,7 +19,7 @@ const MessengerNewSingle = () => {
     request('POST', '/messenger/chat/enter', { userId: user.emp_no, targetId })
       .then(res => {
         const { roomCode, newRoom } = res.data;
-        window.open(`/messenger/chat/${roomCode}`, '_blank', 'width=500,height=600');
+        window.open(`/messengerMgt/chat/${roomCode}`, '_blank', 'width=500,height=600');
         if (newRoom && window.opener) {
           console.log("새 방 생성 -> 부모창 리로드");
           window.opener.location.reload();

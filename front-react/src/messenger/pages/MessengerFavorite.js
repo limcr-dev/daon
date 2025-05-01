@@ -27,7 +27,7 @@ const MessengerFavorite = ({ list }) => {
     });
     const roomCode = res.data?.roomCode;
     if (roomCode) {
-      window.open(`/messenger/chat/${roomCode}`, '_blank', 'width=500,height=600');
+      window.open(`/messengerMgt/chat/${roomCode}`, '_blank', 'width=500,height=600');
     }
   };
 

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Card } from 'react-bootstrap';
 import Leftbar from "../../common/pages/Leftbar";
 import LeftbarDEvaluation from "../components/LeftbarDEvaluation";
-import { Container, Content, Button} from "rsuite";
+import { Container, Content, Button } from "rsuite";
 import QuesList from "./sub/QuesList";
 import { useNavigate } from "react-router-dom";
 import Header from "../../common/pages/Header";
@@ -26,17 +26,21 @@ const EvalSelQue = () => {
 
                 request("get", `/perform/selfList/${user.emp_no}`)
                     .then((response) => {
-                        console.log("최종 자기평가 리스트:", response.data);
+                        if (Array.isArray(response.data)) {
+                            console.log("최종 자기평가 리스트:", response.data);
 
-                        // selfList에서 eval_order_num 값들만 배열로 추출
-                        const selfEvalNums = response.data.map(item => item.eval_order_num);
+                            // selfList에서 eval_order_num 값들만 배열로 추출
+                            const selfEvalNums = response.data.map(item => item.eval_order_num);
 
-                        // testList에서 selfEvalNums에 해당하는 것만 필터링
-                        const filtered = res.data.filter(test =>
-                            selfEvalNums.includes(test.eval_order_num)
-                        );
-                        console.log("필터된 자기평가 리스트:", filtered);
-                        setTestList(filtered);
+                            // testList에서 selfEvalNums에 해당하는 것만 필터링
+                            const filtered = res.data.filter(test =>
+                                selfEvalNums.includes(test.eval_order_num)
+                            );
+                            console.log("필터된 자기평가 리스트:", filtered);
+                            setTestList(filtered);
+                        } else {
+                            console.warn("응답이 배열이 아님:", response.data);
+                        }
                     })
                     .catch((error) => {
                         console.error("자기평가 리스트 가져오기 오류:", error);
@@ -62,8 +66,12 @@ const EvalSelQue = () => {
             setOrderNum(orderNum); // 저장
             request("GET", `/perform/queslist/${orderNum}`)
                 .then((data) => {
-                    console.log("응답", data);
-                    setQuesList(data.data);
+                    if (Array.isArray(data.data)) {
+                        console.log("응답", data);
+                        setQuesList(data.data);
+                    } else {
+                        console.warn("응답이 배열이 아님:", data.data);
+                    }
                 })
                 .catch((error) =>
                     console.error("데이터 가져오기 오류 : ", error));
@@ -132,7 +140,6 @@ const EvalSelQue = () => {
     };
 
     return (
-
         <Container style={{ minHeight: '100vh', width: '100%' }}>
             <Leftbar />
             <Container>
@@ -140,12 +147,9 @@ const EvalSelQue = () => {
                 <Content>
                     <Header />
                     <div className="main-content p-4">
-
                         <h2 className="mb-4">✏️ 자기 평가</h2>
                         <Card align="center">
-
                             <h5 className="line"> 역량 테스트 리스트 </h5>
-
                             <div className="linenomal">&nbsp;</div>
                             <table className="comp-table">
                                 <thead>
@@ -156,12 +160,10 @@ const EvalSelQue = () => {
                                         <th className="comp-th"> 평가유형 </th>
                                         <th className="comp-th"> 평가역량 </th>
                                         <th className="comp-th">  </th>
-
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {testList.length > 0 ? (
-
                                         <>
                                             {testList.map((test, index) => (
                                                 <tr key={index}>
@@ -172,7 +174,6 @@ const EvalSelQue = () => {
                                                     <td className="comp-td">{test.eval_click_emp || "정보 없음"}</td>
                                                     <td className="comp-td">
                                                         <button className="subno" type="button" onClick={() => startTest(test.eval_order_num)}> 테스트 하기 </button>
-
                                                     </td>
                                                 </tr>
                                             ))}
@@ -190,7 +191,6 @@ const EvalSelQue = () => {
                         <Card>
                             <Card.Body>
                                 {quesList.length > 0 ? (quesList.map(ques => (
-
                                     <QuesList key={ques.eval_ques_id} ques={ques}
                                         onScoreChange={handleScoreChange}
                                         selectedScore={answers[ques.eval_ques_id]?.score || null} />))
@@ -199,24 +199,17 @@ const EvalSelQue = () => {
 
                                 )
                                 }
-
                                 <br />
-
                             </Card.Body>
                             <div align='right'>
                                 <Button className="subutt" type="submit" onClick={handleSubmit}> 제출하기  </Button>
                             </div>
-
-
-
                         </Card>
-
                     </div>
                 </Content>
             </Container>
         </Container>
     );
-
 };
 
 export default EvalSelQue;
