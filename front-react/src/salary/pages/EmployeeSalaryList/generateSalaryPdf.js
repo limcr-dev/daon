@@ -1,5 +1,5 @@
 import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
+import autoTable from "jspdf-autotable"
 import { addNotoSansKR } from "../../font/NotoSansKR";
 
 export const generateSalaryPdf = (data, salaryMonth) => {

@@ -10,7 +10,6 @@ import { getPositionName, getDeptName, getRoleName, getEmpType } from "../compon
 import { request } from "../../common/components/helpers/axios_helper";
 import Header from '../../common/pages/Header';
 
-// (부서데이터는 프로젝트 데이터에 맞게 조정!)
 const departmentData = {
   1: {
     name: "회사",
@@ -189,7 +188,11 @@ const EmployeeDetail = () => {
             </Card>
             {/* 오른쪽 수정폼 카드 */}
             {isEdit && (
-              <Card style={{ width: "45%", minHeight: "720px", padding: "30px" }}>
+              <Card style={{  width: "45%",
+                minHeight: "720px",
+                maxHeight: "90vh",   // 화면 짤리지 않게 제한
+                overflow: "auto",    // 스크롤 가능하게
+                padding: "30px" }}>
                 <h4>✏️ 사원 정보 수정</h4>
                 <Divider />
                 {/* 파일 선택 + 비밀번호 입력 */}
