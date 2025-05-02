@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 //import { getAuthToken, removeAuthToken, setAuthToken } from './auth_helper';
 
 // API 기본 URL 설정
-const API_URL = 'http://localhost:8081';
+const API_URL = 'https://daon-ai.com';
 
 // axios 인스턴스 생성
 const api = axios.create({
