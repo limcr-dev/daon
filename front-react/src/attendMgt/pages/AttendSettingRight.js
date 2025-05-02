@@ -162,6 +162,7 @@ const AttendSettingRight = (user) => {
                       selectedWorkType[employees.emp_no] ||
                       employees.work_type_no
                     } // 선택된 값 표시
+                    cleanable={false}
                   />
                 </td>
                 <td style={{ textAlign: "center" }}>

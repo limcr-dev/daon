@@ -12,6 +12,7 @@ import { request } from '../../common/components/helpers/axios_helper';
 import "../css/AttendCalendar.css";
 import "../css/DeptStatus.css";
 import "../css/AttendBoard.css"
+
 // js
 import AttendMgtLeftbar from "./AttendMgtLeftbar";
 import { useUser } from "../../common/contexts/UserContext";
@@ -21,7 +22,6 @@ import { getDeptName, getPositionName } from '../../hrMgt/components/getEmployee
 import AttendPaging from "../components/AttendPaging";
 import ColorLegend from "../components/ColorLegend";
 import AttendUpdate from "./AttendEdit";
-// import {updateLabels} from "../components/AttendMgtTree";
 
 const DeptStatus = () => {
   // 직원 정보
