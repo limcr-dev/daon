@@ -165,13 +165,14 @@ const ScheduleAdd = ({ user, pickDate, closeModal }) => {
                     setActiveTab("1");
                     return false;
                   }
-
+                  setActiveTab("2");
                   setIsVisible(false);
                   setSchedule((prevSchedule) => ({
                     ...prevSchedule, // 기존 schedule 상태를 유지하면서
                     c_sch_type: "A", // c_sch_type만 'A'로 업데이트
                   }));
                 } else {
+                  setActiveTab("1");
                   setIsVisible(true);
                   setSchedule((prevSchedule) => ({
                     ...prevSchedule, // 기존 schedule 상태를 유지하면서
