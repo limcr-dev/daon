@@ -35,18 +35,16 @@ const DocumentDetail = () => {
     const getApproverStatus = () => {
         // 결재선에서 현재 사용자의 결재 정보 찾기
         const currentApprover = line.find(item => item.appr_no === user.emp_no);
-        console.log("currentApprover:", currentApprover);
         return currentApprover ? currentApprover.appr_status : null;
     };
 
     // 승인 처리 함수
     const handleApprove = () => {
         const currentApprover = line.find(item => item.appr_no === user.emp_no);
-        console.log(currentApprover);
         request("POST", `/approve/sign/${document.doc_no}`, {
             doc_no: document.doc_no,
             appr_no: user.emp_no,
-            appr_status: 3, // 반려 상태 코드
+            appr_status: 3, // 승인 상태 코드
             appr_comment: comment,
             appr_order: currentApprover.appr_order  // 다음 승인자 상태 변경을 위한 승인 순서
         })
@@ -81,6 +79,7 @@ const DocumentDetail = () => {
     };
 
     // 상신 취소 함수
+    // 상신 취소 함수
     const handleCancel = async () => {
         if (window.confirm("상신을 취소하시겠습니까?")) {
             try {
@@ -89,50 +88,45 @@ const DocumentDetail = () => {
                 navigate('/approve');
             } catch (error) {
                 console.error("상신 취소 오류:", error);
-                alert("상신 취소 중 오류가 발생했습니다.")
+
+                // 서버에서 메시지를 내려주는 경우
+                const errorMessage =
+                    error.response?.data?.message ||
+                    error.response?.data ||
+                    "상신 취소 중 오류가 발생했습니다.";
+
+                alert(errorMessage);
             }
         }
     };
 
-    // DocumentDetail.js에서 데이터를 가져오는 부분
+
     useEffect(() => {
-        try {
-            const fetchData = async () => {
-                const response = await request("GET", "approve/detail/" + form_no + "/" + doc_no);
+        const fetchData = async () => {
+            try {
+                const res = await request("GET", `approve/detail/${form_no}/${doc_no}`);
+                const { document, lineList, vacation_req, work_report } = res.data;
 
-                if (response) {
-                    setDocument(response.data.document);
-                    setLine(response.data.lineList);
-                    setIsUrgent(response.data.document.doc_urgent === 'Y' ? true : false)
+                setDocument(document);
+                setLine(lineList);
+                setIsUrgent(document.doc_urgent === 'Y');
 
-                    // form_no가 5인 경우 vacation_req 데이터 설정
-                    if (form_no === 1) {
-                        if (response.data.vacation_req) {
-                            console.log("vacation_req 데이터 설정:", response.data.vacation_req);
-                            setFormData(response.data.vacation_req);
-                        } else {
-                            console.warn("vacation_req 데이터가 없습니다!");
-                            setFormData({});  // 빈 객체로 초기화
-                        }
-                    }
-
-                    // form_no가 5인 경우 work_report 데이터 설정
-                    if (form_no === 5) {
-                        if (response.data.work_report) {
-                            console.log("work_report 데이터 설정:", response.data.work_report);
-                            setFormData(response.data.work_report);
-                        } else {
-                            console.warn("work_report 데이터가 없습니다!");
-                            setFormData({});  // 빈 객체로 초기화
-                        }
-                    }
+                let content = {};
+                switch (form_no) {
+                    case 1: content = vacation_req || {}; break;
+                    case 5: content = work_report || {}; break;
+                    default: content = {}; break;
                 }
+
+                setFormData(content);
+            } catch (err) {
+                console.error("전자결재 데이터 불러오기 오류:", err);
             }
-            fetchData();
-        } catch (error) {
-            console.error("전자결재 데이터 불러오기 오류:", error)
-        }
-    }, [doc_no, form_no])
+        };
+
+        fetchData();
+    }, [doc_no, form_no]);
+
 
     // form_no에 따라 다른 양식 컴포넌트를 렌더링
     const renderFormContent = () => {

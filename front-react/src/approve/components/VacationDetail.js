@@ -7,7 +7,7 @@ import { getCurrentVacationCycle, getExpireDate, getUsedVacation } from '../../a
 
 const VacationDetail = ({ approveLine, formData, docData }) => {
   const [line, setLine] = useState(approveLine || []);
-  const [vacationForm, serVacationForm] = useState(formData || {});
+  const [vacationForm, setVacationForm] = useState(formData || {});
   const [document, setDocument] = useState(docData || {});
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
 
@@ -31,7 +31,7 @@ const VacationDetail = ({ approveLine, formData, docData }) => {
     }
 
     if (formData) {
-      serVacationForm(formData);
+      setVacationForm(formData);
     }
 
     if (docData) {
@@ -39,10 +39,10 @@ const VacationDetail = ({ approveLine, formData, docData }) => {
     }
 
     // 모든 필요한 데이터가 있으면 로딩 완료
-    if (line && vacationForm && document) {
+    if (approveLine && formData && docData) {
       setIsLoading(false);
-      console.log("데이터 가져오기 성공");
       if (docData.emp_no) {
+        
         // 입사일 가져오기
         request("GET", "/api/getEmpInfo/" + docData.emp_no)
           .then((res) => {
@@ -108,21 +108,31 @@ const VacationDetail = ({ approveLine, formData, docData }) => {
           <div style={{ display: 'flex' }}>
             <table className="approval-table">
               <tbody>
-                <tr>
-                  <td rowSpan="3" className="approval-position">신청</td>
-                  <td className="approval-header">{line[0].appr_position}</td>
-                </tr>
-                <tr>
-                  <td className="approval-sign">
-                    {line[0].appr_status === 0 && document.doc_status !== 1 && <div className="approval-stamp">승인</div>}
-                    <div className="approval-name">{line[0].appr_name || '이름 정보 없음'}</div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="approval-date">
-                    {document.doc_status !== 1 && <div>{line[0].appr_date}</div>}
-                  </td>
-                </tr>
+                {line[0] ? (
+                  <>
+                    <tr>
+                      <td rowSpan="3" className="approval-position">신청</td>
+                      <td className="approval-header">{line[0]?.appr_position || '직급 정보 없음'}</td>
+                    </tr>
+                    <tr>
+                      <td className="approval-sign">
+                        {line[0]?.appr_status === 0 && document.doc_status !== 1 && (
+                          <div className="approval-stamp">승인</div>
+                        )}
+                        <div className="approval-name">{line[0]?.appr_name || '이름 정보 없음'}</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="approval-date">
+                        {document.doc_status !== 1 && <div>{line[0]?.appr_date}</div>}
+                      </td>
+                    </tr>
+                  </>
+                ) : (
+                  <tr>
+                    <td colSpan="2" style={{ textAlign: 'center' }}>결재선 정보가 없습니다.</td>
+                  </tr>
+                )}
               </tbody>
             </table>
             {/* 승인 정보 (결재선) - 결재선이 있을 때만 표시 */}
@@ -196,9 +206,9 @@ const VacationDetail = ({ approveLine, formData, docData }) => {
             <tr>
               <td className="label-cell">기간 및 일시</td>
               <td>
-                <input type="date" name='start_date' value={vacationForm.start_date} readOnly />
+                <input type="date" name='start_date' value={vacationForm.start_date || ''} readOnly />
                 <span style={{ marginLeft: '10px', marginRight: '10px' }}>~</span>
-                <input type="date" name='end_date' value={vacationForm.end_date} readOnly />
+                <input type="date" name='end_date' value={vacationForm.end_date || ''} readOnly />
                 <span style={{ marginLeft: '30px' }}>
                   <span> 신청일수 : {vacationForm.used_days}</span>
                   <span style={{ marginLeft: '10px' }}>
@@ -213,7 +223,7 @@ const VacationDetail = ({ approveLine, formData, docData }) => {
                 <td>
                   <span>잔여일수 : {createVacation - useVacation} </span>
                   <span style={{ marginLeft: '30px' }}>신청일수 : {vacationForm.vacation_type === 1 ? vacationForm.used_days : 0} </span>
-                  <span style={{ marginLeft: '30px' }}>신청 후 잔여일수 : {vacationForm.vacation_type === 1 ? createVacation - useVacation - formData.used_days : createVacation - useVacation}</span>
+                  <span style={{ marginLeft: '30px' }}>신청 후 잔여일수 : {vacationForm.vacation_type === 1 ? createVacation - useVacation - vacationForm.used_days : createVacation - useVacation}</span>
                 </td>
               </tr>
             }

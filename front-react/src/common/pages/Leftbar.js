@@ -37,7 +37,7 @@ const Leftbar = ({ onOpenOrgChart }) => {
         collapsible
       >
         {/* 상단 영역 - 로고 + 메뉴 */}
-        <div>
+        <div> 
           <Sidenav.Header style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
             <Brand expand={expand} />
           </Sidenav.Header>

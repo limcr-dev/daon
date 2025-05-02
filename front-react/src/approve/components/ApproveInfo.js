@@ -11,16 +11,11 @@ const ApproveInfo = ({ approveLine = [] }) => {
     const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
 
     useEffect(() => {
-        if (approveLine && Array.isArray(approveLine)) {
-            setLine(approveLine);
-            console.log("문서정보 결재선:", line)
-        }
+        if (approveLine && Array.isArray(approveLine)) {setLine(approveLine);}
 
-        if (line) {
-            setIsLoading(false);
-        }
+        if (approveLine) {setIsLoading(false);}
 
-    }, []);
+    }, [approveLine]);
 
     if (isLoading) {
         return <div>데이터를 불러오는 중입니다...</div>;

@@ -15,8 +15,7 @@ export const getStatusText = (status) => {
     case 2: return '진행중';
     case 3: return '완료';
     case 4: return '반려';
-    case 5: return '상신취소';
-    default: return '';
+    default: return '기안';
   }
 }
 

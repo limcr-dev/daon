@@ -19,32 +19,30 @@ const DocumentList = () => {
   const [docList, setDocList] = useState([]);
 
   useEffect(() => {
-    try {
-      const fetchData = async () => {
+    const fetchData = async () => {
+      try {
         let endpoint;
-
-        // status 값이 있으면 상태별 문서 조회, 아니면 전체 문서 조회
-        if (status !== null && status !== undefined && !isNaN(status)) {
+        if (!isNaN(status)) {
           endpoint = `/approve/documents/${status}/${user.emp_no}`;
         } else {
-          endpoint = `/approve/documents/all/${user.emp_no}`;  // all 엔드포인트 사용
+          endpoint = `/approve/documents/all/${user.emp_no}`;
         }
 
         const response = await request("GET", endpoint);
-
         if (response && response.data) {
           const data = Array.isArray(response.data) ? response.data : [];
           setDocList(data);
         }
-      };
-
-      if (user && user.emp_no) {
-        fetchData();
+      } catch (error) {
+        console.log("fetch error :", error);
       }
-    } catch (error) {
-      console.log("error :", error);
+    };
+
+    if (user && user.emp_no) {
+      fetchData();
     }
-  }, [param.status]);
+  }, [param.status, user.emp_no]);
+
 
   return (
     <Container style={{ minHeight: '100vh', width: '100%' }}>
@@ -58,7 +56,7 @@ const DocumentList = () => {
               <Card style={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', minWidth: '500px' }}>
                 <Card.Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', backgroundColor: '#f5f5f5', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
                   <span style={{ fontWeight: '600', fontSize: '16px' }}>
-                    {status !== null && status !== undefined && !isNaN(status) ? '임시 저장함' : '기안 문서함'}
+                    결재 {getStatusText(status)} 문서
                   </span>
                 </Card.Header>
                 <table className='approve-table'>
@@ -86,7 +84,7 @@ const DocumentList = () => {
                           <td>{getFormName(doc.doc_form)}</td>
                           <td><Link to={"/approve/documentDetail/" + doc.doc_form + "/" + doc.doc_no}>{doc.doc_title}</Link></td>
                           <td>
-                            {doc.doc_filename ? (
+                            {doc.doc_filename && (
                               <OverlayTrigger
                                 placement="top"
                                 speaker={
@@ -101,7 +99,7 @@ const DocumentList = () => {
                                   <MdAttachFile />
                                 </div>
                               </OverlayTrigger>
-                            ) : ''}
+                            )}
                           </td>
                           <td><UrgentBadge isUrgent={doc.doc_urgent} /></td>
                           <td><StatusBadge status={doc.doc_status} /></td>

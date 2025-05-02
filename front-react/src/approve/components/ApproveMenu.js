@@ -19,6 +19,9 @@ const data = [
     value: 'documentMenu',
     children: [
       { label: '기안 목록', value: 'documents' },
+      { label: '결재 진행 목록', value: 'documents/2' },
+      { label: '결재 승인 목록', value: 'documents/3' },
+      { label: '결재 반려 목록', value: 'documents/4' },
       { label: '임시 저장 목록', value: 'documents/1' },
     ],
   }

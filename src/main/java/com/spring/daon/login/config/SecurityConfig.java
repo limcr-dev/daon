@@ -58,6 +58,9 @@ public class SecurityConfig {
 				    .antMatchers("/ws-chat/**").permitAll()
 				    .antMatchers("/api/token/refresh").permitAll()
 				    .antMatchers("/api/s3/library/download/**").permitAll() // 파일 다운로드 경로 추가
+				    .antMatchers("/messenger/file/upload").permitAll()
+				    .antMatchers("/messenger/file/uploads/**").permitAll()
+				    .antMatchers("/", "/index.html", "/static/**").permitAll() //
 				    .anyRequest().authenticated()       // 나머지 전부 로그인 필요!!			
 		);
 		
@@ -75,16 +78,22 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 	    CorsConfiguration config = new CorsConfiguration();
-	    
-	    // config.setAllowedOriginPatterns(List.of("http://localhost:3000")); // 프론트엔드 도메인 지정
-	    config.setAllowedOriginPatterns(List.of("*")); // 모든 Origin 허용(배포 후 변경 필요)
+
+	    config.setAllowedOrigins(List.of(
+	        "https://daon-ai.com",
+	        "http://13.209.178.147:80",
+	        "http://localhost:3000"
+	    ));
+
 	    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 	    config.setAllowedHeaders(List.of("*"));
-	    config.setAllowCredentials(true); // 쿠키 전송 허용
-	    config.setExposedHeaders(List.of("Authorization", "Set-Cookie")); // 클라이언트가 접근할 수 있는 헤더
+	    config.setAllowCredentials(true);
+	    config.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
 
 	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 	    source.registerCorsConfiguration("/**", config);
+
 	    return source;
 	}
+
 }

@@ -12,24 +12,14 @@ const WorkReportDetail = ({ approveLine, formData, docData }) => {
 
   useEffect(() => {
 
-    if (approveLine && Array.isArray(approveLine)) {
-      setLine(approveLine);
+    if (approveLine && Array.isArray(approveLine)) { setLine(approveLine); }
 
-    }
-    console.log(line);
-    if (formData) {
-      setReport(formData);
-    }
+    if (formData) { setReport(formData); }
 
-    if (docData) {
-      setDocument(docData);
-    }
-
-    console.log("문서정보:", document);
-    console.log("문서정보:", docData);
+    if (docData) { setDocument(docData); }
 
     // 모든 필요한 데이터가 있으면 로딩 완료
-    if (line && report && document) {
+    if (approveLine && formData && docData) {
       setIsLoading(false);
     }
 
@@ -74,21 +64,25 @@ const WorkReportDetail = ({ approveLine, formData, docData }) => {
           <div style={{ display: 'flex' }}>
             <table className="approval-table">
               <tbody>
-                <tr>
-                  <td rowSpan="3" className="approval-position">신청</td>
-                  <td className="approval-header">{line[0].appr_position}</td>
-                </tr>
-                <tr>
-                  <td className="approval-sign">
-                    {line[0].appr_status === 0 && document.doc_status !== 1 && <div className="approval-stamp">승인</div>}
-                    <div className="approval-name">{line[0].appr_name || '이름 정보 없음'}</div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="approval-date">
-                    {document.doc_status !== 1 && <div>{line[0].appr_date}</div>}
-                  </td>
-                </tr>
+                {line[0] && (
+                  <>
+                    <tr>
+                      <td rowSpan="3" className="approval-position">신청</td>
+                      <td className="approval-header">{line[0].appr_position || '직급 정보 없음'}</td>
+                    </tr>
+                    <tr>
+                      <td className="approval-sign">
+                        {line[0].appr_status === 0 && document.doc_status !== 1 && <div className="approval-stamp">승인</div>}
+                        <div className="approval-name">{line[0].appr_name || '이름 정보 없음'}</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="approval-date">
+                        {document.doc_status !== 1 && <div>{line[0].appr_date}</div>}
+                      </td>
+                    </tr>
+                  </>
+                )}
               </tbody>
             </table>
             {/* 승인 정보 (결재선) - 결재선이 있을 때만 표시 */}
@@ -160,7 +154,9 @@ const WorkReportDetail = ({ approveLine, formData, docData }) => {
               </td>
               <td className="label-cell">협조부서</td>
               <td>
-                {report.coop_dept_no ? report.coop_dept_no : "-"}
+                {report.coop_dept_no && report.coop_dept_no > 0
+                  ? getDeptName(report.coop_dept_no)
+                  : "협조부서 없음"}
               </td>
             </tr>
 
