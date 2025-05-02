@@ -40,59 +40,77 @@ const isTokenValid = (token) => {
    }
 }
 
-// 액세스 토큰 재발급
+let isRedirecting = false;
+
 export const refreshAccessToken = async () => {
    try {
-      // 리프레시 토큰이 HttpOnly 쿠키에 있으므로 요청시 자동으로 포함됨
-      const response = await axios({
-         method: 'post',
-         url: `${API_URL}/api/token/refresh`,
-         withCredentials: true   // 쿠키를 포함하기 위해 필요
-      });
+      const response = await axios.post(`${API_URL}/api/token/refresh`, null, { withCredentials: true });
 
       if (!response.data.accessToken) {
          throw new Error("응답에 액세스 토큰이 없습니다");
       }
 
       const newAccessToken = response.data.accessToken;
-      setAuthToken(newAccessToken); // 반드시 localStorage 업데이트
-      return newAccessToken; // 토큰 반환 추가
-
+      setAuthToken(newAccessToken);
+      return newAccessToken;
    } catch (error) {
       console.error("토큰 갱신 실패:", error.message);
+      removeAuthToken();
 
-      if (error.response) {
-         console.error("응답 상태:", error.response.status);
-         console.error("응답 데이터:", error.response.data);
+      if (!isRedirecting) {
+         isRedirecting = true;
+         alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+         setTimeout(() => {
+            window.location.href = '/';
+         }, 300); // 알림 확인 후 이동
       }
-      removeAuthToken();   // 토큰 갱신 실패 시 액세스 토큰 제거
-      setTimeout(() => {
-         window.location.href = '/';
-         alert('세션이 만료되었습니다. 다시 로그인해주세요.');
-      }, 0);
+
       return null;
    }
-}
+};
 
 // 요청 인터셉터
 api.interceptors.request.use(
    async (config) => {
       let token = getAuthToken();
-      if (token && token !== "null") {
-         if (!isTokenValid(token)) {
-            console.log("요청 직전 토큰 만료 감지");
-            const newToken = await refreshAccessToken();
-            if (newToken) {
-               config.headers['Authorization'] = `Bearer ${newToken}`;
-            } else {
-               console.log("새 토큰 발급 실패 -> 로그인 페이지 이동");
-               window.location.href = '/';
-               throw new Error("Unable to refresh token");
-            }
-         } else {
-            config.headers['Authorization'] = `Bearer ${token}`;
-         }
+
+      // 로그인 요청이면 토큰 없어도 그냥 진행
+      if (config.url.includes('/api/login')) {
+         return config;
       }
+
+      // 토큰이 없거나 null인 경우에도 리프레시 시도
+      if (!token || token === "null") {
+         console.log("토큰 없음 -> 리프레시 시도");
+
+         const newToken = await refreshAccessToken();
+         if (newToken) {
+            config.headers['Authorization'] = `Bearer ${newToken}`;
+         } else {
+            // 리프레시 실패 시 여기선 그냥 요청은 보내지 않음
+            console.log("리프레시 실패 -> 로그인 이동");
+            window.location.href = '/';
+            throw new Error("Unable to refresh token");
+         }
+
+         return config;
+      }
+
+      // 토큰 유효성 검사
+      if (!isTokenValid(token)) {
+         console.log("요청 직전 토큰 만료 감지");
+         const newToken = await refreshAccessToken();
+         if (newToken) {
+            config.headers['Authorization'] = `Bearer ${newToken}`;
+         } else {
+            console.log("새 토큰 발급 실패 -> 로그인 페이지 이동");
+            window.location.href = '/';
+            throw new Error("Unable to refresh token");
+         }
+      } else {
+         config.headers['Authorization'] = `Bearer ${token}`;
+      }
+
       return config;
    },
    (error) => Promise.reject(error)
