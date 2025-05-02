@@ -152,6 +152,14 @@
 		 WHERE doc_no = #{doc_no}
 	</update>
 	
+	<!-- 승인 또는 반려된 결재선이 있는지 확인 -->
+	<select id="countApprovedOrRejectedLines" resultType="int">
+	    SELECT COUNT(*) 
+	      FROM approval_lines 
+	     WHERE doc_no = #{doc_no}
+	       AND appr_status IN (3, 4)
+	</select>
+	
 	<update id="rejectApprove" parameterType="com.spring.daon.approve.Approval_lines">
 		UPDATE approval_lines
 		   SET appr_status = 4

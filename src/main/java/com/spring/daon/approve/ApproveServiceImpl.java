@@ -113,20 +113,29 @@ public class ApproveServiceImpl {
     }
 
     // 상신 취소
+ // 상신 취소
     @Transactional
     public int cancelDocument(int doc_no) {
         Documents doc = apprMapper.getDocument(doc_no);
 
-        // 진행 중(상태 코드 2)가 아닐 경우 예외 처리
+        // 1. 문서 상태 확인 (진행중 상태만 취소 가능)
         if (doc == null || doc.getDoc_status() != 2) {
             throw new RuntimeException("진행 중인 문서만 상신 취소할 수 있습니다.");
         }
 
+        // 2. 이미 결재되었거나 반려된 결재선이 있는지 확인
+        int processedLineCount = apprMapper.countApprovedOrRejectedLines(doc_no);
+        if (processedLineCount > 0) {
+            throw new RuntimeException("결재가 진행된 문서는 취소할 수 없습니다.");
+        }
+
+        // 3. 취소 처리
         int result = apprMapper.cancelDocument(doc_no);
         if (result == 0) throw new RuntimeException("상신 취소 실패");
 
         return result;
     }
+
 
     // 반려 처리
     @Transactional

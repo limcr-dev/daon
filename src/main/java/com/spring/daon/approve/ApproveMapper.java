@@ -38,6 +38,8 @@ public interface ApproveMapper {
 	
 	public int cancelDocument(int doc_no);
 	
+	public int countApprovedOrRejectedLines(int doc_no);
+	
 	public int rejectApprove(Approval_lines appr_line);
 	
 	public int rejectDocument(int doc_no);
