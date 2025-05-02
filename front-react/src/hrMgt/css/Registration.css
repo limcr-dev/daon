@@ -12,6 +12,8 @@
   align-items: center;
   flex: 1 1 calc(50% - 12px);
   min-width: 260px;
+  min-height: 40px;               
+  overflow: hidden; 
 }
 
 .form-group label {
@@ -38,4 +40,8 @@
   justify-content: center;
   gap: 20px;
   margin-top: 24px;
+}
+
+.rs-modal-body {
+  overflow: hidden !important;
 }
