@@ -44,27 +44,27 @@ let isRedirecting = false;
 
 export const refreshAccessToken = async () => {
    try {
-      const response = await axios.post(`${API_URL}/api/token/refresh`, null, { withCredentials: true });
-
-      if (!response.data.accessToken) {
-         throw new Error("응답에 액세스 토큰이 없습니다");
-      }
+      const response = await axios.post(`${API_URL}/api/token/refresh`, null, {
+         withCredentials: true,
+      });
 
       const newAccessToken = response.data.accessToken;
+      if (!newAccessToken) throw new Error('응답에 액세스 토큰 없음');
+
       setAuthToken(newAccessToken);
       return newAccessToken;
+
    } catch (error) {
-      console.error("토큰 갱신 실패:", error.message);
+      console.error('🔁 토큰 갱신 실패:', error.message);
       removeAuthToken();
 
       if (!isRedirecting) {
          isRedirecting = true;
-         alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+         alert('세션이 만료되었습니다. 다시 로그인해주세요.');
          setTimeout(() => {
             window.location.href = '/';
-         }, 300); // 알림 확인 후 이동
+         }, 300);
       }
-
       return null;
    }
 };
@@ -72,49 +72,37 @@ export const refreshAccessToken = async () => {
 // 요청 인터셉터
 api.interceptors.request.use(
    async (config) => {
+      if (isRedirecting) {
+         return Promise.reject(new Error("Redirecting in progress"));
+      }
+
+      const isLogin = config.url?.endsWith('/api/login');
+      if (isLogin) return config;
+
       let token = getAuthToken();
 
-      // 로그인 요청이면 토큰 없어도 그냥 진행
-      if (config.url.includes('/api/login')) {
-         return config;
-      }
-
-      // 토큰이 없거나 null인 경우에도 리프레시 시도
       if (!token || token === "null") {
-         console.log("토큰 없음 -> 리프레시 시도");
-
+         console.log("🔒 토큰 없음 → 리프레시 시도");
          const newToken = await refreshAccessToken();
-         if (newToken) {
-            config.headers['Authorization'] = `Bearer ${newToken}`;
-         } else {
-            // 리프레시 실패 시 여기선 그냥 요청은 보내지 않음
-            console.log("리프레시 실패 -> 로그인 이동");
-            window.location.href = '/';
-            throw new Error("Unable to refresh token");
-         }
-
+         if (!newToken) throw new Error("토큰 없음 → 로그인 이동");
+         config.headers['Authorization'] = `Bearer ${newToken}`;
          return config;
       }
 
-      // 토큰 유효성 검사
       if (!isTokenValid(token)) {
-         console.log("요청 직전 토큰 만료 감지");
+         console.log("🔒 토큰 만료 → 리프레시 시도");
          const newToken = await refreshAccessToken();
-         if (newToken) {
-            config.headers['Authorization'] = `Bearer ${newToken}`;
-         } else {
-            console.log("새 토큰 발급 실패 -> 로그인 페이지 이동");
-            window.location.href = '/';
-            throw new Error("Unable to refresh token");
-         }
-      } else {
-         config.headers['Authorization'] = `Bearer ${token}`;
+         if (!newToken) throw new Error("토큰 만료 → 로그인 이동");
+         config.headers['Authorization'] = `Bearer ${newToken}`;
+         return config;
       }
 
+      config.headers['Authorization'] = `Bearer ${token}`;
       return config;
    },
    (error) => Promise.reject(error)
 );
+
 
 // 응답 인터셉터
 let isRefreshing = false;
@@ -122,49 +110,34 @@ let failedQueue = [];
 
 const processQueue = (error, token = null) => {
    failedQueue.forEach(prom => {
-      if (error) {
-         prom.reject(error);
-      } else {
-         prom.resolve(token);
-      }
+      if (error) prom.reject(error);
+      else prom.resolve(token);
    });
-
    failedQueue = [];
-}
+};
 
 api.interceptors.response.use(
    (response) => response,
    async (error) => {
       const originalRequest = error.config;
 
-      // 네트워크 에러 따로 처리
       if (error.message === 'Network Error') {
-         setTimeout(() => {
-            alert('서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.');
-         }, 100);
+         alert('서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.');
          return Promise.reject(error);
       }
 
-      // 토큰이 만료되었고, 이 요청이 이미 재시도된 것이 아니라면
       if (error.response?.status === 401 && !originalRequest._retry) {
-
-         // 로그인 요청이면 토큰 갱신 시도하지 않고 바로 에러 던짐
-         if (originalRequest.url.includes('/api/login')) {
+         if (originalRequest.url?.includes('/api/login')) {
             return Promise.reject(error);
          }
 
          if (isRefreshing) {
-            // 이미 토큰 갱신 중이면 대기열에 요청 추가
             return new Promise((resolve, reject) => {
                failedQueue.push({ resolve, reject });
-            })
-               .then(token => {
-                  originalRequest.headers['Authorization'] = `Bearer ${token}`;
-                  return api(originalRequest);
-               })
-               .catch(err => {
-                  return Promise.reject(err);
-               });
+            }).then((token) => {
+               originalRequest.headers['Authorization'] = `Bearer ${token}`;
+               return api(originalRequest);
+            }).catch(Promise.reject);
          }
 
          originalRequest._retry = true;
@@ -172,19 +145,15 @@ api.interceptors.response.use(
 
          try {
             const newToken = await refreshAccessToken();
+            processQueue(null, newToken);
             if (newToken) {
-               // 새 토큰으로 대기열의 모든 요청 처리
-               processQueue(null, newToken);
-               // 원래 요청 재시도
                originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
                return api(originalRequest);
             } else {
-               processQueue(new Error('토큰 갱신 실패'), null);
                return Promise.reject(error);
             }
          } catch (refreshError) {
             processQueue(refreshError, null);
-            window.location.href = '/';
             return Promise.reject(refreshError);
          } finally {
             isRefreshing = false;
@@ -199,10 +168,12 @@ api.interceptors.response.use(
 export const request = (method, url, data, config = {}) => {
    const isFormData = data instanceof FormData;
    return api({
-      method: method,
-      url: url,
-      data: data,
-      headers: isFormData ? { ...config.headers } : { "Content-Type": "application/json", ...config.headers }
+      method,
+      url,
+      data,
+      headers: isFormData
+         ? { ...config.headers }
+         : { "Content-Type": "application/json", ...config.headers }
    });
 };
 
