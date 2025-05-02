@@ -75,7 +75,11 @@ public class ChatController {
         System.out.println("<<< ChatController - enterChatRoom >>>");
 
         Map<String, Object> enterResult = chatServiceImpl.enterChatRoom(request.getUserId(), request.getTargetId());
-        Employees targetUser = chatServiceImpl.getTargetUserInfo(request.getTargetId());
+//        Employees targetUser = chatServiceImpl.getTargetUserInfo(request.getTargetId());
+        Employees targetUser = null;
+        if (request.getTargetId() != null) {
+            targetUser = chatServiceImpl.getTargetUserInfo(request.getTargetId());
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.putAll(enterResult); // roomCode + newRoom 둘 다 포함
@@ -94,7 +98,10 @@ public class ChatController {
         Integer targetId = chatServiceImpl.findTargetIdByRoom(roomCode, userId);
 
         if (targetId == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "상대방을 찾을 수 없습니다."));
+            System.out.println(">>> 단체 채팅방: targetId 없음, null 반환");
+            Map<String, Object> result = new HashMap<>();
+            result.put("targetUser", null);
+            return ResponseEntity.ok(result);
         }
 
         // 2. 상대방 정보 조회

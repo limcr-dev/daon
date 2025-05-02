@@ -55,6 +55,8 @@ public class FileController {
 	        file.transferTo(targetFile);
 
 	        System.out.println(">>> 저장 경로 확인: " + uploadDir);
+	        System.out.println("저장된 경로 확인: " + uploadDir + savedName);
+	        System.out.println("파일 존재 확인: " + new File(uploadDir + savedName).exists());
 
 	        // DB 저장
 	        fileService.saveFile(roomCode, senderId, originalName, savedName);
