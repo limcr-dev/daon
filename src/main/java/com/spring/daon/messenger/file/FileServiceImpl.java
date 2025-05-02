@@ -12,6 +12,7 @@ public class FileServiceImpl {
     private final FileMapper fileMapper;
 
     public void saveFile(String roomCode, int senderId, String originalName, String savedName) {
+    	System.out.println("<<< FileServiceImpl - saveFile >>>");
            FileDTO file = new FileDTO();
            file.setRoomCode(roomCode);
            file.setSenderId(senderId);

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -86,15 +87,22 @@ public class ChatServiceImpl {
 	// 참여 중인 채팅방 목록 조회
 	public List<ChatRoomList> getChatRoomsByUser(int userId) {
         System.out.println("<<< ChatServiceImpl - getChatRoomsByUser >>>");
-        return chatMapper.getChatRoomsByUser(userId);
+        return chatMapper.getChatRoomsByUser(userId)
+		                .stream()
+		                .filter(room -> room != null && room.getRoomCode() != null)
+		                .collect(Collectors.toList());
     }
 	
 	// 1대1 채팅방 입장
 	@Transactional
-    public Map<String, Object> enterChatRoom(int userId, int targetId) {
+    public Map<String, Object> enterChatRoom(int userId, Integer targetId) {
         System.out.println("<<< ChatServiceImpl - enterChatRoom >>>");
         Map<String, Object> result = new HashMap<>();
-        
+
+        if (targetId == null) {
+            throw new IllegalArgumentException("❌ targetId는 null일 수 없습니다. 이 메서드는 1:1 채팅 전용입니다.");
+        }
+
         // 기존 방 조회
         String existingRoomCode = chatMapper.findRoomCodeByUsers(userId, targetId);
         if (existingRoomCode != null) {
@@ -110,7 +118,7 @@ public class ChatServiceImpl {
         // 두 유저 모두 참여 등록
         chatMapper.insertRoomUser(newRoomCode, userId);
         chatMapper.insertRoomUser(newRoomCode, targetId);
-        
+
         result.put("roomCode", newRoomCode);
         result.put("newRoom", true);
 
@@ -118,9 +126,16 @@ public class ChatServiceImpl {
     }
 	
 	// 유저정보 가져오기
-	public Employees getTargetUserInfo(int targetId) {
+	public Employees getTargetUserInfo(Integer userId) {
         System.out.println("<<< ChatServiceImpl - getTargetUserInfo >>>");
-        return chatMapper.selectTargetUser(targetId);
+        if (userId == null) return null;
+
+        Employees emp = hrMgtMapper.findByEmployee(userId);
+        if (emp == null) {
+            throw new RuntimeException("해당 유저를 찾을 수 없습니다. userId=" + userId);
+        }
+
+        return emp;
     }
 	
 	// 1대1 채팅방에서 상대방 ID 찾기
