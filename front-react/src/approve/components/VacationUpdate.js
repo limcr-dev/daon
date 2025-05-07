@@ -104,7 +104,7 @@ const VacationUpdate = ({ approveLine, onFormDataChange, formData, docData }) =>
         remaining_days: remaining
       }, line);
     }
-  }, [vacationForm, line, createVacation, useVacation]);
+  }, [vacationForm.title, vacationForm.content, vacationForm.start_date, vacationForm.end_date, vacationForm.vacation_type, vacationForm.used_days, line, createVacation, useVacation]);
 
   useEffect(() => {
     if (approveLine) setLine(approveLine);
@@ -123,16 +123,106 @@ const VacationUpdate = ({ approveLine, onFormDataChange, formData, docData }) =>
           <div>
             <table className="header-table">
               <tbody>
-                <tr><td className="label-cell">기안자</td><td>{document.emp_name}</td></tr>
-                <tr><td className="label-cell">소속</td><td>{getDeptName(document.dept_no)}</td></tr>
-                <tr><td className="label-cell">기안일</td><td>{document.doc_reg_date}</td></tr>
-                <tr><td className="label-cell">문서번호</td><td>{document.doc_no}</td></tr>
+                <tr>
+                  <td className="label-cell">기안자</td>
+                  <td>{document.emp_name}</td>
+                </tr>
+                <tr>
+                  <td className="label-cell">소속</td>
+                  <td>{getDeptName(document.dept_no)}</td>
+                </tr>
+                <tr>
+                  <td className="label-cell">기안일</td>
+                  <td>{document.doc_status !== 4 && (document.doc_reg_date)}</td>
+                </tr>
+                <tr>
+                  <td className="label-cell">문서번호</td>
+                  <td>{document.doc_no}</td>
+                </tr>
               </tbody>
             </table>
           </div>
-          {/* 결재선 출력 생략 가능 */}
-        </div>
 
+          {/* 신청 정보 (기안자 정보) - 항상 표시 */}
+          <div style={{ display: 'flex' }}>
+            <table className="approval-table">
+              <tbody>
+                <tr>
+                  <td rowSpan="3" className="approval-position">신청</td>
+                  <td className="approval-header">{line[0]?.appr_position || '직급 정보 없음'}</td>
+                </tr>
+                <tr>
+                  <td className="approval-sign">
+                    {line[0].appr_status === 0 && document.doc_status !== 1 && <div className="approval-stamp">승인</div>}
+                    <div className="approval-name">{line[0]?.appr_name || '이름 정보 없음'}</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="approval-date">
+                    {document.doc_status !== 1 && <div>{line[0]?.appr_date || '상태 변경 없음'}</div>}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            {/* 승인 정보 (결재선) - 결재선이 있을 때만 표시 */}
+            {line && line.length > 1 && (
+              <table className="approval-table">
+                <tbody>
+                  <tr>
+                    <td rowSpan="3" className="approval-position">승인</td>
+                    {line[1] ?
+                      <td className="approval-header">{line[1].appr_position || '직급 정보 없음'}</td>
+                      : null}
+                    {line[2] ?
+                      <td className="approval-header">{line[2].appr_position || '직급 정보 없음'}</td>
+                      : null}
+                    {line[3] ?
+                      <td className="approval-header">{line[3].appr_position || '직급 정보 없음'}</td>
+                      : null}
+                  </tr>
+                  <tr>
+                    {line[1] ?
+                      <td className="approval-sign">
+                        {line[1].appr_status === 3 && document.doc_status !== 4 && <div className="approval-stamp">승인</div>}
+                        <div className="approval-name">{line[1].appr_name || '이름 정보 없음'}</div>
+                      </td>
+                      : null}
+                    {line[2] ?
+                      <td className="approval-sign">
+                        {line[2].appr_status === 3 && document.doc_status !== 4 && <div className="approval-stamp">승인</div>}
+                        <div className="approval-name">{line[2].appr_name || '이름 정보 없음'}</div>
+                      </td>
+                      : null}
+                    {line[3] ?
+                      <td className="approval-sign">
+                        {line[3].appr_status === 3 && document.doc_status !== 4 && <div className="approval-stamp">승인</div>}
+                        <div className="approval-name">{line[3].appr_name || '이름 정보 없음'}</div>
+                      </td>
+                      : null}
+                  </tr>
+                  <tr>
+                    {line[1] ?
+                      <td className="approval-date">
+                        {line[1].appr_status === 3 && <div>{line[1].appr_date}</div>}
+                      </td>
+                      : null}
+                    {line[2] ?
+                      <td className="approval-date">
+                        {line[2].appr_status === 3 && <div>{line[2].appr_date}</div>}
+                      </td>
+                      : null}
+                    {line[3] ?
+                      <td className="approval-date">
+                        {line[3].appr_status === 3 && <div>{line[3].appr_date}</div>}
+                      </td>
+                      : null}
+                  </tr>
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+        
         {/* 휴가 입력 폼 */}
         <table className="vacation-info-table">
           <tbody>
@@ -165,6 +255,8 @@ const VacationUpdate = ({ approveLine, onFormDataChange, formData, docData }) =>
               <td>
                 <span>잔여일수: </span>
                 <input type="number" className="day-input" value={remainingDays} readOnly />
+                <span style={{ marginLeft: '10px' }}>신청일수 : </span>
+                <input type="number" className="day-input" value={vacationForm.vacation_type === 1 ? vacationForm.used_days : 0} readOnly />
                 <span style={{ marginLeft: '10px' }}>신청 후 잔여일수: </span>
                 <input
                   type="number"
