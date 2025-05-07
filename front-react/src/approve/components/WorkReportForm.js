@@ -105,7 +105,7 @@ const WorkReportForm = ({ approveLine, onFormDataChange }) => {
               </tbody>
             </table>
             {/* 승인 정보 (결재선) - 결재선이 있을 때만 표시 */}
-            {line && line.length > 0 ? (
+            {line && line.length > 1 ? (
               <table className="approval-table">
                 <tbody>
                   <tr>
