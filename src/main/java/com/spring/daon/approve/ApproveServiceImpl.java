@@ -204,7 +204,13 @@ public class ApproveServiceImpl {
         }
 
         int result3 = 1;
-        if (form_no == 5) {
+        
+        if (form_no == 1) {
+            Vacation_req vacation_req = appr_req.getVacation_req();
+            vacation_req.setDoc_no(doc_no);
+            result3 = apprMapper.updateVacationReq(vacation_req);
+            if (result3 == 0) throw new RuntimeException("휴가신청서 수정 실패");
+        } else if (form_no == 5) {
             Work_report work_report = appr_req.getWork_report();
             work_report.setDoc_no(doc_no);
             result3 = apprMapper.updateWorkReport(work_report);
