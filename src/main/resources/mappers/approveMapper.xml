@@ -114,8 +114,6 @@
 	    )
 	</insert>
 	
-	
-	
 	<select id="getDocument" parameterType="int" resultType="com.spring.daon.approve.Documents">
 		SELECT d.*
 			 , e.emp_name AS emp_name
@@ -232,6 +230,17 @@
 		   	 , coop_dept_no = #{coop_dept_no}
 		   	 </if>
 		   	 , execution_date = #{execution_date}
+		 WHERE doc_no = #{doc_no}
+	</update>
+	
+	<update id="updateVacationReq" parameterType="com.spring.daon.approve.Vacation_req">
+		UPDATE vacation_req
+		   SET title = #{title}
+		   	 , content = #{content}
+		   	 , start_date = #{start_date}
+		   	 , end_date = #{end_date}
+		   	 , used_days = #{used_days}
+		   	 , vacation_type = #{vacation_type}
 		 WHERE doc_no = #{doc_no}
 	</update>
 </mapper>   
