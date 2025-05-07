@@ -56,5 +56,7 @@ public interface ApproveMapper {
 	
 	public int deleteApprLines(int doc_no);
 	
+	public int updateVacationReq(Vacation_req vacation_req);
+	
 	public int updateWorkReport(Work_report work_report);
 }
