@@ -157,7 +157,7 @@ const DocumentUpdate = () => {
         console.log("결재 요청 데이터:", requestData);
 
         try {
-            request("POST", "/approve/update/" + form_no, JSON.stringify(requestData))
+            request("POST", "/approve/update/" + form_no, requestData)
                 .then(response => {
                     console.log("결재 요청 성공:", response);
                     alert("결재 요청이 완료되었습니다.");
@@ -199,7 +199,7 @@ const DocumentUpdate = () => {
         console.log("임시저장 데이터:", requestData);
 
         try {
-            request("POST", "/approve/update/" + form_no, JSON.stringify(requestData))
+            request("POST", "/approve/update/" + form_no, requestData)
                 .then(response => {
                     console.log("임시저장 성공:", response);
                     alert("임시저장 요청이 완료되었습니다.");
