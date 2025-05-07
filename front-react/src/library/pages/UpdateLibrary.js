@@ -92,7 +92,7 @@ const Updatelibrary = () => {
                                         <tr>
                                             <th style={{ width: '20%' }}>제목</th>
                                             <td style={{ width: '80%' }} colSpan={3}>
-                                                <input type='text' name='notice_title' style={{ width: '100%' }} value={library.library_title} onChange={changeValue} placeholder='공지 제목을 입력하세요.' />
+                                                <input type='text' name='library_title' style={{ width: '100%' }} value={library.library_title} onChange={changeValue} placeholder='자료 제목을 입력하세요.' />
                                             </td>
                                         </tr>
 
