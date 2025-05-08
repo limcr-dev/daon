@@ -36,7 +36,7 @@ const ScheduleLeftbar = (user) => {
         backdrop="static"
         dialogClassName="modal-450w"
       >
-        <ScheduleAdd open={modalShow} onClose={closeModal} user={user} />
+        <ScheduleAdd open={modalShow} closeModal={closeModal} user={user} />
       </Modal>
       {/* header 시작 */}
       <Sidenav.Header
