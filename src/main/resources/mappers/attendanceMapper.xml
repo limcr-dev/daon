@@ -259,7 +259,9 @@
 	<!-- 근무유형 등록 -->
 	<insert id="addWorkSchedule" parameterType="com.spring.daon.attendMgt.Work_schedules">
 		INSERT INTO work_schedules(type_name, start_time, end_time, total_time)
-		VALUES(#{type_name},#{start_time}, #{end_time}, #{total_time})
+		VALUES(#{type_name},#{start_time}, #{end_time}, 
+				SEC_TO_TIME(TIME_TO_SEC(#{end_time}) - TIME_TO_SEC(#{start_time}))
+			   )
 	</insert>
 	
 	<!-- 근무유형 수정 -->
