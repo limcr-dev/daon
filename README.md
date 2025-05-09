@@ -84,14 +84,29 @@
 
     7) colorPicker
         npm install @adobe/react-spectrum
-        npm install @react-spectrum/color @react-stately/color @react-aria/color    
+        npm install @react-spectrum/color @react-stately/color @react-aria/color   
+
+    8) jwt
+        npm install jwt-decode
+
+    9) web socket
+        npm install sockjs-client @stomp/stompjs
+
+    10) 알림
+        npm install react-toastify
+
+    11) pdf
+        npm install jspdf는 리액트 프로젝트에서 jsPDF 사용용
+
+    12) 엑셀
+        npm install xlsx file-saver
+    
+    13) 그래프
+        npm install recharts
         
 #설치 후 package.json 파일에서 dependcy 버전 확인
     - "react": "^18.3.1",
     - "react-dom": "^18.3.1"
-
-
-
 
 *** react 규칙 ***
  - 기능별로 폴더 생성 후 내부에 pages, components, css 필요한 폴더 만들어 사용 
