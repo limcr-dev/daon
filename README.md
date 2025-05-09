@@ -96,7 +96,8 @@
         npm install react-toastify
 
     11) pdf
-        npm install jspdf는 리액트 프로젝트에서 jsPDF 사용용
+        npm install jspdf
+        npm install jspdf-autotable
 
     12) 엑셀
         npm install xlsx file-saver
